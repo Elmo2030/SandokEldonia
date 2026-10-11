@@ -72,7 +72,7 @@ private struct TabLayout: View {
 
 private struct SplitLayout: View {
     @Environment(UIState.self) private var ui
-    @State private var columns = NavigationSplitViewVisibility.automatic
+    @State private var columns = NavigationSplitViewVisibility.all
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columns) {
@@ -104,7 +104,7 @@ private struct Sidebar: View {
             set: { new in
                 switch new {
                 case .section(let s):
-                    if let t = s.itemType, ui.section == s { model.selectedCategory = "__all"; _ = t }
+                    if s.itemType != nil, ui.section == s { model.selectedCategory = "__all" }
                     ui.section = s
                 case .category(let tag): model.selectedCategory = tag
                 case nil: break

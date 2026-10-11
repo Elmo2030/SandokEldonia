@@ -105,7 +105,12 @@ enum DebugLaunch {
         if let s = d.string(forKey: "demoServer"), model.accounts.isEmpty {
             await model.addAccount(Account(name: d.string(forKey: "demoName") ?? "Demo", kind: .xtream, server: s, username: "demo"), password: "demo")
         }
+        if d.bool(forKey: "demoSecond"), model.accounts.count == 1 {
+            await model.addAccount(Account(name: "Home", kind: .xtream, server: d.string(forKey: "demoServer") ?? "http://127.0.0.1:8099", username: "demo"), password: "demo")
+        }
+        if d.bool(forKey: "uiAll") { model.allPlaylists = true }
         if d.bool(forKey: "demoSeed") { await seed(model) }
+        try? await Task.sleep(for: .milliseconds(1200))                        // the tab view must have settled before the section is chosen
         if let s = d.string(forKey: "uiSection"), let sec = AppSection(rawValue: s) {
             ui.section = sec
             if let t = sec.itemType { model.tab = t }

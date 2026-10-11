@@ -33,7 +33,7 @@ struct SettingsScreen: View {
                 case .acknowledgements: AcknowledgementsScreen()
                 }
             }
-            .sheet(isPresented: $adding) { NavigationStack { SourceFormView(mode: .add, draft: SourceDraft(), presentation: .sheet) } }
+            .sheet(isPresented: $adding) { NavigationStack { SourceFormView(mode: .add, draft: SourceDraft(), presentation: .sheet) }.formSheet() }
             .task(id: ui.debugSheet) {
                 #if DEBUG
                 switch ui.debugSheet {

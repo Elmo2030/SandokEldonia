@@ -131,7 +131,7 @@ struct DetailSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large]).presentationDragIndicator(.visible)
+        .presentationDetents([.medium, .large]).presentationDragIndicator(.visible).formSheet()
         .motion(value: phase)
         .task(id: attempt) { await load() }
         .sheet(item: $trailer) { SafariView(url: $0.url).ignoresSafeArea() }
@@ -239,7 +239,7 @@ struct SeriesScreen: View {
                 }
             }
         }
-        .presentationDetents([.large]).presentationDragIndicator(.visible)
+        .presentationDetents([.large]).presentationDragIndicator(.visible).formSheet()
         .motion(value: loading)
         .task(id: attempt) { await load() }
         .sheet(item: $trailer) { SafariView(url: $0.url).ignoresSafeArea() }

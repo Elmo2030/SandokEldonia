@@ -33,6 +33,7 @@ struct BrowseScreen: View {
                 }
             }
             .onSubmit(of: .search) { RecentSearches().add(model.searchText); recents = RecentSearches().items }
+            .onChange(of: model.searchText) { _, t in if t.isEmpty { recents = RecentSearches().items } }
         }
     }
 }
@@ -194,7 +195,7 @@ private struct CategorySheet: View {
             .navigationTitle(L("cat.title")).navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button(L("player.close")) { dismiss() } } }
         }
-        .presentationDetents([.medium, .large]).presentationDragIndicator(.visible)
+        .presentationDetents([.medium, .large]).presentationDragIndicator(.visible).formSheet()
     }
 
     private func row(_ tag: String, _ title: String, _ symbol: String?) -> some View {

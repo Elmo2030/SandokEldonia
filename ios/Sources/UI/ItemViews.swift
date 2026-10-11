@@ -62,7 +62,7 @@ struct ChannelRow: View {
         let fav = model.isFavorite(item)
         let current = ui.lastPlayedID == item.id
         HStack(spacing: 4) {
-            Button { RecentSearches().add(model.searchText); model.play(item) } label: {
+            Button { Haptics.tap(); RecentSearches().add(model.searchText); model.play(item) } label: {
                 HStack(spacing: 12) {
                     ChannelLogo(item: item).frame(width: logo, height: logo)
                     VStack(alignment: .leading, spacing: 3) {

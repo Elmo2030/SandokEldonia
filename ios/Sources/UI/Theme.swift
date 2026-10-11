@@ -33,6 +33,8 @@ extension View {
     /// `.animation(_:value:)` that does nothing when Reduce Motion is on.
     func motion<V: Equatable>(_ animation: Animation = .smooth(duration: 0.25), value: V) -> some View { modifier(MotionModifier(animation: animation, value: value)) }
     func brandRows() -> some View { listRowBackground(Brand.surface) }
+    /// iPad: a centered form-sized sheet instead of a phone-style card hanging off one edge (iOS 18+; before that the system default).
+    @ViewBuilder func formSheet() -> some View { if #available(iOS 18.0, *) { presentationSizing(.form) } else { self } }
 }
 
 enum Haptics {

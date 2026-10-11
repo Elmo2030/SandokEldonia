@@ -76,6 +76,7 @@ open class LibraryModel {
     public var favoriteKeys: Set<String> = []
     private var epgNow: [String: String] = [:]      // "accountId:streamId" -> program title
     private var epgStamp: [String: Date] = [:]
+    private var epgEntries: [String: [EPGEntry]] = [:]   // current + next program, for the phone's rows
     private var epgInFlight: Set<String> = []
     public var schedule: [EPGEntry] = []      // current + upcoming programs of the channel being watched
     private var searchTask: Task<Void, Never>?
@@ -308,6 +309,11 @@ open class LibraryModel {
     }
 
     public func epgTitle(_ i: Item) -> String? { epgNow["\(i.accountId):\(i.streamId)"] }
+    /// The program on now and the one after it (nil when the provider has no guide for the channel).
+    public func epgPrograms(_ i: Item) -> (now: EPGEntry?, next: EPGEntry?) {
+        let l = epgEntries["\(i.accountId):\(i.streamId)"] ?? []
+        return (l.first, l.count > 1 ? l[1] : nil)
+    }
 
     /// "Now" per channel (keyed by playlist and stream id): refreshed after 5 minutes, fetched once at a time per channel.
     public func loadEPGNow(_ item: Item) async {
@@ -315,10 +321,11 @@ open class LibraryModel {
         guard item.type == .live, !epgInFlight.contains(key), let urls = xtreamURLs(for: item.accountId) else { return }
         if let t = epgStamp[key], Date().timeIntervalSince(t) < 300 { return }
         epgInFlight.insert(key); defer { epgInFlight.remove(key) }
-        let title = try? await XtreamClient(urls: urls).epgNow(streamId: item.streamId)
+        let entries = try? await XtreamClient(urls: urls).epgShort(streamId: item.streamId, limit: 2)
         guard !Task.isCancelled else { return }
         epgStamp[key] = Date()
-        epgNow[key] = title ?? nil
+        epgNow[key] = entries?.first?.title
+        epgEntries[key] = entries ?? []
     }
 
     // MARK: Preferences, info, backup

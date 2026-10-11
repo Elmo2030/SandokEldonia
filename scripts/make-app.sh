@@ -79,7 +79,14 @@ IDENTITY="${IPTVMAC_SIGN_IDENTITY:--}"
 if [ "$IDENTITY" != "-" ] || [ -n "${IPTVMAC_HARDENED:-}" ]; then
   FLAGS=(--force --options runtime --sign "$IDENTITY"); [ "$IDENTITY" != "-" ] && FLAGS+=(--timestamp)
   find "$APP/Contents/Frameworks" -name '*.dylib' -exec codesign "${FLAGS[@]}" {} \;
-  codesign "${FLAGS[@]}" --entitlements scripts/entitlements.plist "$APP"
+  ENT=scripts/entitlements.plist
+  if [ "$IDENTITY" = "-" ]; then
+    # An ad-hoc signature has no Team ID, so library validation can never pass: for this local test only, switch it off.
+    # It proves nothing else breaks under the hardened runtime; the real Team ID signing needs no exception.
+    ENT="$(mktemp)"; trap 'rm -f "$ENT"' EXIT
+    printf '<?xml version="1.0" encoding="UTF-8"?><plist version="1.0"><dict><key>com.apple.security.cs.disable-library-validation</key><true/></dict></plist>' > "$ENT"
+  fi
+  codesign "${FLAGS[@]}" --entitlements "$ENT" "$APP"
   codesign --verify --strict --deep "$APP"
   "$APP/Contents/MacOS/IPTVMac" --selftest   # the bundled libmpv must still load under the hardened runtime
 else

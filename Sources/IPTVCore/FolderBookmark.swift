@@ -4,6 +4,14 @@ import Foundation
 /// relaunch (the grant the open panel gave lives for one session only); the bookmark data carries the grant.
 /// Without the sandbox the same bookmark just resolves, so there is a single code path.
 /// A plain path saved by older versions is turned into a bookmark once. Every system call is injectable for tests.
+#if os(macOS)
+private let scopeCreate: URL.BookmarkCreationOptions = .withSecurityScope      // the Mac sandbox keeps a user-chosen folder by security-scoped bookmark
+private let scopeResolve: URL.BookmarkResolutionOptions = .withSecurityScope
+#else
+private let scopeCreate: URL.BookmarkCreationOptions = []                       // iOS has no scope flag: plain bookmarks of folders picked in the document picker
+private let scopeResolve: URL.BookmarkResolutionOptions = []
+#endif
+
 public final class FolderBookmark: @unchecked Sendable {
     public struct Ops {
         public var make: (URL) throws -> Data
@@ -18,10 +26,10 @@ public final class FolderBookmark: @unchecked Sendable {
         }
 
         public static let system = Ops(
-            make: { try $0.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) },
+            make: { try $0.bookmarkData(options: scopeCreate, includingResourceValuesForKeys: nil, relativeTo: nil) },
             resolve: {
                 var stale = false
-                let u = try URL(resolvingBookmarkData: $0, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale)
+                let u = try URL(resolvingBookmarkData: $0, options: scopeResolve, relativeTo: nil, bookmarkDataIsStale: &stale)
                 return (u, stale)
             },
             start: { $0.startAccessingSecurityScopedResource() },

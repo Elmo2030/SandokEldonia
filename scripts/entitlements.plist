@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<!-- Hardened runtime with no exceptions. Only if the notarized app fails to launch, add the one entitlement the crash log names
+     (for example com.apple.security.cs.disable-library-validation when a bundled dylib is not signed by our own identity). -->
+</dict></plist>

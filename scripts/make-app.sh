@@ -72,6 +72,18 @@ sed -i '' "s/__VERSION__/$VERSION/g" "$APP/Contents/Info.plist"
 # every Resources/<lang>.lproj folder is a UI language macOS may pick
 LOCS="$(cd Sources/IPTVMac/Resources && for d in *.lproj; do printf '<string>%s</string>' "${d%.lproj}"; done)"
 sed -i '' "s|__LOCALIZATIONS__|$LOCS|" "$APP/Contents/Info.plist"
-find "$APP/Contents/Frameworks" -name '*.dylib' -exec codesign --force --sign - {} \;
-codesign --force --deep --sign - "$APP"
+# Signing. Default: ad-hoc (works for the curl installer and the in-app updater, but macOS shows a warning for a downloaded DMG).
+# IPTVMAC_SIGN_IDENTITY="Developer ID Application: Name (TEAMID)" signs for notarization: hardened runtime + secure timestamp,
+# every bundled dylib first, then the app (no --deep). IPTVMAC_HARDENED=1 applies the hardened runtime to an ad-hoc build, to test locally.
+IDENTITY="${IPTVMAC_SIGN_IDENTITY:--}"
+if [ "$IDENTITY" != "-" ] || [ -n "${IPTVMAC_HARDENED:-}" ]; then
+  FLAGS=(--force --options runtime --sign "$IDENTITY"); [ "$IDENTITY" != "-" ] && FLAGS+=(--timestamp)
+  find "$APP/Contents/Frameworks" -name '*.dylib' -exec codesign "${FLAGS[@]}" {} \;
+  codesign "${FLAGS[@]}" --entitlements scripts/entitlements.plist "$APP"
+  codesign --verify --strict --deep "$APP"
+  "$APP/Contents/MacOS/IPTVMac" --selftest   # the bundled libmpv must still load under the hardened runtime
+else
+  find "$APP/Contents/Frameworks" -name '*.dylib' -exec codesign --force --sign - {} \;
+  codesign --force --deep --sign - "$APP"
+fi
 echo "Built $APP"

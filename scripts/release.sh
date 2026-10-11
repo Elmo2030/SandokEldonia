@@ -22,6 +22,7 @@ grep -q "$PUB" install.sh || { echo "scripts/release-key.pub is not the key pinn
 [ "$(ssh-keygen -y -f "$KEY" | cut -d' ' -f2)" = "$PUB" ] || { echo "$KEY does not match scripts/release-key.pub"; exit 1; }
 git push -q
 COMMIT="$(git rev-parse HEAD)"
+[ -n "${IPTVMAC_SIGN_IDENTITY:-}" ] || echo "NOTE: IPTVMAC_SIGN_IDENTITY is not set: this release will be ad-hoc signed and not notarized."
 scripts/make-dmg.sh
 SHA="$(shasum -a 256 build/IPTVMac.dmg | cut -c1-64)"
 MSG="$(mktemp)"; trap 'rm -f "$MSG" "$MSG.sig" "$MSG.allowed"' EXIT

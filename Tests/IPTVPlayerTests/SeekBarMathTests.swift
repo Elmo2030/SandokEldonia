@@ -1,6 +1,6 @@
 import Testing
 import Foundation
-@testable import IPTVMac
+@testable import IPTVPlayer
 
 @Test func pointerPositionMapsToTimeAcrossTheBar() {
     #expect(SeekBarMath.time(x: 0, width: 400, duration: 200) == 0)

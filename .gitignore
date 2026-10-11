@@ -4,3 +4,7 @@ build/
 .DS_Store
 .superpowers/
 .claude/settings.local.json
+
+# iOS: generated project, CA bundle, Info.plist, version/team include (scripts/ios-setup.sh); downloads go to build/
+ios/*.xcodeproj
+ios/Generated/

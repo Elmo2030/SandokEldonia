@@ -1,3 +1,4 @@
+#if os(macOS)   // the iOS twin (OpenGL ES) is MPVVideoViewiOS.swift
 import AppKit
 import OpenGL.GL3
 import CLibMPV
@@ -85,3 +86,4 @@ public final class MPVVideoView: NSOpenGLView {
         mpv_render_context_free(r)
     }
 }
+#endif

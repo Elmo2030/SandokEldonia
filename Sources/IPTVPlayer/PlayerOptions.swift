@@ -38,11 +38,18 @@ extension MPVPlayer {
 /// Streams, playlists and subtitles come from a third party: verify HTTPS certificates (the Xtream password is in the URL),
 /// and switch off everything that can run code or read the disk (the bundled mpv has no scripts/ytdl, a dev build would).
 enum EngineOptions {
+    /// iOS has no /etc/ssl/cert.pem and mbedTLS no system trust store: the app bundles cacert.pem (scripts/make-ca-bundle.sh).
+    /// Missing file = empty path = every HTTPS stream fails (closed), never unverified.
+    #if os(iOS)
+    static let caFile = Bundle.main.path(forResource: "cacert", ofType: "pem") ?? ""
+    #else
+    static let caFile = "/etc/ssl/cert.pem"
+    #endif
     static let hardened: [(String, String)] = [
         ("network-timeout", "15"),
         ("stream-lavf-o", "reconnect=1,reconnect_streamed=1,reconnect_delay_max=5"),
         ("tls-verify", "yes"),
-        ("tls-ca-file", "/etc/ssl/cert.pem"),
+        ("tls-ca-file", caFile),
         ("embeddedfonts", "no"),
         ("ytdl", "no"),
         ("load-scripts", "no"),

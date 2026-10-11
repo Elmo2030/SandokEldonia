@@ -1,0 +1,73 @@
+# XcodeGen spec (https://github.com/yonaskolb/XcodeGen, MIT) for the iPhone + iPad app. Do not run xcodegen by hand: scripts/ios-setup.sh
+# fetches the pinned XcodeGen, the iOS libmpv and the CA bundle, writes ios/Generated/generated.yml (included below: the list of
+# languages and, when IOS_TEAM_ID is set, the signing team) and generates ios/IPTVPhone.xcodeproj (git-ignored: this file is the source).
+name: IPTVPhone
+include:
+  - path: Generated/generated.yml
+options:
+  bundleIdPrefix: io.github.goelir
+  deploymentTarget: { iOS: "17.0" }
+  developmentLanguage: en
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: ${IPTV_VERSION}          # the repo's VERSION file
+    CURRENT_PROJECT_VERSION: ${IPTV_BUILD}      # build number, separate: IPTV_BUILD=7 scripts/ios-setup.sh (default 1)
+    TARGETED_DEVICE_FAMILY: "1,2"
+    GLES_SILENCE_DEPRECATION: YES               # OpenGL ES is deprecated since iOS 12; mpv's only iOS render path (see MPVVideoViewiOS.swift)
+packages:
+  IPTVMac: { path: .. }                         # the repo's Package.swift: IPTVCore, IPTVPlayer, IPTVAppKit (+ GRDB)
+targets:
+  IPTVPhone:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+      - { path: Resources, optional: true, excludes: ["Info-extra.plist"] }   # icon, privacy manifest, InfoPlist strings...: the resources work (may be missing; Info-extra.plist is merged by ios-setup.sh)
+      - path: Generated/cacert.pem               # scripts/make-ca-bundle.sh
+      - path: ../Sources/IPTVMac/Resources       # the 31 shared Localizable.strings, not copied
+        includes: ["*.lproj/Localizable.strings"]
+    dependencies:
+      - { package: IPTVMac, product: IPTVCore }
+      - { package: IPTVMac, product: IPTVPlayer }
+      - { package: IPTVMac, product: IPTVAppKit }
+      # libmpv and its 17 dependencies: dynamic frameworks, embedded in the app (scripts/fetch-ios-mpv.sh).
+      - { framework: ../build/vendor/ios-mpv/Mpv.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Ass.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Avcodec.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Avfilter.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Avformat.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Avutil.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Dav1d.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Freetype.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Fribidi.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Harfbuzz.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Mbedcrypto.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Mbedtls.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Mbedx509.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Png16.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Swresample.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Swscale.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Uchardet.xcframework, embed: true }
+      - { framework: ../build/vendor/ios-mpv/Xml2.xcframework, embed: true }
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.goelir.IPTVMac    # same id as the Mac app (universal purchase later); the owner may change it
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon             # from ios/Resources/Assets.xcassets (ignored while there is none)
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        # DEVELOPMENT_TEAM: set with IOS_TEAM_ID=<Team ID> scripts/ios-setup.sh, or in Xcode > Signing & Capabilities
+    info:
+      path: Generated/Info.plist
+      properties:
+        CFBundleDisplayName: IPTVMac
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest: { UIApplicationSupportsMultipleScenes: false }
+        UIBackgroundModes: [audio]                              # audio keeps playing with the screen locked
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        ITSAppUsesNonExemptEncryption: false                    # only standard TLS (URLSession and mbedTLS inside libmpv); confirm in App Store Connect
+        NSAppTransportSecurity: { NSAllowsArbitraryLoads: true }   # like the Mac app: IPTV panels are mostly plain http (libmpv's sockets bypass ATS anyway)
+        NSLocalNetworkUsageDescription: IPTVMac connects to playlists and streams on your local network.

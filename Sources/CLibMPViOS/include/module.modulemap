@@ -1,0 +1,10 @@
+// The libmpv C API for iOS, so IPTVPlayer compiles for iOS without pkg-config (macOS uses the CLibMPV system library).
+// include/mpv/*.h are the unmodified headers of the media-kit iOS build (libmpv-darwin-build v0.7.3: mpv 0.36.0, client API under
+// the ISC licence, see the notice at the top of each header). The symbols come from Mpv.xcframework, which the Xcode app links:
+// scripts/fetch-ios-mpv.sh downloads it and checks that these headers still match it.
+module CLibMPViOS {
+    header "mpv/client.h"
+    header "mpv/render.h"
+    header "mpv/render_gl.h"
+    export *
+}

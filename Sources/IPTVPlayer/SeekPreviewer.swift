@@ -1,6 +1,10 @@
 import Foundation
 import CoreGraphics
+#if os(iOS)
+import CLibMPViOS
+#else
 import CLibMPV
+#endif
 
 /// A second, hidden libmpv instance that only grabs small frames for the seek bar's hover preview.
 /// It opens the same source as the player (a second connection for network sources: the app asks for it only when the user allows it),

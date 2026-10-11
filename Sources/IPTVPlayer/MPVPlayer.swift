@@ -1,5 +1,9 @@
 import Foundation
+#if os(iOS)
+import CLibMPViOS
+#else
 import CLibMPV
+#endif
 
 public struct Track: Identifiable, Equatable {
     public let id: Int

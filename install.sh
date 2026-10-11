@@ -2,9 +2,10 @@
 # IPTVMac installer. Usage:
 #   curl -fsSL https://raw.githubusercontent.com/Goelir/IPTVMac/main/install.sh | bash
 #
-# Why this exists: IPTVMac is not notarized by Apple (that needs a paid Developer ID). A DMG downloaded in a
-# browser is marked "from the internet" and macOS then blocks the app on first launch. A file fetched with curl is
-# not marked, so the app installed by this script opens normally. Nothing is hidden: it downloads the latest
+# Why use it: from version 0.9.1, IPTVMac releases are signed with an Apple Developer ID and notarized, so a DMG
+# downloaded in a browser opens with a normal double-click. Older versions are not notarized: a browser marks their
+# DMG "from the internet" and macOS blocks the app on first launch. This script works for every version. A file
+# fetched with curl is not marked, so there is nothing to bypass. Nothing is hidden: it downloads the latest
 # GitHub release, checks the release SIGNATURE (made with a key that is not on GitHub) and the SHA-256, copies
 # the app and opens it.
 # INSTALL_DIR=/some/folder changes the destination (default: /Applications, or ~/Applications if /Applications is not writable).

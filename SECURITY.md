@@ -15,7 +15,7 @@ Supported version: the latest release. The app updates itself, so please reprodu
 
 Known limits (honest list):
 
-- The app is **not notarized** (no paid Apple Developer ID) and only ad-hoc signed, so macOS cannot tie it to a verified developer. The pinned release key is the trust root instead. Losing or leaking `~/.ssh/iptvmac_release` means rotating the key (a new app release signed with the old key that pins the new one).
+- From version 0.9.1, releases are signed with an Apple Developer ID (hardened runtime) and notarized and stapled, so macOS can tie them to a developer and opens the DMG normally. Notarization is an automated malware scan that Apple runs on the uploaded build. It does not mean Apple reviewed or endorses the app. Versions before 0.9.1 are **not notarized** and only ad-hoc signed, so macOS cannot tie them to a verified developer and blocks a copy downloaded in a browser. For every version, the pinned release key described above is what the app and `install.sh` check before installing anything, and it stays the trust root for updates. Losing or leaking `~/.ssh/iptvmac_release` means rotating the key (a new app release signed with the old key that pins the new one).
 - The player (libmpv/FFmpeg) is a prebuilt third-party build and processes data from your IPTV provider. HTTPS certificates of streams are verified; scripting (`ytdl`, Lua, config files) and embedded fonts are disabled. Keep the app updated.
 - Xtream passwords are stored in plain text in the app's database (`~/Library/Application Support/IPTVMac/`, readable only by your user), not in the Keychain.
 

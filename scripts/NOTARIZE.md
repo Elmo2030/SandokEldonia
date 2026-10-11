@@ -29,4 +29,4 @@ builds and signs the DMG, has the DMG notarized and stapled, and only then does 
 ## If something fails
 - *Notarization "Invalid"*: `scripts/notarize.sh` prints Apple's log. Usual causes: a dylib not signed (all are re-signed by make-app.sh), missing secure timestamp, or an unsigned nested binary.
 - *App crashes at launch only when signed*: read the crash report; add the one entitlement it names to `scripts/entitlements.plist`.
-- After the first notarized release, update the "not notarized" text (README, README.he, website, SECURITY.md, install.sh header). `install.sh` keeps working.
+- The first notarized version is written as "0.9.1" in README.md, README.he.md, SECURITY.md and the install.sh header comment, and as `NOTARIZED_FROM` in scripts/site/build.py (the website, llms.txt and the FAQ read it from there; rebuild with `python3 scripts/site/build.py`). If the version number changes, update all of them (`grep -rn "0\.9\.1"` finds the text). `install.sh` keeps working.

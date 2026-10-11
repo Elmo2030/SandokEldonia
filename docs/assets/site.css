@@ -348,6 +348,8 @@ html[lang="he"] .wall { letter-spacing: -.01em; }
 .steps li { counter-increment: s; position: relative; padding-inline-start: 44px; color: var(--mute); font-size: .9688rem; }
 .steps li::before { content: counter(s); position: absolute; inset-inline-start: 0; top: -1px; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font: 600 .8125rem/1 var(--sans); color: var(--ink); }
 .steps code { color: var(--ink); background: var(--s2); border-radius: 5px; padding: 1px 6px; overflow-wrap: anywhere; }
+.note .old { margin: -4px 0 20px; font-size: .9rem; }
+.note .old code { display: inline-block; max-width: 100%; color: var(--ink); background: var(--s2); border-radius: 5px; padding: 1px 6px; overflow-wrap: anywhere; }
 
 /* ---------- free playlists, faq, guides ---------- */
 .free { padding-block: clamp(64px, 10vh, 120px); background: var(--s1); border-block: 1px solid var(--line); }

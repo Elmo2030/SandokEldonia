@@ -1,4 +1,5 @@
-// Draws the DMG window background: swift scripts/dmg/background.swift out.png
+// Draws the DMG window background: swift scripts/dmg/background.swift out.png [notarized]
+// Without the second argument the window shows the "Open Anyway" hint that an un-notarized build needs; a notarized build opens normally.
 import AppKit
 
 let out = CommandLine.arguments[1]
@@ -28,6 +29,6 @@ arrow.move(to: NSPoint(x: 250, y: 200)); arrow.line(to: NSPoint(x: 400, y: 200))
 arrow.move(to: NSPoint(x: 370, y: 228)); arrow.line(to: NSPoint(x: 405, y: 200)); arrow.line(to: NSPoint(x: 370, y: 172))
 NSColor(calibratedWhite: 0.45, alpha: 1).setStroke(); arrow.stroke()
 
-text("First launch: System Settings > Privacy & Security > Open Anyway", size: 12, y: 40, color: .gray)
+if CommandLine.arguments.count < 3 { text("First launch: System Settings > Privacy & Security > Open Anyway", size: 12, y: 40, color: .gray) }
 NSGraphicsContext.restoreGraphicsState()
 try rep.representation(using: .png, properties: [:])!.write(to: URL(fileURLWithPath: out))

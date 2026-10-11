@@ -128,6 +128,17 @@
 "settings.seekPreviewNote" = "يفتح اتصالًا ثانيًا بمزوّد الخدمة. أوقفه إذا توقف التشغيل أو إذا كان مزوّد الخدمة يسمح باتصال واحد فقط.";
 "player.seekBar" = "موضع التشغيل";
 "player.seekValue" = "%@ من %@";
+"player.live" = "مباشر";
+"player.channelPrev" = "القناة السابقة";
+"player.channelNext" = "القناة التالية";
+"player.scale.fit" = "ملاءمة";
+"player.scale.fill" = "ملء";
+"player.scale.stretch" = "تمديد";
+"player.subtitleAdjust" = "ضبط الترجمة…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "السطوع";
+"player.volume" = "مستوى الصوت";
+"player.replay" = "إعادة التشغيل";
 "settings.clock" = "إظهار الوقت في المشغّل";
 "settings.seekStep" = "مدة التخطي (مفاتيح الأسهم وأزرار التخطي)";
 "settings.barsHide" = "إخفاء عناصر التحكم بعد";

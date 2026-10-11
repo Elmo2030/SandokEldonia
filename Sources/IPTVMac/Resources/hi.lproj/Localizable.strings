@@ -128,6 +128,17 @@
 "settings.seekPreviewNote" = "आपके प्रदाता से दूसरा कनेक्शन खोलता है। प्लेबैक रुक जाए या आपका प्रदाता केवल एक कनेक्शन की अनुमति देता हो, तो इसे बंद कर दें।";
 "player.seekBar" = "प्लेबैक की स्थिति";
 "player.seekValue" = "%@ / %@";
+"player.live" = "लाइव";
+"player.channelPrev" = "पिछला चैनल";
+"player.channelNext" = "अगला चैनल";
+"player.scale.fit" = "फ़िट";
+"player.scale.fill" = "भरें";
+"player.scale.stretch" = "खींचें";
+"player.subtitleAdjust" = "उपशीर्षक समायोजित करें…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "चमक";
+"player.volume" = "वॉल्यूम";
+"player.replay" = "फिर से चलाएँ";
 "settings.clock" = "प्लेयर में समय दिखाएँ";
 "settings.seekStep" = "स्किप स्टेप (ऐरो कीज़ और स्किप बटन)";
 "settings.barsHide" = "इतने समय बाद कंट्रोल छिपाएँ";

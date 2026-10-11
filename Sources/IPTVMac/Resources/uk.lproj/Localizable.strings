@@ -128,6 +128,17 @@
 "settings.seekPreviewNote" = "Відкриває друге з’єднання з вашим провайдером. Вимкніть, якщо відтворення зупиняється або провайдер дозволяє лише одне з’єднання.";
 "player.seekBar" = "Позиція відтворення";
 "player.seekValue" = "%@ з %@";
+"player.live" = "Наживо";
+"player.channelPrev" = "Попередній канал";
+"player.channelNext" = "Наступний канал";
+"player.scale.fit" = "Вписати";
+"player.scale.fill" = "Заповнити";
+"player.scale.stretch" = "Розтягнути";
+"player.subtitleAdjust" = "Налаштувати субтитри…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Яскравість";
+"player.volume" = "Гучність";
+"player.replay" = "Відтворити знову";
 "settings.clock" = "Показувати час у програвачі";
 "settings.seekStep" = "Крок перемотування (клавіші зі стрілками та кнопки перемотування)";
 "settings.barsHide" = "Ховати елементи керування через";

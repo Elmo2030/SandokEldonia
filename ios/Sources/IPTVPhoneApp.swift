@@ -18,7 +18,12 @@ import SwiftUI
         WindowGroup {
             RootView()
                 .environment(model)
-                .task { await model.start() }
+                .task {
+                    await model.start()
+                    #if DEBUG
+                    await PlayerDebug.runIfRequested(model)   // -uiState player-*: opens the player on a generated test stream
+                    #endif
+                }
         }
     }
 }

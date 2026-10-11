@@ -128,6 +128,17 @@
 "settings.seekPreviewNote" = "Membuka koneksi kedua ke penyedia Anda. Matikan jika pemutaran berhenti atau penyedia Anda hanya mengizinkan satu koneksi.";
 "player.seekBar" = "Posisi pemutaran";
 "player.seekValue" = "%@ dari %@";
+"player.live" = "Langsung";
+"player.channelPrev" = "Saluran sebelumnya";
+"player.channelNext" = "Saluran berikutnya";
+"player.scale.fit" = "Pas";
+"player.scale.fill" = "Isi";
+"player.scale.stretch" = "Regangkan";
+"player.subtitleAdjust" = "Atur subjudul…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Kecerahan";
+"player.volume" = "Volume";
+"player.replay" = "Putar ulang";
 "settings.clock" = "Tampilkan jam di pemutar";
 "settings.seekStep" = "Langkah lompat (tombol panah dan tombol lompat)";
 "settings.barsHide" = "Sembunyikan kontrol setelah";

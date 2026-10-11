@@ -128,6 +128,17 @@
 "settings.seekPreviewNote" = "Отваря втора връзка към вашия доставчик. Изключете го, ако възпроизвеждането спре или доставчикът ви позволява само една връзка.";
 "player.seekBar" = "Позиция на възпроизвеждане";
 "player.seekValue" = "%@ от %@";
+"player.live" = "На живо";
+"player.channelPrev" = "Предишен канал";
+"player.channelNext" = "Следващ канал";
+"player.scale.fit" = "Побиране";
+"player.scale.fill" = "Запълване";
+"player.scale.stretch" = "Разтягане";
+"player.subtitleAdjust" = "Настройка на субтитрите…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Яркост";
+"player.volume" = "Сила на звука";
+"player.replay" = "Пусни отново";
 "settings.clock" = "Показвай часа в плейъра";
 "settings.seekStep" = "Стъпка на превъртане (клавиши със стрелки и бутони за превъртане)";
 "settings.barsHide" = "Скривай контролите след";

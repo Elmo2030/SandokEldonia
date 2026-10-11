@@ -128,6 +128,17 @@
 "settings.seekPreviewNote" = "Otevře druhé připojení k vašemu poskytovateli. Vypněte, pokud se přehrávání zastaví nebo váš poskytovatel povoluje jen jedno připojení.";
 "player.seekBar" = "Pozice přehrávání";
 "player.seekValue" = "%@ z %@";
+"player.live" = "Živě";
+"player.channelPrev" = "Předchozí kanál";
+"player.channelNext" = "Další kanál";
+"player.scale.fit" = "Přizpůsobit";
+"player.scale.fill" = "Vyplnit";
+"player.scale.stretch" = "Roztáhnout";
+"player.subtitleAdjust" = "Upravit titulky…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Jas";
+"player.volume" = "Hlasitost";
+"player.replay" = "Přehrát znovu";
 "settings.clock" = "Zobrazovat čas v přehrávači";
 "settings.seekStep" = "Krok přeskoku (šipky a tlačítka přeskoku)";
 "settings.barsHide" = "Skrýt ovládací prvky po";

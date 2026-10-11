@@ -128,6 +128,17 @@
 "settings.seekPreviewNote" = "Apre una seconda connessione con il tuo provider. Disattivala se la riproduzione si interrompe o se il tuo provider consente una sola connessione.";
 "player.seekBar" = "Posizione di riproduzione";
 "player.seekValue" = "%@ di %@";
+"player.live" = "Diretta";
+"player.channelPrev" = "Canale precedente";
+"player.channelNext" = "Canale successivo";
+"player.scale.fit" = "Adatta";
+"player.scale.fill" = "Riempi";
+"player.scale.stretch" = "Allunga";
+"player.subtitleAdjust" = "Regola i sottotitoli…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Luminosità";
+"player.volume" = "Volume";
+"player.replay" = "Riproduci di nuovo";
 "settings.clock" = "Mostra l’ora nel player";
 "settings.seekStep" = "Passo di salto (tasti freccia e pulsanti di salto)";
 "settings.barsHide" = "Nascondi i controlli dopo";

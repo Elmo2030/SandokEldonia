@@ -10,7 +10,11 @@ SIGNED="${IPTVMAC_SIGN_IDENTITY:-}"
 [ -x build/venv/bin/dmgbuild ] || { python3 -m venv build/venv && build/venv/bin/pip install -q --require-hashes -r scripts/dmg/requirements.txt; }
 swift scripts/dmg/background.swift build/dmg-background.png
 rm -f build/IPTVMac.dmg
-build/venv/bin/dmgbuild -s scripts/dmg/settings.py -D app=build/IPTVMac.app -D background=build/dmg-background.png -D icon=build/IPTVMac.app/Contents/Resources/AppIcon.icns "IPTVMac" build/IPTVMac.dmg
+DMG_ARGS=(-s scripts/dmg/settings.py -D app=build/IPTVMac.app -D background=build/dmg-background.png -D icon=build/IPTVMac.app/Contents/Resources/AppIcon.icns "IPTVMac" build/IPTVMac.dmg)
+build/venv/bin/dmgbuild "${DMG_ARGS[@]}" || {
+  echo "dmgbuild failed (a plain 'hdiutil detach' can be refused while the simulator service shuts down): retrying with a forced detach"
+  build/venv/bin/python scripts/dmg/force-detach.py "${DMG_ARGS[@]}"
+}
 if [ -n "$SIGNED" ]; then
   codesign --force --sign "$SIGNED" --timestamp build/IPTVMac.dmg
   scripts/notarize.sh build/IPTVMac.dmg

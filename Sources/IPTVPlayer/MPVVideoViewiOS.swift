@@ -22,7 +22,7 @@ public final class MPVVideoView: UIView {
     private var fbo: GLuint = 0
     private var rbo: GLuint = 0
     private var bufferSize = CGSize.zero
-    private var backgrounded = false
+    private var gate = BackgroundVideoGate()   // the tested state machine behind the two notifications below
     private var observers: [NSObjectProtocol] = []
     /// Test seam kept for parity with the macOS view: centre pixel (r, g, b) of every frame right after mpv draws it.
     public var onFrame: ((UInt8, UInt8, UInt8) -> Void)?
@@ -58,18 +58,17 @@ public final class MPVVideoView: UIView {
         player.onTeardown = { [weak self] in self?.shutdown() }
 
         // An app that issues OpenGL ES commands in the background is terminated by iOS. The video track is switched off
-        // while backgrounded (audio keeps playing, UIBackgroundModes audio) and back on in the foreground.
+        // while backgrounded (audio keeps playing, UIBackgroundModes audio) and back on in the foreground (BackgroundVideoGate).
+        gate = BackgroundVideoGate(inBackground: UIApplication.shared.applicationState == .background)
         let nc = NotificationCenter.default
         observers = [
             nc.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
-                guard let self else { return }
-                self.backgrounded = true
+                guard let self, self.gate.didEnterBackground() == .finishGLThenVideoOff else { return }
                 EAGLContext.setCurrent(self.gl); glFinish()
                 self.player.setProperty("vid", "no")
             },
             nc.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
-                guard let self else { return }
-                self.backgrounded = false
+                guard let self, self.gate.willEnterForeground() == .videoAuto else { return }
                 self.player.setProperty("vid", "auto")
                 self.setNeedsLayout()
             },
@@ -95,7 +94,7 @@ public final class MPVVideoView: UIView {
     }
 
     private func drawFrame() {
-        guard let render, !backgrounded, window != nil || superview != nil else { return }
+        guard let render, gate.mayDraw, window != nil || superview != nil else { return }
         EAGLContext.setCurrent(gl)
         ensureBuffers()
         guard bufferSize.width > 0 else { return }

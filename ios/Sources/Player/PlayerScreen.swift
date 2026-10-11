@@ -22,6 +22,10 @@ struct PlayerScreen: View {
     /// iPhone held upright: video on top, the rest below.
     private var split: Bool { vSize == .regular && hSize == .compact }
     private var visible: Bool { player.controlsVisible }
+    /// The failure card stands alone: no bar of dead controls behind it.
+    private var transportVisible: Bool { visible && player.error == nil }
+    /// The up-next card has its own buttons: the big ones step aside while it counts down.
+    private var clusterVisible: Bool { transportVisible && !player.upNext.isCounting }
 
     var body: some View {
         ZStack {
@@ -47,6 +51,10 @@ struct PlayerScreen: View {
         .task {
             player.configure(model: model)
             rotatedFromPortrait = PlayerOrientation.enter()
+            #if DEBUG
+            try? await Task.sleep(for: .seconds(2.5))          // -playerSheet speed|subtitles: open a sheet for screenshots
+            switch UserDefaults.standard.string(forKey: "playerSheet") { case "speed": showSpeed = true; case "subtitles": adjusting = true; default: break }
+            #endif
         }
         .onDisappear { PlayerOrientation.leave(rotated: rotatedFromPortrait) }
         .animation(reduceMotion ? nil : .smooth(duration: 0.28), value: player.upNext.episode?.id)
@@ -73,7 +81,7 @@ struct PlayerScreen: View {
             GestureSurface(handlers: handlers, live: player.isLive).ignoresSafeArea()
             PlayerHUD(player: player)
             VStack(spacing: 0) {
-                TitleBar(player: player).padding(.horizontal, 10).padding(.top, 4)
+                TitleBar(player: player).padding(.horizontal, 10).padding(.top, 10)
                     .background(alignment: .top) {
                         LinearGradient(colors: [.black.opacity(0.7), .black.opacity(0.3), .clear], startPoint: .top, endPoint: .bottom)
                             .frame(height: 130).ignoresSafeArea(edges: .top).allowsHitTesting(false)
@@ -85,14 +93,14 @@ struct PlayerScreen: View {
                 VStack(spacing: 8) {
                     UpNextCard(player: player).frame(maxWidth: .infinity, alignment: .trailing)
                     bottomPanel
-                        .offset(y: visible || reduceMotion ? 0 : 8)
-                        .opacity(visible ? 1 : 0).allowsHitTesting(visible)
+                        .offset(y: transportVisible || reduceMotion ? 0 : 8)
+                        .opacity(transportVisible ? 1 : 0).allowsHitTesting(transportVisible)
                         .simultaneousGesture(touchDown)
                 }
                 .padding(.horizontal, 12).padding(.bottom, 6)
             }
             TransportCluster(player: player)
-                .opacity(visible ? 1 : 0).allowsHitTesting(visible)
+                .opacity(clusterVisible ? 1 : 0).allowsHitTesting(clusterVisible)
             ErrorCard(player: player)
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: visible)
@@ -100,17 +108,11 @@ struct PlayerScreen: View {
 
     private var bottomPanel: some View {
         VStack(spacing: 0) {
-            if player.isLive {
-                HStack(spacing: 6) {
-                    Circle().fill(.red).frame(width: 8, height: 8)
-                    Text(L("player.live")).font(.caption.weight(.bold))
-                    Spacer()
-                }
-                .foregroundStyle(.white).padding(.horizontal, 6).padding(.top, 8)
-            } else {
-                SeekRow(player: player, containerWidth: width).padding(.horizontal, 6)
+            if !player.isLive { SeekRow(player: player, containerWidth: width).padding(.horizontal, 6) }
+            HStack(spacing: 0) {
+                if player.isLive { LiveBadge().padding(.leading, 10) }
+                UtilityRow(player: player, showSpeed: $showSpeed, importing: $importing, adjusting: $adjusting)
             }
-            UtilityRow(player: player, showSpeed: $showSpeed, importing: $importing, adjusting: $adjusting)
         }
         .padding(.horizontal, 8).padding(.vertical, 2)
         .playerSurface()
@@ -149,7 +151,7 @@ struct PlayerScreen: View {
                     }
                     .offset(y: visible || reduceMotion ? 0 : 6)
                     .opacity(visible ? 1 : 0).allowsHitTesting(visible)
-                    TransportCluster(player: player, compact: true).opacity(visible ? 1 : 0).allowsHitTesting(visible)
+                    TransportCluster(player: player, compact: true).opacity(clusterVisible ? 1 : 0).allowsHitTesting(clusterVisible)
                     VStack { Spacer(); UpNextCard(player: player).padding(.horizontal, 8).padding(.bottom, 44) }
                     ErrorCard(player: player).scaleEffect(0.85)
                 }
@@ -182,6 +184,17 @@ struct PlayerScreen: View {
             .padding(16)
         }
         .scrollBounceBehavior(.basedOnSize)
+    }
+}
+
+struct LiveBadge: View {
+    var body: some View {
+        HStack(spacing: 6) {
+            Circle().fill(.red).frame(width: 8, height: 8)
+            Text(L("player.live")).font(.caption.weight(.bold))
+        }
+        .foregroundStyle(.white).fixedSize()
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -221,14 +234,18 @@ private struct VolumeHost: UIViewRepresentable {
 
     /// True when the interface was turned from portrait to landscape.
     static func enter() -> Bool {
-        guard UIDevice.current.userInterfaceIdiom == .phone, let scene else { return false }
-        let wantLandscape = UserDefaults.standard.object(forKey: "playerStartsLandscape") as? Bool ?? true
-        let forced = UserDefaults.standard.string(forKey: "playerOrientation")
-        if forced == "portrait" { return false }
-        guard forced == "landscape" || (wantLandscape && scene.effectiveGeometry.interfaceOrientation.isPortrait) else { return false }
-        let wasPortrait = scene.effectiveGeometry.interfaceOrientation.isPortrait
+        guard let scene else { return false }
+        let now = scene.effectiveGeometry.interfaceOrientation
+        #if DEBUG
+        if let forced = UserDefaults.standard.string(forKey: "playerOrientation") {      // screenshots and UI tests, any device
+            scene.requestGeometryUpdate(.iOS(interfaceOrientations: forced == "landscape" ? .landscape : .portrait)) { _ in }
+            return false
+        }
+        #endif
+        guard UIDevice.current.userInterfaceIdiom == .phone, now.isPortrait,
+              UserDefaults.standard.object(forKey: "playerStartsLandscape") as? Bool ?? true else { return false }
         scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscape)) { _ in }
-        return wasPortrait
+        return true
     }
 
     static func leave(rotated: Bool) {

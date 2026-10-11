@@ -326,6 +326,7 @@ struct FavoriteButton: View {
         let fav = model.isFavorite(item)
         PlayerButton(symbol: fav ? "star.fill" : "star", label: L(fav ? "fav.remove" : "fav.add")) { model.toggleFavorite(item) }
             .foregroundStyle(fav ? Color.yellow : .white)
+            .accessibilityIdentifier("player.favorite")
     }
 }
 

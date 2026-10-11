@@ -222,3 +222,4 @@ public enum UpdateInstaller {
     }
 }
 #endif
+#endif   // !APPSTORE

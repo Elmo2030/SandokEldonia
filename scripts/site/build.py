@@ -13,6 +13,7 @@ import json, html, pathlib, re, hashlib, shutil
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs"
 VERSION = (ROOT / "VERSION").read_text().strip()
+NOTARIZED_FROM = "0.9.1"   # first release signed with a Developer ID and notarized; every "not notarized" sentence on the site, in llms.txt and in the FAQ JSON-LD derives from this
 BASE = "https://goelir.github.io/IPTVMac/"
 REPO = "https://github.com/Goelir/IPTVMac"
 DOWNLOAD = REPO + "/releases/latest"
@@ -164,7 +165,7 @@ HOME = {
   gh="GitHub", theme="Switch between light and dark", other_lang=("he/", "עברית", "he"),
   h1='<span class="l">A {m}</span> <span class="l">IPTV player</span> <span class="l">for Mac.</span>',
   lede="Xtream Codes and M3U sources, instant search, Picture in Picture, catch-up and downloads. Free and open source, with no account.",
-  cmd_b="Install in one line.", cmd_t="Paste it in Terminal. macOS shows no warning, and the app updates itself afterwards.",
+  cmd_b="Install in one line.", cmd_t="Paste it in Terminal, or use the DMG button below. Either way, the app updates itself afterwards.",
   copy="Copy", copied="Copied", copy_aria="Copy the install command",
   dl="Download the DMG", src="View the source", tour="Watch the 80-second tour",
   meta=f"Version {VERSION}. Apple Silicon, macOS 14 or later. GPL-3.0.",
@@ -202,11 +203,12 @@ HOME = {
   install_p="Paste it in Terminal. The script downloads the latest release, checks its signature and SHA-256, copies IPTVMac to Applications and opens it. After that the app updates itself.",
   reqs="Needs an Apple Silicon Mac (M1 or later) and macOS 14 or later.",
   term="Terminal", opens="IPTVMac opens", opens_s="First launch shows a three-step guide.",
-  why_h="Why a command?",
-  why="IPTVMac is not notarized by Apple, which needs a paid developer account, and macOS blocks apps that a browser marked as downloaded from the internet. A file fetched with curl is not marked, so there is nothing to bypass. The script is short and public: install.sh.",
+  why_h="When to use the command",
+  why="The command works with every version. It fetches the release with curl, so no browser marks it as downloaded from the internet, and it checks the release signature and SHA-256 before it installs anything. The script is short and public: install.sh.",
   video="Watch the 95-second install video on YouTube",
-  dmg_h="Or download the DMG",
-  dmg_steps=["Open IPTVMac.dmg and drag the app onto the Applications icon.", "The first launch is blocked: open System Settings, Privacy &amp; Security, and choose Open Anyway next to IPTVMac.", "Or run <code>xattr -dr com.apple.quarantine /Applications/IPTVMac.app</code> in Terminal."],
+  dmg_h="Download the DMG",
+  dmg_steps=["Open IPTVMac.dmg and drag the app onto the Applications icon.", f"Open IPTVMac from Applications. From version {NOTARIZED_FROM}, releases are signed with an Apple Developer ID and notarized (an automated malware scan by Apple, not a review of the app), so the app opens with a normal double-click. macOS may ask you once to confirm that it was downloaded from the internet."],
+  dmg_old=f"Versions before {NOTARIZED_FROM} are not notarized, and macOS blocks them on first launch. Open System Settings, Privacy &amp; Security, and choose Open Anyway next to IPTVMac, or run <code>xattr -dr com.apple.quarantine /Applications/IPTVMac.app</code> in Terminal.",
   free_h="No playlist yet?",
   free_p="IPTVMac is only a player, so it needs a playlist. If you do not have a provider, iptv-org is a free, independent open source project that publishes M3U playlists of publicly available channels from around the world. In IPTVMac choose M3U, give it a name and paste the link below.",
   free_note="IPTVMac is not affiliated with iptv-org. Whether a stream is available, and whether you may watch it, depends on the channel and on your country: use only what you are allowed to.",
@@ -218,7 +220,7 @@ HOME = {
    ("Does it work with Xtream Codes and M3U?", "Yes. For Xtream Codes you enter the server address, username and password from your provider. For M3U you enter a name and the playlist link."),
    ("Which Macs are supported?", "Apple Silicon Macs (M1 or later) with macOS 14 or later. Intel Macs are not supported."),
    ("Is IPTVMac free?", "Yes. It is free and open source under the GPL-3.0 license, with no ads and no tracking."),
-   ("Why does macOS block the app, and how do I open it?", "IPTVMac is not notarized by Apple, which requires a paid developer account. Install with the one-line command above, which avoids the warning, or open System Settings, Privacy and Security, and choose Open Anyway."),
+   ("Why does macOS block the app, and how do I open it?", f"Versions before {NOTARIZED_FROM} are not notarized by Apple, so macOS blocks a copy that was downloaded in a browser. From version {NOTARIZED_FROM}, releases are signed with an Apple Developer ID and notarized, and the DMG opens with a normal double-click. To fix an older copy, install the latest release (the DMG, or the one-line command above, which works for every version), or open System Settings, Privacy and Security, and choose Open Anyway."),
    ("Does IPTVMac have Picture in Picture?", "Yes. A floating window stays on top of other apps and across Spaces while you browse for something else."),
    ("Can I watch past programs (catch-up)?", "Yes, on channels where your provider supports catch-up. Pick a program from the guide."),
    ("Is it safe to use?", "The source code is public. Updates come from GitHub Releases and are checked against a SHA-256 checksum. Account passwords are stored in the app's local database, readable only by your user."),
@@ -247,7 +249,7 @@ HOME = {
   gh="GitHub", theme="מעבר בין מראה בהיר לכהה", other_lang=("../", "English", "en"),
   h1='<span class="l">נגן IPTV</span> <span class="l">{m}</span> <span class="l">ל-Mac.</span>',
   lede="מקורות Xtream Codes ו-M3U, חיפוש מיידי, תמונה בתוך תמונה, צפייה בהיסטוריה והורדות. חינם ובקוד פתוח, בלי חשבון.",
-  cmd_b="התקנה בשורה אחת.", cmd_t="מדביקים בטרמינל. macOS לא מציגה אזהרה, ואחר כך האפליקציה מתעדכנת לבד.",
+  cmd_b="התקנה בשורה אחת.", cmd_t="מדביקים בטרמינל, או מורידים את ה-DMG בכפתור שלמטה. בשני המקרים האפליקציה מתעדכנת לבד.",
   copy="העתק", copied="הועתק", copy_aria="העתקת פקודת ההתקנה",
   dl="הורדת ה-DMG", src="קוד המקור", tour="לצפות בסיור של 80 שניות",
   meta=f"גרסה {VERSION}. Apple Silicon, macOS 14 ומעלה. GPL-3.0.",
@@ -284,11 +286,12 @@ HOME = {
   install_p="מדביקים בטרמינל. הסקריפט מוריד את הגרסה האחרונה, בודק חתימה ו-SHA-256, מעתיק את IPTVMac ל-Applications ופותח אותה. מאותו רגע האפליקציה מתעדכנת לבד.",
   reqs="נדרש Mac עם Apple Silicon (M1 ומעלה) ו-macOS 14 ומעלה.",
   term="Terminal", opens="IPTVMac נפתחת", opens_s="בהפעלה הראשונה מוצג מדריך של שלושה שלבים.",
-  why_h="למה פקודה?",
-  why="IPTVMac לא עברה אימות (notarization) של Apple, שדורש חשבון מפתחים בתשלום, ו-macOS חוסמת אפליקציות שהדפדפן סימן כ״הורדו מהאינטרנט״. קובץ שמורידים עם curl לא מסומן, ולכן אין מה לעקוף. הסקריפט קצר וגלוי: install.sh.",
+  why_h="מתי כדאי להשתמש בפקודה",
+  why="הפקודה עובדת עם כל הגרסאות. היא מורידה את הגרסה עם curl, ולכן אף דפדפן לא מסמן אותה כ״הורדה מהאינטרנט״, ובודקת את חתימת הגרסה ואת ה-SHA-256 לפני שהיא מתקינה משהו. הסקריפט קצר וגלוי: install.sh.",
   video="צפו בסרטון ההתקנה של 95 שניות ביוטיוב (באנגלית)",
-  dmg_h="או הורדת ה-DMG",
-  dmg_steps=["פותחים את IPTVMac.dmg וגוררים את האפליקציה על אייקון Applications.", "ההפעלה הראשונה נחסמת: בהגדרות המערכת, פרטיות ואבטחה, לוחצים Open Anyway ליד IPTVMac.", "או מריצים בטרמינל <code>xattr -dr com.apple.quarantine /Applications/IPTVMac.app</code>"],
+  dmg_h="הורדת ה-DMG",
+  dmg_steps=["פותחים את IPTVMac.dmg וגוררים את האפליקציה על אייקון Applications.", f"פותחים את IPTVMac מתוך Applications. מגרסה {NOTARIZED_FROM} ואילך הגרסאות חתומות ב-Apple Developer ID ועברו notarization (בדיקה אוטומטית של Apple לאיתור תוכנות זדוניות, לא סקירה של האפליקציה), ולכן האפליקציה נפתחת בלחיצה כפולה רגילה. ייתכן ש-macOS תבקש פעם אחת לאשר שהיא הורדה מהאינטרנט."],
+  dmg_old=f"גרסאות לפני {NOTARIZED_FROM} לא עברו notarization, ו-macOS חוסמת אותן בהפעלה הראשונה. בהגדרות המערכת, פרטיות ואבטחה, לוחצים Open Anyway ליד IPTVMac, או מריצים בטרמינל <code>xattr -dr com.apple.quarantine /Applications/IPTVMac.app</code>.",
   free_h="אין לכם רשימה?",
   free_p="IPTVMac הוא נגן בלבד, ולכן צריך רשימת ערוצים. אם אין לכם ספק, iptv-org הוא פרויקט עצמאי בקוד פתוח וחינמי שמפרסם רשימות M3U של ערוצים זמינים לציבור מכל העולם. ב-IPTVMac בוחרים M3U, נותנים שם ומדביקים את הקישור שלמטה.",
   free_note="IPTVMac אינו קשור ל-iptv-org. אם סטרים זמין, ואם מותר לכם לצפות בו, תלוי בערוץ ובמדינה שלכם: השתמשו רק במה שמותר לכם.",
@@ -300,7 +303,7 @@ HOME = {
    ("האם זה עובד עם Xtream Codes ו-M3U?", "כן. ב-Xtream Codes מזינים כתובת שרת, שם משתמש וסיסמה מהספק. ב-M3U מזינים שם וקישור לרשימה."),
    ("אילו מחשבי Mac נתמכים?", "מחשבי Mac עם Apple Silicon (M1 ומעלה) ו-macOS 14 ומעלה. מחשבי Intel לא נתמכים."),
    ("האם IPTVMac חינמי?", "כן. הוא חינמי ובקוד פתוח ברישיון GPL-3.0, בלי פרסומות ובלי מעקב."),
-   ("למה macOS חוסמת את האפליקציה, ואיך פותחים אותה?", "IPTVMac לא עברה אימות של Apple, שדורש חשבון מפתחים בתשלום. מתקינים בפקודה שלמעלה, שמונעת את האזהרה, או פותחים הגדרות מערכת, פרטיות ואבטחה, ובוחרים Open Anyway."),
+   ("למה macOS חוסמת את האפליקציה, ואיך פותחים אותה?", f"גרסאות לפני {NOTARIZED_FROM} לא עברו notarization של Apple, ולכן macOS חוסמת עותק שהורד בדפדפן. מגרסה {NOTARIZED_FROM} ואילך הגרסאות חתומות ב-Apple Developer ID ועברו notarization, וה-DMG נפתח בלחיצה כפולה רגילה. כדי לתקן עותק ישן, מתקינים את הגרסה האחרונה (מה-DMG, או בפקודת ההתקנה שלמעלה, שעובדת בכל הגרסאות), או פותחים הגדרות מערכת, פרטיות ואבטחה, ובוחרים Open Anyway."),
    ("האם יש תמונה בתוך תמונה?", "כן. חלון צף נשאר מעל אפליקציות אחרות ובכל שולחן עבודה בזמן שמחפשים משהו אחר."),
    ("אפשר לצפות בתוכניות מהעבר?", "כן, בערוצים שהספק תומך בהם. בוחרים תוכנית מלוח השידורים."),
    ("האם זה בטוח?", "קוד המקור פומבי. העדכונים מגיעים מ-GitHub Releases ונבדקים מול SHA-256. סיסמאות החשבונות נשמרות במסד הנתונים המקומי של האפליקציה, נגיש רק למשתמש שלכם."),
@@ -509,7 +512,7 @@ def home(code):
 <p style="margin-top:14px"><a class="link" href="{YT_INSTALL}" rel="noopener">{ICON_PLAY}{e(c["video"])}</a></p></div>
 {term(c)}</div>
 <div class="note"><div><h3>{e(c["why_h"])}</h3><p>{e(c["why"])}</p></div>
-<div><h3>{e(c["dmg_h"])}</h3><ol class="steps">{steps}</ol><a class="btn" href="{DOWNLOAD}">{ICON_DL}{e(c["dl"])}</a></div></div></div></section>
+<div><h3>{e(c["dmg_h"])}</h3><ol class="steps">{steps}</ol><p class="old">{c["dmg_old"]}</p><a class="btn" href="{DOWNLOAD}">{ICON_DL}{e(c["dl"])}</a></div></div></div></section>
 '''
     # free playlists, faq, guides
     out += f'''<section class="free" id="free" aria-labelledby="free-h"><div class="wrap free-grid"><h2 id="free-h">{e(c["free_h"])}</h2><div><p>{e(c["free_p"])}</p>
@@ -689,7 +692,7 @@ Source code: {REPO}
 - Downloads of movies and episodes (whole seasons on Xtream series) to a folder the user chooses.
 - Next episode starts automatically after a 5 second countdown (can be turned off).
 - Free, no ads, no tracking. Passwords are stored in the app's local database, readable only by the user.
-- Not notarized by Apple (no paid developer account): install with the Terminal command above, or choose Open Anyway in System Settings, Privacy and Security.
+- Signing: from version {NOTARIZED_FROM}, releases are signed with an Apple Developer ID and notarized by Apple (an automated malware scan, not a review of the app), so the DMG opens with a normal double-click. Versions before {NOTARIZED_FROM} are not notarized: install them with the Terminal command above (it works for every version), or choose Open Anyway in System Settings, Privacy and Security.
 
 ## FAQ
 """ + "".join(f"- {q} {a}\n" for q, a in d["faq"]) + """

@@ -44,7 +44,7 @@ Xtream Codes ו-M3U, חיפוש מיידי, נגן מובנה עם כתוביו�
 
 נדרש Mac עם Apple Silicon (M1 ומעלה) ו-macOS 14 ומעלה.
 
-**שורה אחת, בלי אזהרה של macOS.** הדביקו בטרמינל:
+**התקנה בשורה אחת.** הדביקו בטרמינל:
 
 <div dir="ltr">
 
@@ -54,9 +54,11 @@ curl -fsSL https://raw.githubusercontent.com/Goelir/IPTVMac/main/install.sh | ba
 
 </div>
 
-השורה מורידה את הגרסה האחרונה, בודקת את החתימה ואת ה-SHA-256, מעתיקה את IPTVMac ל-`/Applications` ופותחת אותה. [install.sh](install.sh) קצר, ואפשר לקרוא אותו קודם. אחרי ההתקנה האפליקציה מתעדכנת לבד.
+השורה מורידה את הגרסה האחרונה, בודקת את החתימה ואת ה-SHA-256, מעתיקה את IPTVMac ל-`/Applications` ופותחת אותה. [install.sh](install.sh) קצר, ואפשר לקרוא אותו קודם. היא עובדת עם כל הגרסאות, ומכיוון שדבר לא יורד בדפדפן, אין ל-macOS מה לסמן. אחרי ההתקנה האפליקציה מתעדכנת לבד.
 
-**או להוריד את ה-DMG.** הורידו את `IPTVMac.dmg` מ[הגרסה האחרונה](https://github.com/Goelir/IPTVMac/releases/latest), פתחו אותו וגררו את האייקון **IPTVMac** על האייקון **Applications** שבחלון (לא את קובץ ה-dmg עצמו). IPTVMac לא עברה אימות (notarization) של Apple, שדורש חשבון מפתחים בתשלום, ולכן macOS חוסמת עותק שהורד בדפדפן בהפעלה הראשונה:
+**או להוריד את ה-DMG.** הורידו את `IPTVMac.dmg` מ[הגרסה האחרונה](https://github.com/Goelir/IPTVMac/releases/latest), פתחו אותו וגררו את האייקון **IPTVMac** על האייקון **Applications** שבחלון (לא את קובץ ה-dmg עצמו). מגרסה 0.9.1 ואילך הגרסאות חתומות ב-Apple Developer ID ועברו notarization (בדיקה אוטומטית של Apple לאיתור תוכנות זדוניות, לא סקירה של האפליקציה), ולכן האפליקציה נפתחת בלחיצה כפולה רגילה. ייתכן ש-macOS תבקש פעם אחת לאשר שהיא הורדה מהאינטרנט.
+
+גרסאות ישנות יותר לא עברו notarization, ו-macOS חוסמת עותק שהורד בדפדפן בהפעלה הראשונה. בגרסאות האלה:
 
 - macOS 15 ומעלה: נסו לפתוח את האפליקציה פעם אחת, ואז **הגדרות המערכת > פרטיות ואבטחה**, גללו למטה ולחצו **Open Anyway** ליד IPTVMac.
 - או בטרמינל: `xattr -dr com.apple.quarantine /Applications/IPTVMac.app`
@@ -125,7 +127,7 @@ https://iptv-org.github.io/iptv/index.m3u
 <details>
 <summary><b>macOS אומרת שאי אפשר לפתוח את האפליקציה, או שהיא "פגומה".</b></summary>
 
-האפליקציה לא עברה אימות של Apple. השתמשו בפקודת ההתקנה למעלה, או פתחו **הגדרות המערכת > פרטיות ואבטחה** ולחצו **Open Anyway**, או הריצו `xattr -dr com.apple.quarantine /Applications/IPTVMac.app`.
+זה קורה בגרסאות ישנות, שלא עברו notarization (ראו [התקנה](#התקנה)). התקינו את הגרסה האחרונה: מה-DMG, או בפקודת ההתקנה שלמעלה, שעובדת בכל הגרסאות. כדי לפתוח עותק ישן בכל זאת, פתחו **הגדרות המערכת > פרטיות ואבטחה** ולחצו **Open Anyway**, או הריצו `xattr -dr com.apple.quarantine /Applications/IPTVMac.app`. אם ההודעה מופיעה בגרסה האחרונה, פתחו בבקשה issue.
 </details>
 
 <details>

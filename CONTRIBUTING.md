@@ -39,7 +39,7 @@ Except for Hebrew, English and Arabic, the current translations were written wit
 
 ## Releasing (maintainers)
 
-Bump `VERSION`, commit, and run `scripts/release.sh notes.md`. It refuses to run from a dirty tree, builds, signs and verifies the release signature before publishing (see [SECURITY.md](SECURITY.md)).
+Bump `VERSION`, commit, and run `scripts/release.sh notes.md`. It refuses to run from a dirty tree, builds, signs and verifies the release signature before publishing (see [SECURITY.md](SECURITY.md)). With `IPTVMAC_SIGN_IDENTITY` set it also signs with the Developer ID certificate and has the app and the DMG notarized (see [scripts/NOTARIZE.md](scripts/NOTARIZE.md)); without it the build is ad-hoc signed and not notarized.
 
 ## License
 

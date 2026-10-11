@@ -25,7 +25,7 @@ Source code: https://github.com/Goelir/IPTVMac
 - Downloads of movies and episodes (whole seasons on Xtream series) to a folder the user chooses.
 - Next episode starts automatically after a 5 second countdown (can be turned off).
 - Free, no ads, no tracking. Passwords are stored in the app's local database, readable only by the user.
-- Not notarized by Apple (no paid developer account): install with the Terminal command above, or choose Open Anyway in System Settings, Privacy and Security.
+- Signing: from version 0.9.1, releases are signed with an Apple Developer ID and notarized by Apple (an automated malware scan, not a review of the app), so the DMG opens with a normal double-click. Versions before 0.9.1 are not notarized: install them with the Terminal command above (it works for every version), or choose Open Anyway in System Settings, Privacy and Security.
 
 ## FAQ
 - What is IPTVMac? IPTVMac is a free, open source IPTV player for Mac. It plays Xtream Codes and M3U sources with a built-in mpv player, instant search, subtitles, Picture in Picture, catch-up, downloads and an interface in 31 languages.
@@ -33,7 +33,7 @@ Source code: https://github.com/Goelir/IPTVMac
 - Does it work with Xtream Codes and M3U? Yes. For Xtream Codes you enter the server address, username and password from your provider. For M3U you enter a name and the playlist link.
 - Which Macs are supported? Apple Silicon Macs (M1 or later) with macOS 14 or later. Intel Macs are not supported.
 - Is IPTVMac free? Yes. It is free and open source under the GPL-3.0 license, with no ads and no tracking.
-- Why does macOS block the app, and how do I open it? IPTVMac is not notarized by Apple, which requires a paid developer account. Install with the one-line command above, which avoids the warning, or open System Settings, Privacy and Security, and choose Open Anyway.
+- Why does macOS block the app, and how do I open it? Versions before 0.9.1 are not notarized by Apple, so macOS blocks a copy that was downloaded in a browser. From version 0.9.1, releases are signed with an Apple Developer ID and notarized, and the DMG opens with a normal double-click. To fix an older copy, install the latest release (the DMG, or the one-line command above, which works for every version), or open System Settings, Privacy and Security, and choose Open Anyway.
 - Does IPTVMac have Picture in Picture? Yes. A floating window stays on top of other apps and across Spaces while you browse for something else.
 - Can I watch past programs (catch-up)? Yes, on channels where your provider supports catch-up. Pick a program from the guide.
 - Is it safe to use? The source code is public. Updates come from GitHub Releases and are checked against a SHA-256 checksum. Account passwords are stored in the app's local database, readable only by your user.

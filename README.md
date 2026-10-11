@@ -38,15 +38,17 @@ Free and open source. No accounts, no analytics.
 
 Requires an Apple Silicon Mac (M1 or later) and macOS 14 or later.
 
-**One line, no warning from macOS.** Paste this in Terminal:
+**Install in one line.** Paste this in Terminal:
 
 ```
 curl -fsSL https://raw.githubusercontent.com/Goelir/IPTVMac/main/install.sh | bash
 ```
 
-It downloads the latest release, checks its signature and the SHA-256, copies IPTVMac to `/Applications` and opens it. [install.sh](install.sh) is short; read it first if you like. After this the app updates itself.
+It downloads the latest release, checks its signature and the SHA-256, copies IPTVMac to `/Applications` and opens it. [install.sh](install.sh) is short; read it first if you like. It works for every version, and because nothing is downloaded in a browser, macOS has nothing to flag. After this the app updates itself.
 
-**Or download the DMG.** Get `IPTVMac.dmg` from the [latest release](https://github.com/Goelir/IPTVMac/releases/latest), open it and drag the **IPTVMac** icon onto the **Applications** icon in the window (not the .dmg file itself). IPTVMac is not notarized by Apple, which needs a paid Developer ID, so macOS blocks a browser-downloaded copy on first launch:
+**Or download the DMG.** Get `IPTVMac.dmg` from the [latest release](https://github.com/Goelir/IPTVMac/releases/latest), open it and drag the **IPTVMac** icon onto the **Applications** icon in the window (not the .dmg file itself). From version 0.9.1, releases are signed with an Apple Developer ID and notarized (an automated malware scan by Apple, not a review of the app), so the app opens with a normal double-click. macOS may ask you once to confirm that it was downloaded from the internet.
+
+Older versions are not notarized, and macOS blocks a browser-downloaded copy on first launch. For those:
 
 - macOS 15 and later: try to open the app once, then go to **System Settings > Privacy & Security**, scroll down and click **Open Anyway** next to IPTVMac.
 - Or in Terminal: `xattr -dr com.apple.quarantine /Applications/IPTVMac.app`
@@ -111,7 +113,7 @@ It holds about 11,000 entries (loading takes a moment); the project's README als
 <details>
 <summary><b>macOS says the app "cannot be opened" or "is damaged".</b></summary>
 
-The app is not notarized by Apple. Use the install command above, or open **System Settings > Privacy & Security** and click **Open Anyway**, or run `xattr -dr com.apple.quarantine /Applications/IPTVMac.app`.
+This happens with older versions, which are not notarized (see [Install](#install)). Install the latest release: the DMG, or the install command above, which works for every version. To open an old copy anyway, go to **System Settings > Privacy & Security** and click **Open Anyway**, or run `xattr -dr com.apple.quarantine /Applications/IPTVMac.app`. If you see this message on the latest release, please open an issue.
 </details>
 
 <details>

@@ -145,13 +145,31 @@ public final class MPVVideoView: UIView {
                 mpv_render_context_render(render, &params)
             }
         }
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), fbo)      // mpv leaves its own framebuffer bound; read (and present) ours
         if let onFrame {
             var px = [UInt8](repeating: 0, count: 4)
             glReadPixels(GLint(bufferSize.width / 2), GLint(bufferSize.height / 2), 1, 1, GLenum(GL_RGBA), GLenum(GL_UNSIGNED_BYTE), &px)
             onFrame(px[0], px[1], px[2])
         }
+        if let path = snapshotPath { snapshotPath = nil; writeSnapshot(to: path) }
         glBindRenderbuffer(GLenum(GL_RENDERBUFFER), rbo)
         gl.presentRenderbuffer(Int(GL_RENDERBUFFER))
+    }
+
+    /// Debug: the next drawn frame is saved as a PNG (what the GL framebuffer holds, before it is presented).
+    public var snapshotPath: String?
+
+    private func writeSnapshot(to path: String) {
+        let w = Int(bufferSize.width), h = Int(bufferSize.height)
+        var px = [UInt8](repeating: 0, count: w * h * 4)
+        glReadPixels(0, 0, GLsizei(w), GLsizei(h), GLenum(GL_RGBA), GLenum(GL_UNSIGNED_BYTE), &px)
+        var rows = [UInt8](); rows.reserveCapacity(px.count)
+        for y in stride(from: h - 1, through: 0, by: -1) { rows += px[(y * w * 4)..<((y + 1) * w * 4)] }       // GL rows start at the bottom
+        guard let provider = CGDataProvider(data: Data(rows) as CFData),
+              let img = CGImage(width: w, height: h, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: w * 4, space: CGColorSpaceCreateDeviceRGB(),
+                                bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue), provider: provider, decode: nil,
+                                shouldInterpolate: false, intent: .defaultIntent) else { return }
+        try? UIImage(cgImage: img).pngData()?.write(to: URL(fileURLWithPath: path))
     }
 
     public func shutdown() {

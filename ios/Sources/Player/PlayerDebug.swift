@@ -10,7 +10,7 @@ import IPTVPlayer
 /// typing (`xcrun simctl launch <device> <bundle id> -uiState player-live ...`). Needs the fake panel and the media of ios/UITests/Fixtures
 /// (`make-media.sh`, `fake_panel.py`) on 127.0.0.1:8765 (`-panel http://host:port` to change it). Never compiled into a release build.
 ///
-///   -uiState  player-live | player-vod | player-series | player-local | player-error
+///   -uiState  player-url (-playerURL <url> [-playerLive YES]) | player-live | player-vod | player-series | player-local | player-error
 ///   -playerControls hidden        start with the controls faded out
 ///   -playerOrientation portrait|landscape      force the interface orientation (default: iPhone starts landscape)
 ///   -playerSeek <seconds>         seek there after the start
@@ -20,6 +20,8 @@ import IPTVPlayer
 ///   -playerSheet speed|subtitles  open that sheet 2.5 s after the player appears
 ///   -playerFile <path>            the movie for player-local (default /tmp/iptvplayer-media/vod.mkv)
 ///   -statusFile <path>            write a JSON status (position, frames drawn, app state, lock screen info...) every 0.5 s
+///   -playerSnapshot YES           save the next GL frame as Documents/snapshot.png (what the video view really draws)
+///   -hwdec <mode>                 set mpv hwdec after the start (videotoolbox | videotoolbox-copy | no)
 ///   -playerPiP YES                start Picture in Picture 1.5 s after the player appears (commandFile: pip-start | pip-stop)
 ///   -commandFile <path>           each line appended to this file is run once: interrupt-began | interrupt-ended | route-unplugged
 ///                                 (posts the real AVAudioSession notifications, so the app's own handlers answer them)
@@ -32,12 +34,19 @@ import IPTVPlayer
     /// Gesture counters for the status file (what the recognizers saw).
     static func count(_ name: String) { counters[name, default: 0] += 1 }
 
+    /// A relative path (a device run: no /tmp) lives in the app's Documents folder.
+    private static func resolved(_ path: String) -> String {
+        path.hasPrefix("/") ? path : (FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(path).path)
+    }
+
     static func runIfRequested(_ model: PhoneModel) async {
         let d = UserDefaults.standard
         guard let state = d.string(forKey: "uiState"), state.hasPrefix("player") else { return }
         if let o = d.string(forKey: "playerOrientation") { _ = o }          // read by PlayerOrientation.enter()
-        if state == "player-local" || state == "player-error" {
-            let file = d.string(forKey: "playerFile") ?? "/tmp/iptvplayer-media/vod.mkv"
+        if state == "player-url", let u = d.string(forKey: "playerURL").flatMap(URL.init(string:)) {          // a stream from the network
+            model.startPlayback(PlayRequest(title: "Network test", url: u, isLive: d.bool(forKey: "playerLive"), item: nil))
+        } else if state == "player-local" || state == "player-error" {
+            let file = resolved(d.string(forKey: "playerFile") ?? "/tmp/iptvplayer-media/vod.mkv")
             let url = state == "player-error" ? URL(string: "http://127.0.0.1:9/none.mkv")! : URL(fileURLWithPath: file)
             model.startPlayback(PlayRequest(title: "Local test movie", url: url, isLive: false, item: nil))
         } else {
@@ -68,10 +77,12 @@ import IPTVPlayer
         case "toast": p.toast = ("arrow.up.left.and.arrow.down.right", p.scaleName(.fill), 1)
         default: break
         }
+        if d.bool(forKey: "playerSnapshot") { try? await Task.sleep(for: .seconds(3)); p.view.snapshotPath = resolved("snapshot.png") }   // the GL framebuffer, to Documents
+        if let h = d.string(forKey: "hwdec") { p.core.mpv.setProperty("hwdec", h) }       // experiment: which decoder path draws on this device
         if d.bool(forKey: "playerPiP") { p.startPiP() }
         if d.object(forKey: "playerSpeed") != nil { p.setSpeed(d.double(forKey: "playerSpeed")) }
         if d.object(forKey: "playerSeek") != nil { p.seek(to: d.double(forKey: "playerSeek")) }
-        if let path = d.string(forKey: "statusFile") { startStatus(model, path) }
+        if let path = d.string(forKey: "statusFile") { startStatus(model, resolved(path)) }
     }
 
     private static func play(_ model: PhoneModel, _ type: ItemType) async {

@@ -35,6 +35,11 @@ public final class MPVPlayer {
         opt("sub-auto", "fuzzy")
         opt("keep-open", "yes")
         for (k, v) in EngineOptions.hardened { opt(k, v) }
+        #if DEBUG
+        if let f = UserDefaults.standard.string(forKey: "mpvLogFile") {            // debug: a verbose mpv log, relative to Documents
+            opt("log-file", f.hasPrefix("/") ? f : NSHomeDirectory() + "/Documents/" + f); opt("msg-level", "all=v")
+        }
+        #endif
         if let s = subLang, !s.isEmpty { opt("slang", s) }
         if let a = audioLang, !a.isEmpty { opt("alang", a) }
         mpv_initialize(handle)

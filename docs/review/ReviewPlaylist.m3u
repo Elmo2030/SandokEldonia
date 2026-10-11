@@ -1,0 +1,29 @@
+#EXTM3U
+# IPTVMac review playlist: open-licence test content only, no copyrighted channels or movies.
+# All films are open movies by the Blender Foundation, licensed Creative Commons Attribution (blender.org):
+#   Elephants Dream (2006) orange.blender.org | Big Buck Bunny (2008) peach.blender.org | Sintel (2010) durian.blender.org | Tears of Steel (2012) mango.blender.org
+# The files are served by their public hosts (download.blender.org, archive.org, Wikimedia Commons, test-streams.mux.dev, demo.unified-streaming.com).
+# IPTVMac sorts entries by URL path (/movie/, /series/), then by group-title, then by file ending (.mp4 .mkv .avi). Everything else is Live.
+# Here the group-title decides: "Live demo" (HLS streams) -> Live, "Open Movies" and "Movie Trailers" -> Movies, "Series (demo)" -> Series.
+# The Live entries are on-demand HLS streams: IPTVMac lists them as Live because nothing in the link says otherwise.
+# Source: https://github.com/Goelir/IPTVMac (docs/review/ReviewPlaylist.m3u). Checked with scripts in appstore/ on 2026-10-11.
+#EXTINF:-1 group-title="Live demo",Big Buck Bunny (HLS stream)
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 group-title="Live demo",Tears of Steel (HLS stream)
+https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8
+#EXTINF:-1 group-title="Open Movies",Elephants Dream (2006)
+https://download.blender.org/ED/elephantsdream-720-h264-st-aac.mov
+#EXTINF:-1 group-title="Open Movies",Big Buck Bunny (2008)
+https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4
+#EXTINF:-1 group-title="Open Movies",Sintel (2010)
+https://archive.org/download/Sintel/sintel-2048-surround.mp4
+#EXTINF:-1 group-title="Open Movies",Tears of Steel (2012)
+https://download.blender.org/demo/movies/ToS/tears_of_steel_720p.mov
+#EXTINF:-1 group-title="Movie Trailers",Sintel Trailer (2010)
+https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4
+#EXTINF:-1 group-title="Series (demo)",Blender Open Movies S01E01 - Elephants Dream
+https://archive.org/download/ElephantsDream/ed_hd.mp4
+#EXTINF:-1 group-title="Series (demo)",Blender Open Movies S01E02 - Big Buck Bunny
+https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.480p.vp9.webm
+#EXTINF:-1 group-title="Series (demo)",Blender Open Movies S01E03 - Sintel (trailer)
+https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4

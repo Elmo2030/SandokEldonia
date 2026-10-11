@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Generates the static website in docs/ (home EN + HE, three guides, robots.txt, sitemap.xml, llms.txt).
+"""Generates the static website in docs/ (home EN + HE, three guides, privacy policy and support page in EN + HE, robots.txt, sitemap.xml, llms.txt).
 Run: python3 scripts/site/build.py   (no dependencies). Edit the content below, not the generated HTML.
 
 Layout of scripts/site/:
   build.py, site.css, site.js   this generator and the page's own style and script
+  legal.py                      text of the privacy policy and the support page (EN + HE)
   poster/, make-posters.mjs     source and renderer of the hero poster (AVIF/WebP/JPEG in docs/assets)
   demo/demo.js, demo/demo.css   optional interactive mock of the app (window.IPTVDemo), copied to docs/assets when present
   fx/fx.js, fx/fx.css           optional motion layer (window.IPTVFX), copied to docs/assets when present
 The page is complete without the optional modules: every chapter has a static composition, the modules only replace it."""
 import json, html, pathlib, re, hashlib, shutil
+import legal   # copy of the privacy policy and the support page (scripts/site/legal.py)
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs"
@@ -22,6 +24,9 @@ FREE_M3U = "https://iptv-org.github.io/iptv/index.m3u"
 YT_INSTALL = "https://youtu.be/TgaoFEEMg48"
 INSTALL_CMD = "curl -fsSL https://raw.githubusercontent.com/Goelir/IPTVMac/main/install.sh | bash"
 UPDATED = "2026-10-06"
+ISSUES = REPO + "/issues"
+CONTACT_EMAIL = ""   # public contact address for the privacy and support pages. Apple's "Support URL" must lead to real contact information (an email address is the usual one): set it, then rebuild. Empty = the GitHub issues page is the only contact.
+DEMO_PLAYLIST = BASE + "review/ReviewPlaylist.m3u"   # docs/review/ReviewPlaylist.m3u, the open-licence test playlist (also the App Review playlist, see appstore/review-notes.txt)
 e = html.escape
 
 # ---------- assets ----------
@@ -234,7 +239,7 @@ HOME = {
   foot_about="A free, open source IPTV player for Mac.",
   foot_cols=[("Explore", [("#search", "Search"), ("#player", "Player"), ("#pip", "Picture in Picture"), ("#playlists", "Playlists"), ("#languages", "Languages"), ("#install", "Install")]),
              ("Learn", [("#faq", "Questions"), ("#free", "Free playlists")]),
-             ("Project", [(REPO, "GitHub"), (DOWNLOAD, "Releases"), ("https://www.gnu.org/licenses/gpl-3.0.html", "GPL-3.0 license"), (REPO + "#contributing-translations", "Translate IPTVMac")])],
+             ("Project", [(REPO, "GitHub"), (DOWNLOAD, "Releases"), ("https://www.gnu.org/licenses/gpl-3.0.html", "GPL-3.0 license"), (REPO + "#contributing-translations", "Translate IPTVMac"), ("privacy/", "Privacy policy"), ("support/", "Support")])],
   alt_h="Other IPTV players for Mac.", alt_p="IPTVMac is Mac only. If you need something different:",
   alt=["IPTVnator is free and open source and also runs on Windows and Linux.", "VLC can open an M3U playlist directly.", "IPTV Smarters Pro has a desktop app for macOS."],
   credit='Demo footage: "Sintel" by the Blender Foundation, <a href="https://durian.blender.org" rel="noopener">CC BY 3.0</a>. All titles and channels on this page are invented.',
@@ -317,7 +322,7 @@ HOME = {
   foot_about="נגן IPTV חינמי ובקוד פתוח ל-Mac.",
   foot_cols=[("בעמוד", [("#search", "חיפוש"), ("#player", "נגן"), ("#pip", "תמונה בתוך תמונה"), ("#playlists", "רשימות"), ("#languages", "שפות"), ("#install", "התקנה")]),
              ("מידע", [("#faq", "שאלות נפוצות"), ("#free", "רשימות חינמיות")]),
-             ("הפרויקט", [(REPO, "GitHub"), (DOWNLOAD, "גרסאות"), ("https://www.gnu.org/licenses/gpl-3.0.html", "רישיון GPL-3.0"), (REPO + "#contributing-translations", "תרגום IPTVMac")])],
+             ("הפרויקט", [(REPO, "GitHub"), (DOWNLOAD, "גרסאות"), ("https://www.gnu.org/licenses/gpl-3.0.html", "רישיון GPL-3.0"), (REPO + "#contributing-translations", "תרגום IPTVMac"), ("privacy/", "מדיניות פרטיות"), ("support/", "תמיכה")])],
   alt_h="נגני IPTV אחרים ל-Mac.", alt_p="IPTVMac הוא ל-Mac בלבד. אם אתם צריכים משהו אחר:",
   alt=["IPTVnator חינמי ובקוד פתוח ופועל גם ב-Windows וב-Linux.", "VLC יכול לפתוח רשימת M3U ישירות.", "ל-IPTV Smarters Pro יש אפליקציית שולחן עבודה ל-macOS."],
   credit='קטעי הדגמה: "Sintel" של Blender Foundation, <a href="https://durian.blender.org" rel="noopener">CC BY 3.0</a>. כל הכותרים והערוצים בעמוד בדויים.',
@@ -351,31 +356,34 @@ def win(inner, bar=True):
 def slot(scene):
     return f'<div class="demo-slot" data-iptvdemo-mount data-scene="{scene}"></div>'
 
-def header_html(c, depth, home=True):
+def header_html(c, depth, home=True, home_rel=None, alt_href=None):
+    # home_rel: relative link to this language's home page when it is not `up` (the Hebrew pages one level below he/); alt_href: the other language's version of this page
     up = "../" * depth
-    prefix = "" if home else up
+    rel = up if home_rel is None else home_rel
+    prefix = "" if home else rel
     links = "".join(f'<a{" class=keep" if h == "#install" else ""} href="{prefix}{h}">{e(t)}</a>' for h, t in c["nav"])
     ol = c["other_lang"]
-    href = ol[0] if home else (up + ("he/" if ol[2] == "he" else ""))
+    href = ol[0] if home else (alt_href or up + ("he/" if ol[2] == "he" else ""))
     return f'''<a class="skip" href="#main">{e(c["skip"])}</a>
 <div class="prog" aria-hidden="true"></div>
-<header class="top" id="top"><a class="brand" href="{up or './'}" aria-label="{e(c["home_aria"])}"><img src="{up}logo.png" width="30" height="30" alt=""><span class="brand-t">IPTVMac</span></a>
+<header class="top" id="top"><a class="brand" href="{(rel if home_rel is not None else up) or './'}" aria-label="{e(c["home_aria"])}"><img src="{up}logo.png" width="30" height="30" alt=""><span class="brand-t">IPTVMac</span></a>
 <nav class="nav" aria-label="{e(c["nav_aria"])}">{links}</nav>
 <div class="tools"><a class="ibtn" href="{REPO}" aria-label="{e(c["gh"])}" rel="noopener">{ICON_GH}</a>
 <button class="ibtn theme" type="button" aria-label="{e(c["theme"])}">{ICON_SUN}{ICON_MOON_T}</button>
 <a class="pill" href="{href}" hreflang="{ol[2]}" lang="{ol[2]}">{e(ol[1])}</a></div></header>
 '''
 
-def footer_html(c, depth, home=True):
+def footer_html(c, depth, home=True, home_rel=None):
     # on the home page the closing section already carries the "no content" disclaimer right above the footer
     up = "../" * depth
+    rel = up if home_rel is None else home_rel
     cols = ""
     for h, items in c["foot_cols"]:
         cols += f'<div><h3>{e(h)}</h3><ul>' + "".join(
-            f'<li><a href="{(href if href.startswith("http") else (up if not home and href.startswith("#") else "") + href)}"{" rel=noopener" if href.startswith("http") else ""}>{e(t)}</a></li>' for href, t in items) + '</ul></div>'
+            f'<li><a href="{(href if href.startswith("http") else ("" if home else rel) + href)}"{" rel=noopener" if href.startswith("http") else ""}>{e(t)}</a></li>' for href, t in items) + '</ul></div>'
     alts = "".join(f"<li>{e(x)}</li>" for x in c["alt"])
     return f'''<footer class="site"><div class="wrap">
-<div class="foot"><div class="about"><a class="brand" href="{up or './'}"><img src="{up}logo.png" width="30" height="30" alt="">IPTVMac</a><p>{e(c["foot_about"])}</p></div>{cols}</div>
+<div class="foot"><div class="about"><a class="brand" href="{(rel if home_rel is not None else up) or './'}"><img src="{up}logo.png" width="30" height="30" alt="">IPTVMac</a><p>{e(c["foot_about"])}</p></div>{cols}</div>
 <div class="fine-print">{"" if home else f"<p>{e(c['foot'])}</p>"}
 <p><b>{e(c["alt_h"])}</b> {e(c["alt_p"])} {" ".join(e(x) for x in c["alt"])}</p>
 <p>{c["credit"]}</p><p>{e(c["lic"])} <a href="{REPO}">GitHub</a></p></div></div></footer>
@@ -649,14 +657,57 @@ def guide(g):
     out += script_tag("../", c, mods=False) + '</body></html>\n'
     (DOCS / "guides" / f"{g['slug']}.html").write_text(out)
 
+# ---------- privacy policy and support page (EN + HE) ----------
+def legal_page(kind, code):
+    c = HOME[code]; p = legal.LEGAL[kind][code]; ui = legal.UI[code]; he = code == "he"
+    depth = 2 if he else 1; rel = "../"                       # rel: this language's home, seen from the page
+    other = "privacy" if kind == "support" else "support"
+    path = f"{'he/' if he else ''}{kind}/"; canon = BASE + path
+    alts = [("en", BASE + f"{kind}/"), ("he", BASE + f"he/{kind}/"), ("x-default", BASE + f"{kind}/")]
+    faq = "".join(f"<h3>{e(q)}</h3><p>{e(a)}</p>" for q, a in p.get("faq", []))
+    body = p["body"].replace("@FAQ@", faq)
+    body = body.replace(" @EMAIL@", " " + ui["email"].replace("@MAIL@", CONTACT_EMAIL) if CONTACT_EMAIL else "")
+    for k, v in {"@ISSUES@": ISSUES, "@REPO@": REPO, "@DEMO@": DEMO_PLAYLIST, "@PRIVACY@": "../privacy/", "@SUPPORT@": "../support/",
+                 "@GUIDES@": "../" * depth + "guides/"}.items(): body = body.replace(k, v)
+    toc = []
+    def ident(m):
+        i = slug(m.group(1)) or f"s{len(toc) + 1}"; toc.append((i, m.group(1)))
+        return f'<h2 id="{i}">{m.group(1)}</h2>'
+    body = re.sub(r"<h2>(.*?)</h2>", ident, body)
+    ld = [{"@context": "https://schema.org", "@type": "WebPage", "name": p["h1"], "description": p["desc"], "url": canon, "inLanguage": code,
+           "datePublished": legal.EFFECTIVE, "dateModified": legal.EFFECTIVE, "isPartOf": {"@type": "WebSite", "name": "IPTVMac", "url": BASE}},
+          {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+              {"@type": "ListItem", "position": 1, "name": "IPTVMac", "item": BASE + ("he/" if he else "")},
+              {"@type": "ListItem", "position": 2, "name": p["h1"], "item": canon}]}]
+    if p.get("faq"): ld.append(faq_ld(p["faq"]))
+    out = head(p["title"], p["desc"], canon, code, depth, alts, extra_ld=ld)
+    out += header_html(c, depth, home=False, home_rel=rel, alt_href=("../../" if he else "../he/") + f"{kind}/")
+    tocs = "".join(f'<a href="#{i}">{t}</a>' for i, t in toc)
+    out += f'''<main id="main"><div class="wrap g-wrap"><div class="g-grid">
+<article class="g-main"><nav class="crumbs" aria-label="{e(ui["bc"])}"><a href="{rel}">IPTVMac</a> / {e(p["crumb"])}</nav>
+<h1>{e(p["h1"])}</h1>
+<p class="answer">{e(p["answer"])}</p>
+<div class="prose">{body}</div>
+<div class="g-foot"><p class="fine">{e(ui["eff"])}: <time datetime="{legal.EFFECTIVE}">{e(legal.EFFECTIVE_LABEL[code])}</time>. {e(c["foot"])}</p></div></article>
+<aside class="g-side"><nav class="toc" aria-label="{e(ui["toc"])}"><p class="side-h">{e(ui["toc"])}</p>{tocs}</nav>
+<div class="side-cta"><p class="side-h">{e(ui["side_h"])}</p><a class="btn" href="{ISSUES}" rel="noopener">{ICON_GH}{e(ui["side_btn"])}</a></div></aside>
+</div></div></main>
+'''
+    out += footer_html(c, depth, home=False, home_rel=rel)
+    out += script_tag("../" * depth, c, mods=False) + '</body></html>\n'
+    d = DOCS / path; d.mkdir(parents=True, exist_ok=True); (d / "index.html").write_text(out)
+
 # ---------- crawler files ----------
 def crawler_files():
+    en_of = {BASE: BASE, BASE + "he/": BASE}              # page url -> its English url; every entry lists both language versions
     urls = [BASE, BASE + "he/"] + [BASE + f"guides/{g['slug']}.html" for g in GUIDES]
+    for k in legal.LEGAL: urls += [BASE + f"{k}/", BASE + f"he/{k}/"]; en_of[BASE + f"{k}/"] = en_of[BASE + f"he/{k}/"] = BASE + f"{k}/"
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
     for u in urls:
-        sm += f"<url><loc>{u}</loc><lastmod>{UPDATED}</lastmod>"
-        if u in (BASE, BASE + "he/"):
-            sm += f'<xhtml:link rel="alternate" hreflang="en" href="{BASE}"/><xhtml:link rel="alternate" hreflang="he" href="{BASE}he/"/>'
+        sm += f"<url><loc>{u}</loc><lastmod>{legal.EFFECTIVE if u in en_of and u not in (BASE, BASE + 'he/') else UPDATED}</lastmod>"
+        if u in en_of:
+            en = en_of[u]; he = en.replace(BASE, BASE + "he/", 1) if en != BASE else BASE + "he/"
+            sm += f'<xhtml:link rel="alternate" hreflang="en" href="{en}"/><xhtml:link rel="alternate" hreflang="he" href="{he}"/>'
         sm += "</url>\n"
     (DOCS / "sitemap.xml").write_text(sm + "</urlset>\n")
     (DOCS / "robots.txt").write_text(f"""# Everyone is welcome, including search and AI crawlers: the goal is to be found.
@@ -676,6 +727,8 @@ Latest version: {VERSION}. Download: {DOWNLOAD}
 Install in Terminal: `{INSTALL_CMD}`
 Install video (95 seconds, English): {YT_INSTALL}
 Source code: {REPO}
+Privacy policy: {BASE}privacy/ (no account, no analytics, no ads, no tracking; nothing is sent to the developer)
+Support: {BASE}support/ (how to add a source, troubleshooting, how to report a bug without sharing a login)
 
 ## Guides
 """ + "".join(f"- [{g['h1']}]({BASE}guides/{g['slug']}.html): {g['answer']}\n" for g in GUIDES) + f"""
@@ -708,5 +761,7 @@ if __name__ == "__main__":
     publish_assets()
     home("en"); home("he")
     for g in GUIDES: guide(g)
+    for k in legal.LEGAL:
+        for code in ("en", "he"): legal_page(k, code)
     crawler_files()
     print("site built:", ", ".join(sorted(p.name for p in DOCS.rglob("*.html"))))

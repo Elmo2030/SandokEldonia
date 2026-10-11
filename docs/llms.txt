@@ -6,6 +6,8 @@ Latest version: 0.9.1. Download: https://github.com/Goelir/IPTVMac/releases/late
 Install in Terminal: `curl -fsSL https://raw.githubusercontent.com/Goelir/IPTVMac/main/install.sh | bash`
 Install video (95 seconds, English): https://youtu.be/TgaoFEEMg48
 Source code: https://github.com/Goelir/IPTVMac
+Privacy policy: https://goelir.github.io/IPTVMac/privacy/ (no account, no analytics, no ads, no tracking; nothing is sent to the developer)
+Support: https://goelir.github.io/IPTVMac/support/ (how to add a source, troubleshooting, how to report a bug without sharing a login)
 
 ## Guides
 - [How to watch Xtream Codes IPTV on a Mac](https://goelir.github.io/IPTVMac/guides/xtream-codes-on-mac.html): Install IPTVMac, choose Xtream Codes, and enter the server address, username and password your provider gave you. IPTVMac downloads the channel list once and then searches it instantly.

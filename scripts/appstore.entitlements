@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<!-- Entitlements of the Mac App Store build (scripts/make-appstore.sh). Nothing else is requested and there are NO temporary-exception
+     entitlements. scripts/make-appstore.sh adds com.apple.application-identifier and com.apple.developer.team-identifier at signing time,
+     read from the provisioning profile (they differ per team, so they cannot live in this file). -->
+
+<!-- Required for every Mac App Store app (guideline 2.4.5 i). -->
+<key>com.apple.security.app-sandbox</key><true/>
+
+<!-- Outgoing connections only: the Xtream/M3U servers the user adds, streams, posters and the program guide (URLSession), and libmpv's own
+     HTTP(S) and RTSP connections. No listening socket anywhere, so no network.server. -->
+<key>com.apple.security.network.client</key><true/>
+
+<!-- Folders and files the USER picks in an open or save panel: the downloads folder (write), subtitle files (read; also dragged ones),
+     the settings backup (save panel to write, open panel to read). The app never touches a path the user did not choose. -->
+<key>com.apple.security.files.user-selected.read-write</key><true/>
+
+<!-- Remembers the downloads folder across launches as a security-scoped bookmark (FolderBookmark). Without it the sandbox forgets the
+     folder at every quit, and the user would be asked again at the first download of each session. -->
+<key>com.apple.security.files.bookmarks.app-scope</key><true/>
+
+<!-- Deliberately NOT requested: com.apple.security.files.downloads.read-write. The user chooses the downloads folder in a panel (any folder,
+     movies by default), which user-selected + the bookmark already cover; this one would only give access to ~/Downloads. -->
+</dict></plist>

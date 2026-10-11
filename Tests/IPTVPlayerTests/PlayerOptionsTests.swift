@@ -81,3 +81,26 @@ func bufferPropertiesReadBackFromTheEngine(_ b: BufferSize) {
     #expect(p.double("demuxer-readahead-secs") == Double(BufferSize.large.readaheadSecs))
     #expect((p.double("time-pos") ?? 0) > 0, "playback goes on after the change")
 }
+
+// MARK: TLS roots under the App Sandbox
+
+@Test func httpsIsVerifiedAgainstTheSystemRootsWhenTheSandboxLetsUsReadThem() {
+    #expect(EngineOptions.caFile(systemReadable: true, bundled: "/App/Contents/Resources/cacert.pem") == "/etc/ssl/cert.pem")
+    #expect(EngineOptions.caFile(systemReadable: true, bundled: nil) == "/etc/ssl/cert.pem")
+}
+
+@Test func theBundledCopyIsUsedOnlyWhenTheSystemFileIsClosed() {
+    #expect(EngineOptions.caFile(systemReadable: false, bundled: "/App/Contents/Resources/cacert.pem") == "/App/Contents/Resources/cacert.pem")
+}
+
+@Test func withNoReadableCAFileTheChoiceStaysSetSoVerificationFailsClosed() {
+    #expect(EngineOptions.caFile(systemReadable: false, bundled: nil) == "/etc/ssl/cert.pem")
+}
+
+@Test func theEngineAlwaysVerifiesHTTPSAgainstAReadableCAFile() throws {
+    let o = Dictionary(uniqueKeysWithValues: EngineOptions.hardened)
+    #expect(o["tls-verify"] == "yes")
+    let ca = try #require(o["tls-ca-file"])
+    #expect(FileManager.default.isReadableFile(atPath: ca), "\(ca)")
+    #expect(try String(contentsOfFile: ca, encoding: .utf8).contains("BEGIN CERTIFICATE"))
+}

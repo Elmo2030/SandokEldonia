@@ -1,3 +1,4 @@
+#if !APPSTORE   // self-updating is not allowed in the Mac App Store (guideline 2.4.5 vii): see scripts/APPSTORE.md
 import Foundation
 import CryptoKit
 
@@ -59,3 +60,4 @@ public enum ReleaseSignature {
         return key.isValidSignature(raw, for: signed)
     }
 }
+#endif

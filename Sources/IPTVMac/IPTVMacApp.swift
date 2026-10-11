@@ -39,7 +39,9 @@ private struct MainWindow: View {
                 AppDelegate.onQuit = { [model] in
                     MainActor.assumeIsolated {
                         model.player?.close()                 // saves the resume point and stops mpv/GL cleanly before the process exits
+                        #if !APPSTORE
                         model.applyStagedUpdateOnQuit()
+                        #endif
                     }
                 }
                 await model.start()
@@ -62,6 +64,8 @@ struct IPTVMacApp: App {
     }
 
     init() {
+        // Hidden diagnostics for the App Store build (scripts/APPSTORE.md): one JSON line, no window; first, so it changes nothing on disk.
+        if CommandLine.arguments.contains("--sandbox-probe") { SandboxProbe.run() }
         Self.migrateOldPreferences()
         // The self test must not open (and migrate) the user's real database first, so the model is created after it.
         if CommandLine.arguments.contains("--selftest") { SelfTest.run() }

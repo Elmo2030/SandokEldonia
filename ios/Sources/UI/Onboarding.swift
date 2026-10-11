@@ -13,12 +13,15 @@ struct OnboardingView: View {
         NavigationStack(path: $path) {
             Group {
                 if sizeClass == .regular {
-                    HStack(spacing: 0) {
-                        Welcome(showsAction: false) { _ in }.frame(maxWidth: .infinity)
-                        SourceFormView(mode: .add, draft: draft, presentation: .embedded).frame(maxWidth: 520)
-                            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-                            .padding(.vertical, 40).padding(.trailing, 40)
+                    HStack(spacing: 48) {
+                        Welcome(showsAction: false) { _ in }.frame(maxWidth: 460, maxHeight: 660)
+                        SourceFormView(mode: .add, draft: draft, presentation: .embedded)
+                            .frame(width: 480, height: 660)
+                            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+                            .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous).strokeBorder(Color.primary.opacity(0.08)))
+                            .shadow(color: .black.opacity(0.14), radius: 30, y: 14)
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     Welcome(showsAction: true) { path = [$0 ?? SourceDraft()] }
                 }
@@ -215,6 +218,7 @@ struct SourceFormView: View {
             } else if state == .ok {
                 Section { Label(L("onb.test.ok"), systemImage: "checkmark.circle.fill").foregroundStyle(.green) }.brandRows()
             }
+            if presentation == .embedded { Section { primaryButton }.listRowBackground(Color.clear).listRowInsets(EdgeInsets()) }
             if editing != nil {
                 Section {
                     Button { Task { await test() } } label: { HStack { Text(L("onb.test")); if state == .testing { ProgressView() } } }.disabled(!draft.canTest || state == .testing)
@@ -227,7 +231,7 @@ struct SourceFormView: View {
         .navigationTitle(presentation == .embedded ? "" : editing == nil ? L("account.add") : L("settings.editSource")).navigationBarTitleDisplayMode(.inline)
         .toolbar(presentation == .embedded ? .hidden : .visible, for: .navigationBar)
         .toolbar { if presentation == .sheet { ToolbarItem(placement: .cancellationAction) { Button(L("common.cancel")) { dismiss() } } } }
-        .safeAreaInset(edge: .bottom, spacing: 0) { primaryBar }
+        .safeAreaInset(edge: .bottom, spacing: 0) { if presentation != .embedded { primaryBar } }
         .onChange(of: draft) { if state != .testing { state = .idle } }
         .motion(value: state)
         .confirmationDialog(editing?.name ?? "", isPresented: $confirmDelete, titleVisibility: .visible) {
@@ -245,21 +249,21 @@ struct SourceFormView: View {
     }
 
     // The one big button: test first, then save and sync (editing may save at once).
-    private var primaryBar: some View {
+    private var primaryButton: some View {
         let ready = state == .ok || editing != nil
-        return VStack(spacing: 0) {
-            Button { ready ? Task { await save() } : Task { await test() } } label: {
-                HStack(spacing: 8) {
-                    if state == .testing { ProgressView().tint(.white); Text(L("onb.test.running")) }
-                    else { Text(ready ? L("onb.save") : L("onb.test")) }
-                }
-                .font(.headline).frame(maxWidth: .infinity, minHeight: 36)
+        return Button { ready ? Task { await save() } : Task { await test() } } label: {
+            HStack(spacing: 8) {
+                if state == .testing { ProgressView().tint(.white); Text(L("onb.test.running")) }
+                else { Text(ready ? L("onb.save") : L("onb.test")) }
             }
-            .buttonStyle(.borderedProminent).controlSize(.large)
-            .disabled(!draft.canTest || state == .testing)
-            .padding(16)
+            .font(.headline).frame(maxWidth: .infinity, minHeight: 36)
         }
-        .background(.bar)
+        .buttonStyle(.borderedProminent).controlSize(.large)
+        .disabled(!draft.canTest || state == .testing)
+    }
+
+    private var primaryBar: some View {
+        VStack(spacing: 0) { primaryButton.padding(16) }.background(.bar)
     }
 
     private func test() async {

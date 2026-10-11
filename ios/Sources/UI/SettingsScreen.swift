@@ -99,7 +99,7 @@ private struct PreferencesSection: View {
         Section {
             Picker(L("settings.refresh"), selection: $refreshHours) {
                 ForEach([0, 6, 12, 24], id: \.self) { Text(L("settings.refresh.\($0)")).tag($0) }
-            }
+            }.pickerStyle(.navigationLink)
             Picker(L("settings.appearance"), selection: $appearance) {
                 Text(L("settings.system")).tag("system")
                 Text(L("appearance.light")).tag("light")

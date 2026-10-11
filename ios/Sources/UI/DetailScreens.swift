@@ -77,6 +77,17 @@ private struct IconAction: View {
     }
 }
 
+/// Play beside the round buttons; with big text the round buttons move under it (a button that wraps its label mid-word is no button).
+private struct ActionRow<Primary: View, Secondary: View>: View {
+    @ViewBuilder let primary: Primary
+    @ViewBuilder let secondary: Secondary
+    @Environment(\.dynamicTypeSize) private var type
+    var body: some View {
+        if type.isAccessibilitySize { VStack(alignment: .leading, spacing: 10) { primary; HStack(spacing: 10) { secondary } } }
+        else { HStack(spacing: 10) { primary; secondary } }
+    }
+}
+
 /// A movie (or any title that is not a series): poster, facts and a Play button.
 struct DetailSheet: View {
     @Environment(PhoneModel.self) private var model
@@ -106,11 +117,12 @@ struct DetailSheet: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    HStack(spacing: 10) {
+                    ActionRow {
                         Button { Haptics.press(); dismiss(); model.play(item) } label: {
                             HStack(spacing: 8) { Image(systemName: "play.fill"); Text(L(resumable ? "info.resume" : "info.play")) }.font(.headline).foregroundStyle(.white).frame(maxWidth: .infinity, minHeight: 36)
                         }
                         .buttonStyle(.borderedProminent).controlSize(.large)
+                    } secondary: {
                         if let url = info?.trailerURL { IconAction(symbol: "play.rectangle", label: L("info.trailer")) { trailer = TrailerLink(url: url) }.transition(.opacity) }
                         IconAction(symbol: fav ? "star.fill" : "star", label: L(fav ? "fav.remove" : "fav.add"), tint: fav ? .yellow : .primary) {
                             Haptics.tap(); model.toggleFavorite(item)
@@ -258,14 +270,15 @@ struct SeriesScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             if let plot = info?.plot { Text(verbatim: plot).font(.callout).lineLimit(5).fixedSize(horizontal: false, vertical: true) }
-            HStack(spacing: 10) {
+            ActionRow {
                 if let next = upNext {
                     Button { play(next.episode) } label: {
                         HStack(spacing: 8) { Image(systemName: "play.fill"); Text(String(format: L(next.resume ? "series.continueEp" : "series.playEp"), next.episode.season, next.episode.number)) }
                             .font(.headline).foregroundStyle(.white).frame(maxWidth: .infinity, minHeight: 36)
                     }
                     .buttonStyle(.borderedProminent).controlSize(.large)
-                } else { Spacer(minLength: 0) }
+                }
+            } secondary: {
                 if let url = info?.trailerURL { IconAction(symbol: "play.rectangle", label: L("info.trailer")) { trailer = TrailerLink(url: url) } }
                 IconAction(symbol: fav ? "star.fill" : "star", label: L(fav ? "fav.remove" : "fav.add"), tint: fav ? .yellow : .primary) { Haptics.tap(); model.toggleFavorite(series) }
             }

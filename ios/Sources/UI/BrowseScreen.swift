@@ -111,7 +111,7 @@ private struct CategoryChips: View {
     var body: some View {
         HStack(spacing: 0) {
             Button { showAll = true } label: {
-                Image(systemName: "line.3.horizontal.decrease").font(.body.weight(.semibold))
+                Image(systemName: "line.3.horizontal.decrease").font(.system(size: 17, weight: .semibold))     // an icon: it does not grow with the text
                     .frame(width: 44, height: 44).contentShape(Rectangle())
             }
             .accessibilityLabel(L("cat.title"))
@@ -130,7 +130,7 @@ private struct CategoryChips: View {
             }
         }
         .padding(.leading, 4)
-        .frame(height: 48)
+        .frame(minHeight: 48)
         .background(.bar)
         .sheet(isPresented: $showAll) { CategorySheet() }
         .onChange(of: ui.debugSheet) { _, s in if s == "categories" { showAll = true } }
@@ -363,7 +363,8 @@ struct GroupedSections: View {
                 }
             } header: {
                 if shown.count > 1 || alwaysHeaders {
-                    Text(AppSection(type).title).font(.title3.weight(.semibold)).accessibilityAddTraits(.isHeader)
+                    Text(AppSection(type).title).font(pinned ? .title3.weight(.semibold) : .subheadline.weight(.semibold)).foregroundStyle(pinned ? Color.primary : Color.secondary)
+                        .accessibilityAddTraits(.isHeader)
                         .padding(.horizontal, 16).padding(.vertical, 8).frame(maxWidth: .infinity, alignment: .leading).background(pinned ? AnyShapeStyle(.bar) : AnyShapeStyle(.clear))
                 }
             }

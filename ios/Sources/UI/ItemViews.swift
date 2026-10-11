@@ -34,10 +34,16 @@ private struct ChannelLogo: View {
 /// What is on now (with how far along it is) and what comes next, when the provider has a guide for the channel.
 private struct ProgramLine: View {
     @Environment(PhoneModel.self) private var model
+    @Environment(\.dynamicTypeSize) private var type
     let item: Item
     var body: some View {
         let p = model.epgPrograms(item)
-        if let now = p.now {
+        if let now = p.now, type.isAccessibilitySize {              // big text: the titles get the room, the bar goes
+            VStack(alignment: .leading, spacing: 2) {
+                Text(now.title).font(.subheadline).foregroundStyle(.secondary).lineLimit(2)
+                if let next = p.next { Text("\(L("epg.next")): \(next.title)").font(.caption).foregroundStyle(.secondary).lineLimit(2) }
+            }
+        } else if let now = p.now {
             VStack(alignment: .leading, spacing: 4) {
                 Text(now.title).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
                 HStack(spacing: 8) {

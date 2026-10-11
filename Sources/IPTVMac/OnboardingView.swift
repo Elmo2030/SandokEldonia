@@ -116,25 +116,13 @@ struct OnboardingView: View {
         }
     }
 
-    private var formValid: Bool {
-        !name.trimmingCharacters(in: .whitespaces).isEmpty &&
-        (kind == .xtream ? !server.isEmpty && !username.isEmpty : !url.isEmpty)
-    }
+    private var formValid: Bool { LibraryModel.isValidSource(kind: kind, name: name, server: server, username: username, url: url) }
 
     private func test() async {
         busy = true; ok = false; status = nil
         defer { busy = false }
         do {
-            if kind == .xtream {
-                guard let u = XtreamURLs(server: server, username: username, password: password) else { throw IPTVError.badConfig }
-                try await XtreamClient(urls: u).authenticate()
-            } else {
-                guard let u = URL(string: url.trimmingCharacters(in: .whitespaces)), u.scheme != nil, u.host != nil else { throw IPTVError.badConfig }
-                var r = URLRequest(url: u); r.setValue("bytes=0-1023", forHTTPHeaderField: "Range")
-                let (d, _) = try await apiSession.data(for: r)
-                guard String(decoding: d, as: UTF8.self).drop(while: { $0.isWhitespace || $0 == "\u{FEFF}" }).hasPrefix("#EXTM3U")
-                else { throw IPTVError.badResponse }
-            }
+            try await LibraryModel.testConnection(kind: kind, server: server, username: username, password: password, url: url)
             withAnimation(reduceMotion ? nil : .smooth(duration: 0.2)) { ok = true; status = L("onb.test.ok") }
         } catch { withAnimation(reduceMotion ? nil : .smooth(duration: 0.2)) { status = "\(L("onb.test.fail")): \(error.localizedDescription)" } }
     }

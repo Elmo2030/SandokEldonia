@@ -1,3 +1,4 @@
+#if os(macOS)   // shells out to ssh-keygen/hdiutil/codesign/sh: the iOS app has no updater
 import Testing
 import Foundation
 @testable import IPTVCore
@@ -243,3 +244,4 @@ private func await_(_ s: Double) throws { Thread.sleep(forTimeInterval: s) }
     let app = try UpdateInstaller.stage(dmg: dmg, expectedVersion: u.version, into: dir, expectedBundleID: "io.github.goelir.IPTVMac", currentVersion: "0.3.5")
     #expect(FileManager.default.fileExists(atPath: app.appendingPathComponent("Contents/MacOS/IPTVMac").path))
 }
+#endif

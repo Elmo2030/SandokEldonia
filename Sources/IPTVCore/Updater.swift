@@ -150,6 +150,7 @@ public enum UpdateChecker {
     }
 }
 
+#if os(macOS)   // Process/hdiutil/codesign: the iOS app is updated by the App Store
 public enum UpdateInstaller {
     @discardableResult
     static func tool(_ path: String, _ args: [String]) throws -> (status: Int32, output: String) {
@@ -219,3 +220,4 @@ public enum UpdateInstaller {
         return p
     }
 }
+#endif

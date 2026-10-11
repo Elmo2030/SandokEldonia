@@ -22,7 +22,9 @@ struct DownloadEntry: Identifiable {
 @MainActor @Observable
 final class DownloadManager: NSObject, URLSessionDownloadDelegate {
     var entries: [DownloadEntry] = []
-    var folderPath: String? { didSet { UserDefaults.standard.set(folderPath, forKey: "downloadFolder") } }
+    /// Where downloads go, for display. The folder itself is a security-scoped bookmark (`folder`): the App Sandbox forgets a plain path.
+    var folderPath: String?
+    nonisolated let folder = FolderBookmark()
     @ObservationIgnored private var tasks: [UUID: URLSessionDownloadTask] = [:]
     @ObservationIgnored private lazy var session: URLSession = {
         let c = URLSessionConfiguration.ephemeral          // the URL holds the account password: nothing on the URL cache
@@ -35,7 +37,7 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate {
 
     override init() {
         super.init()
-        folderPath = UserDefaults.standard.string(forKey: "downloadFolder")
+        folderPath = folder.resolve()?.path
         if let data = UserDefaults.standard.data(forKey: "downloadsDone"),
            let rows = try? JSONDecoder().decode([[String]].self, from: data) {
             entries = rows.compactMap { r in
@@ -48,9 +50,9 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate {
 
     // MARK: Folder
 
-    /// Asks for the folder the first time (or when the old one is gone). False if the user cancels.
+    /// Asks for the folder the first time (or when the old one is gone or cannot be reached any more). False if the user cancels.
     func ensureFolder() -> Bool {
-        if let p = folderPath, FileManager.default.isWritableFile(atPath: p) { return true }
+        if folder.withAccess({ FileManager.default.isWritableFile(atPath: $0.path) }) == true { return true }
         return chooseFolder()
     }
 
@@ -59,8 +61,8 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true; panel.canChooseFiles = false; panel.canCreateDirectories = true
         panel.message = L("downloads.chooseFolder"); panel.prompt = L("downloads.choose")
-        panel.directoryURL = folderPath.map { URL(fileURLWithPath: $0) } ?? FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first
-        guard panel.runModal() == .OK, let u = panel.url else { return false }
+        panel.directoryURL = folder.resolve() ?? FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first
+        guard panel.runModal() == .OK, let u = panel.url, (try? folder.choose(u)) != nil else { return false }
         folderPath = u.path
         return true
     }
@@ -74,12 +76,16 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate {
     @discardableResult
     func add(title: String, url: URL, ext: String?) -> Bool {
         guard ["http", "https"].contains(url.scheme?.lowercased() ?? "") else { return false }   // an M3U entry may carry file:// or worse
-        guard ensureFolder(), let dir = folderPath, !contains(url) else { return folderPath != nil }
-        let name = DownloadNaming.fileName(title: title, ext: ext) { n in
-            FileManager.default.fileExists(atPath: "\(dir)/\(n)")
-                || self.entries.contains { $0.file.lastPathComponent.lowercased() == n.lowercased() && $0.file.deletingLastPathComponent().path == dir }   // APFS is case-insensitive
+        guard ensureFolder(), !contains(url) else { return folderPath != nil }
+        let planned: URL? = folder.withAccess { dir in
+            let name = DownloadNaming.fileName(title: title, ext: ext) { n in
+                FileManager.default.fileExists(atPath: dir.appendingPathComponent(n).path)
+                    || self.entries.contains { $0.file.lastPathComponent.lowercased() == n.lowercased() && $0.file.deletingLastPathComponent().path == dir.path }   // APFS is case-insensitive
+            }
+            return dir.appendingPathComponent(name)
         }
-        entries.append(DownloadEntry(title: title, url: url, file: URL(fileURLWithPath: dir).appendingPathComponent(name)))
+        guard let planned else { return false }
+        entries.append(DownloadEntry(title: title, url: url, file: planned))
         pump()
         return true
     }
@@ -117,7 +123,8 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate {
     }
 
     func resume(_ id: UUID) {
-        guard let i = entries.firstIndex(where: { $0.id == id }), entries[i].url != nil else { return }
+        // A lost folder: ask again instead of failing again (the panel is modal: look the entry up after it).
+        guard entries.contains(where: { $0.id == id && $0.url != nil }), ensureFolder(), let i = entries.firstIndex(where: { $0.id == id }) else { return }
         switch entries[i].state { case .paused, .failed: entries[i].state = .queued; entries[i].retries = 0; pump(); default: break }
     }
 
@@ -125,7 +132,7 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate {
     func remove(_ id: UUID, trashFile: Bool = false) {
         guard let i = entries.firstIndex(where: { $0.id == id }) else { return }
         tasks.removeValue(forKey: id)?.cancel()
-        if trashFile { try? FileManager.default.trashItem(at: entries[i].file, resultingItemURL: nil) }
+        if trashFile { let f = entries[i].file; _ = folder.withAccess { _ in try? FileManager.default.trashItem(at: f, resultingItemURL: nil) } }
         entries.remove(at: i)
         saveDone(); pump()
     }
@@ -174,7 +181,7 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate {
         // Out of disk space is permanent: stop at the start and every ~64 MB instead of filling the system volume (keep 1 GiB free).
         if done / 67_108_864 != (done - written) / 67_108_864 || done == written {
             let dest = URL(fileURLWithPath: path).deletingLastPathComponent()
-            let room = min(Self.freeSpace(at: dest), Self.freeSpace(at: FileManager.default.temporaryDirectory))
+            let room = min(folder.withAccess { Self.freeSpace(at: $0) } ?? Self.freeSpace(at: dest), Self.freeSpace(at: FileManager.default.temporaryDirectory))
             if room - 1_073_741_824 < max(total - done, 0) {
                 t.cancel()
                 Task { @MainActor in
@@ -206,17 +213,24 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate {
         }
         // The name was chosen when the download was queued: pick it again now, a file may have appeared meanwhile
         // (same title in another case, another app), and the temp file is deleted when this method returns.
+        // The folder is the one chosen now (under the sandbox only that one is reachable, and only inside `withAccess`).
         let planned = URL(fileURLWithPath: path)
-        let dir = planned.deletingLastPathComponent()
-        let name = DownloadNaming.fileName(title: planned.deletingPathExtension().lastPathComponent, ext: planned.pathExtension) {
-            FileManager.default.fileExists(atPath: dir.appendingPathComponent($0).path)
-        }
-        let final = dir.appendingPathComponent(name)
-        var failure: String?
-        do { try FileManager.default.moveItem(at: tmp, to: final) } catch { failure = error.localizedDescription }
+        var final: URL?, failure: String?
+        do {
+            final = try folder.withAccess { dir in
+                let name = DownloadNaming.fileName(title: planned.deletingPathExtension().lastPathComponent, ext: planned.pathExtension) {
+                    FileManager.default.fileExists(atPath: dir.appendingPathComponent($0).path)
+                }
+                let dest = dir.appendingPathComponent(name)
+                try FileManager.default.moveItem(at: tmp, to: dest)
+                return dest
+            }
+            if final == nil { failure = L("downloads.chooseFolder") }   // the folder is gone: pick one in Settings, then resume
+        } catch { failure = error.localizedDescription }
+        let moved = final
         Task { @MainActor in
             guard self.tasks[id]?.taskIdentifier == tid else { return }
-            self.finish(id, error: failure, file: failure == nil ? final : nil)
+            self.finish(id, error: failure, file: failure == nil ? moved : nil)
         }
     }
 

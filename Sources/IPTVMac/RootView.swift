@@ -54,7 +54,9 @@ struct RootView: View {
                     PlayerScreen(request: r, pm: pm)    // no transition here: the video view is re-parented between hosts
                 } else {
                     VStack(spacing: 0) {
+                        #if !APPSTORE
                         UpdateBanner()
+                        #endif
                         if model.wrappedValue.syncing {
                             StatusStrip(kind: .busy, text: L("sync.running"))
                                 .transition(.move(edge: .top).combined(with: .opacity))

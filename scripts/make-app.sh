@@ -5,12 +5,21 @@
 # Homebrew's mpv is NOT bundled: its bottles require the macOS version of the build machine (27), so the app would not
 # open on older Macs. Homebrew's mpv is still used at build time for the C headers and to link against.
 # Requires on the build machine: brew install mpv pkgconf
+#
+# scripts/make-appstore.sh reuses this script for the Mac App Store build through these variables (all unset = the direct-download build):
+#   IPTVMAC_OUT_DIR=dir          where the app is assembled (default build; the downloaded libmpv stays in build/vendor)
+#   IPTVMAC_SWIFT_ARGS="..."     extra arguments of `swift build` (the App Store build passes -Xswiftc -DAPPSTORE and its own --scratch-path)
+#   IPTVMAC_BUILD_NUMBER=n       CFBundleVersion (default: the version, as before)
+#   IPTVMAC_SKIP_SIGN=1          leave the bundle unsigned: the caller signs it
 set -euo pipefail
 cd "$(dirname "$0")/.."
 export PATH="/opt/homebrew/bin:$PATH"
 
 # Single source of the app version: the VERSION file (IPTVMAC_VERSION overrides it for update tests).
 VERSION="${IPTVMAC_VERSION:-$(cat VERSION)}"
+OUT="${IPTVMAC_OUT_DIR:-build}"
+BUILD_NUMBER="${IPTVMAC_BUILD_NUMBER:-$VERSION}"
+read -r -a SWIFT_ARGS <<< "${IPTVMAC_SWIFT_ARGS:-}"
 MK_VERSION=v0.7.3
 MK_NAME="libmpv-libs_${MK_VERSION}_macos-arm64-video-full"
 MK_SHA256=9bb168ec908b4801f4231f411e3278a0aea644a2b03ce375c880d2813ab7f949
@@ -22,9 +31,10 @@ if [ ! -d "$VENDOR/$MK_NAME" ]; then
   tar xzf "$VENDOR/mk.tgz" -C "$VENDOR"
 fi
 
-scripts/swift.sh build -c release
-BIN="$(scripts/swift.sh build -c release --show-bin-path)"
-APP=build/IPTVMac.app
+# (bash 3.2 and `set -u`: an empty array must be expanded with the ${a[@]+...} form)
+scripts/swift.sh build -c release ${SWIFT_ARGS[@]+"${SWIFT_ARGS[@]}"}
+BIN="$(scripts/swift.sh build -c release ${SWIFT_ARGS[@]+"${SWIFT_ARGS[@]}"} --show-bin-path)"
+APP="$OUT/IPTVMac.app"
 EXE="$APP/Contents/MacOS/IPTVMac"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
@@ -42,12 +52,12 @@ for f in "$APP"/Contents/Frameworks/*.dylib; do
 done
 
 # App icon: drawn by scripts/icon/icon.swift, packed into an .icns.
-ICONSET=build/AppIcon.iconset
+ICONSET="$OUT/AppIcon.iconset"
 rm -rf "$ICONSET" && mkdir -p "$ICONSET"
-swift scripts/icon/icon.swift build/icon-1024.png 1024
+swift scripts/icon/icon.swift "$OUT/icon-1024.png" 1024
 for sz in 16 32 128 256 512; do
-  sips -z $sz $sz build/icon-1024.png --out "$ICONSET/icon_${sz}x${sz}.png" >/dev/null
-  sips -z $((sz*2)) $((sz*2)) build/icon-1024.png --out "$ICONSET/icon_${sz}x${sz}@2x.png" >/dev/null
+  sips -z $sz $sz "$OUT/icon-1024.png" --out "$ICONSET/icon_${sz}x${sz}.png" >/dev/null
+  sips -z $((sz*2)) $((sz*2)) "$OUT/icon-1024.png" --out "$ICONSET/icon_${sz}x${sz}@2x.png" >/dev/null
 done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 
@@ -61,14 +71,14 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 <key>CFBundleIconFile</key><string>AppIcon</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleShortVersionString</key><string>__VERSION__</string>
-<key>CFBundleVersion</key><string>__VERSION__</string>
+<key>CFBundleVersion</key><string>__BUILD__</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>
 <key>CFBundleLocalizations</key><array>__LOCALIZATIONS__</array>
 <key>NSHighResolutionCapable</key><true/>
 <key>NSAppTransportSecurity</key><dict><key>NSAllowsArbitraryLoads</key><true/></dict>
 </dict></plist>
 PLIST
-sed -i '' "s/__VERSION__/$VERSION/g" "$APP/Contents/Info.plist"
+sed -i '' -e "s/__VERSION__/$VERSION/g" -e "s/__BUILD__/$BUILD_NUMBER/g" "$APP/Contents/Info.plist"
 # every Resources/<lang>.lproj folder is a UI language macOS may pick
 LOCS="$(cd Sources/IPTVMac/Resources && for d in *.lproj; do printf '<string>%s</string>' "${d%.lproj}"; done)"
 sed -i '' "s|__LOCALIZATIONS__|$LOCS|" "$APP/Contents/Info.plist"
@@ -76,6 +86,9 @@ sed -i '' "s|__LOCALIZATIONS__|$LOCS|" "$APP/Contents/Info.plist"
 # IPTVMAC_SIGN_IDENTITY="Developer ID Application: Name (TEAMID)" signs for notarization: hardened runtime + secure timestamp,
 # every bundled dylib first, then the app (no --deep). IPTVMAC_HARDENED=1 applies the hardened runtime to an ad-hoc build, to test locally.
 IDENTITY="${IPTVMAC_SIGN_IDENTITY:--}"
+if [ -n "${IPTVMAC_SKIP_SIGN:-}" ]; then
+  echo "Built $APP (unsigned: IPTVMAC_SKIP_SIGN is set)"; exit 0
+fi
 if [ "$IDENTITY" != "-" ] || [ -n "${IPTVMAC_HARDENED:-}" ]; then
   FLAGS=(--force --options runtime --sign "$IDENTITY"); [ "$IDENTITY" != "-" ] && FLAGS+=(--timestamp)
   find "$APP/Contents/Frameworks" -name '*.dylib' -exec codesign "${FLAGS[@]}" {} \;

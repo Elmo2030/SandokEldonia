@@ -43,7 +43,7 @@ struct DownloadsView: View {
             Spacer()
             switch e.state {
             case .done:
-                Button { model.stopPlayback(); dismiss(); model.startPlayback(PlayRequest(title: e.title, url: e.file, isLive: false, item: nil)) } label: { Image(systemName: "play.fill") }.help(L("downloads.play"))
+                Button { d.folder.hold(); model.stopPlayback(); dismiss(); model.startPlayback(PlayRequest(title: e.title, url: e.file, isLive: false, item: nil)) } label: { Image(systemName: "play.fill") }.help(L("downloads.play"))
                 Button { NSWorkspace.shared.activateFileViewerSelecting([e.file]) } label: { Image(systemName: "folder") }.help(L("downloads.reveal"))
                 Button { d.remove(e.id, trashFile: true) } label: { Image(systemName: "trash") }.help(L("downloads.delete"))
             case .active, .queued:

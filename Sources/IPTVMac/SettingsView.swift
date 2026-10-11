@@ -17,8 +17,10 @@ struct SettingsView: View {
 
 struct GeneralSettings: View {
     @Environment(AppModel.self) var model
+    #if !APPSTORE
     @AppStorage("autoCheckUpdates") private var autoCheck = true
     @AppStorage("autoInstallUpdates") private var autoInstall = true
+    #endif
     @AppStorage("appearance") private var appearance = "system"
     @AppStorage("hiddenCategoryWords") private var hiddenWords = ""
     @State private var language = InterfaceLanguage.current
@@ -54,6 +56,7 @@ struct GeneralSettings: View {
             }
             Section {
                 Text(String(format: L("update.current"), model.currentVersion)).foregroundStyle(.secondary)
+                #if !APPSTORE   // the App Store updates the app: no update check, banner or installer in that build
                 Toggle(L("update.auto"), isOn: $autoCheck)
                 Toggle(L("update.autoInstall"), isOn: $autoInstall).disabled(!autoCheck)
                 HStack {
@@ -68,10 +71,13 @@ struct GeneralSettings: View {
                     case .none: EmptyView()
                     }
                 }
+                #endif
             }
         }
         .formStyle(.grouped)
+        #if !APPSTORE
         .motion(value: model.updateStatus)
+        #endif
     }
 }
 

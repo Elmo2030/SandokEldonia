@@ -5,6 +5,13 @@ import IPTVPlayer
 /// Proves the shipped engine loads, opens a file and advances its clock on this Mac, without a stream or a window.
 enum SelfTest {
     static func run() -> Never {
+        let r = playWAV()
+        print("selftest: \(r.version) time-pos=\(r.pos)")
+        exit(r.pos > 0.5 ? 0 : 1)
+    }
+
+    /// Plays the generated WAV with a fresh libmpv instance (`--sandbox-probe` reuses it).
+    static func playWAV() -> (version: String, pos: Double) {
         let wav = FileManager.default.temporaryDirectory.appendingPathComponent("iptvmac-selftest-\(UUID().uuidString).wav")
         try? silentWAV(seconds: 3).write(to: wav)
         defer { try? FileManager.default.removeItem(at: wav) }
@@ -17,9 +24,9 @@ enum SelfTest {
             pos = p.double("time-pos") ?? 0
             if pos > 0.5 { break }
         }
-        print("selftest: \(p.string("mpv-version") ?? "unknown") time-pos=\(pos)")
+        let version = p.string("mpv-version") ?? "unknown"
         p.shutdown()
-        exit(pos > 0.5 ? 0 : 1)
+        return (version, pos)
     }
 
     /// 8 kHz mono 16-bit PCM silence.

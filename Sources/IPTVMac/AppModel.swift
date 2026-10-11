@@ -4,7 +4,9 @@ import Observation
 import IPTVCore
 @_exported import IPTVAppKit   // the views and tests of this module keep seeing PlayRequest, SearchScopeChoice, ClearKind, LibraryModel
 
+#if !APPSTORE
 enum UpdateStatus: Equatable { case none, available, downloading, ready, failed(String), upToDate, devBuild }
+#endif
 
 @MainActor @Observable
 final class AppModel: LibraryModel {
@@ -91,12 +93,14 @@ final class AppModel: LibraryModel {
         }
     }
 
+    #if !APPSTORE
     // MARK: Updates
     var update: AppUpdate?
     var updateStatus: UpdateStatus = .none
     var updateBannerDismissed = false
     private var stagedApp: URL?
     private var swapScheduled = false
+    #endif
 
     init() {
         let opened: (db: AppDatabase, movedAside: String?)
@@ -125,8 +129,10 @@ final class AppModel: LibraryModel {
         if let aside = dbMovedAside {
             let a = NSAlert(); a.messageText = L("db.recovered.title"); a.informativeText = String(format: L("db.recovered.body"), aside); a.runModal()
         }
+        #if !APPSTORE
         clearStaleUpdate()
         Task { await updateLoop() }
+        #endif
         await super.start()
     }
 
@@ -238,12 +244,16 @@ final class AppModel: LibraryModel {
     }
 }
 
+extension AppModel {
+    var currentVersion: String { Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0" }
+}
+
+#if !APPSTORE
 // MARK: - Updates
 extension AppModel {
     private static func flag(_ key: String) -> Bool { UserDefaults.standard.object(forKey: key) as? Bool ?? true }
     var autoCheckUpdates: Bool { Self.flag("autoCheckUpdates") }
     var autoInstallUpdates: Bool { Self.flag("autoInstallUpdates") }
-    var currentVersion: String { Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0" }
     /// `swift run` builds have no app bundle to replace, so updates are only for the installed app.
     var isInstalledApp: Bool { Bundle.main.bundleURL.pathExtension == "app" }
 
@@ -311,3 +321,4 @@ extension AppModel {
         _ = try? UpdateInstaller.scheduleSwap(pid: getpid(), target: Bundle.main.bundleURL, staged: staged, relaunch: false)
     }
 }
+#endif

@@ -125,16 +125,12 @@ struct PlayerScreen: View {
         .onKeyPress("f") { NSApp.keyWindow?.toggleFullScreen(nil); return .handled }
         .onDrop(of: [.fileURL], isTargeted: nil) { providers in
             providers.first?.loadItem(forTypeIdentifier: UTType.fileURL.identifier) { data, _ in
-                if let d = data as? Data, let u = URL(dataRepresentation: d, relativeTo: nil) { Task { @MainActor in pm.mpv.addSubtitle(u) } }
+                if let d = data as? Data, let u = URL(dataRepresentation: d, relativeTo: nil) { Task { @MainActor in addSubtitle(u) } }
             }
             return true
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.data]) { r in
-            if case .success(let u) = r {
-                let access = u.startAccessingSecurityScopedResource()
-                pm.mpv.addSubtitle(u)
-                if access { u.stopAccessingSecurityScopedResource() }
-            }
+            if case .success(let u) = r { addSubtitle(u) }
         }
         .sheet(isPresented: $showCatchup) {
             if let item = request.item {
@@ -187,6 +183,14 @@ struct PlayerScreen: View {
             showBars = false
             NSCursor.setHiddenUntilMouseMoves(true)
         }
+    }
+
+    /// A subtitle from the file picker or a drop. mpv opens the file while the `sub-add` command runs, so the sandbox access of a picked
+    /// (security-scoped) file only has to last that long; a dropped file's access comes with the drop and the call is then a no-op.
+    private func addSubtitle(_ u: URL) {
+        let access = u.startAccessingSecurityScopedResource()
+        pm.mpv.addSubtitle(u)
+        if access { u.stopAccessingSecurityScopedResource() }
     }
 
     private func skip(_ direction: Double) { revealBars(); pm.mpv.seek(by: direction * Double(seekStep)) }

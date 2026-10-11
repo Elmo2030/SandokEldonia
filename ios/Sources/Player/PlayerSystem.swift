@@ -30,13 +30,18 @@ final class PlayerSystem {
     private var artworkFor: URL?
     private(set) var active = false
 
-    func activate(_ commands: Commands, seekStep: Int) {
+    /// `ready` runs on the main thread once the audio session is active: activating it can block for a while (another app's audio is
+    /// stopped), so it happens off the main thread, and the stream is only opened after it.
+    func activate(_ commands: Commands, seekStep: Int, ready: @escaping @MainActor () -> Void) {
         self.commands = commands
-        guard !active else { return }
+        guard !active else { ready(); return }
         active = true
         let session = AVAudioSession.sharedInstance()
-        try? session.setCategory(.playback, mode: .moviePlayback)   // silent switch does not mute; UIBackgroundModes audio keeps it going locked
-        try? session.setActive(true)
+        DispatchQueue.global(qos: .userInitiated).async {
+            try? session.setCategory(.playback, mode: .moviePlayback)   // silent switch does not mute; UIBackgroundModes audio keeps it going locked
+            try? session.setActive(true)
+            DispatchQueue.main.async { MainActor.assumeIsolated { ready() } }
+        }
         let nc = NotificationCenter.default
         observers = [
             nc.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { [weak self] n in
@@ -65,7 +70,7 @@ final class PlayerSystem {
         throttle.reset()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         UIApplication.shared.isIdleTimerDisabled = false
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        DispatchQueue.global(qos: .utility).async { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
     }
 
     /// The user's own play/pause cancels an automatic resume after an interruption.
@@ -87,7 +92,7 @@ final class PlayerSystem {
 
     private func routeChange(_ reason: AVAudioSession.RouteChangeReason?, _ previous: AVAudioSessionRouteDescription?) {
         let builtIn: Set<AVAudioSession.Port> = [.builtInSpeaker, .builtInReceiver]
-        let wasBuiltIn = previous?.outputs.allSatisfy { builtIn.contains($0.portType) } ?? true
+        let wasBuiltIn = previous?.outputs.allSatisfy { builtIn.contains($0.portType) } ?? false   // no route information: assume the worst, pause
         if RoutePolicy.shouldPause(oldDeviceUnavailable: reason == .oldDeviceUnavailable, previousOutputWasBuiltIn: wasBuiltIn) { commands.pause() }
     }
 

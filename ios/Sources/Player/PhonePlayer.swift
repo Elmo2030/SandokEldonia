@@ -93,8 +93,10 @@ final class PhonePlayer {
         core.onSaveProgress = { [weak self] position, duration, _ in self?.onSaveProgress?(position, duration) }
         core.onEndChanged = { [weak self] ended in self?.endChanged(ended) }
         core.onSleep = { [weak self] in self?.onClose?() }
-        system.activate(commands, seekStep: seekStep)
-        core.play(request.url, isLive: request.isLive, start: request.start)
+        system.activate(commands, seekStep: seekStep) { [weak self] in
+            guard let self, !self.closed else { return }
+            self.core.play(self.request.url, isLive: self.request.isLive, start: self.request.start)
+        }
         pushRemoteCommands()
         observers = [
             NotificationCenter.default.addObserver(forName: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil, queue: .main) { [weak self] _ in

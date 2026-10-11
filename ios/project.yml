@@ -83,8 +83,23 @@ targets:
       base:
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: io.github.goelir.IPTVMac.tests
+
+  # UI tests of the player (headless: xcodebuild test -destination 'platform=iOS Simulator,...'). They need the fake panel and media of
+  # UITests/Fixtures; see the header of PlayerUITests.swift. Debug builds only (the app has the -uiState hooks in DEBUG).
+  IPTVPhoneUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+        excludes: ["Fixtures/**"]
+    dependencies:
+      - target: IPTVPhone
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.goelir.IPTVMac.UITests
+        GENERATE_INFOPLIST_FILE: YES
 schemes:
   IPTVPhone:
     build: { targets: { IPTVPhone: all } }
     run: { config: Debug }
-    test: { config: Debug, targets: [IPTVPhoneTests] }
+    test: { config: Debug, targets: [IPTVPhoneTests, IPTVPhoneUITests] }

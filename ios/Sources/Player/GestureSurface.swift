@@ -64,14 +64,21 @@ struct GestureSurface: UIViewRepresentable {
             return PlayerGestures.side(x: g.location(in: v).x, width: v.bounds.width)
         }
 
-        @objc func single(_ g: UITapGestureRecognizer) { if g.state == .ended { handlers?.singleTap(side(of: g)) } }
-        @objc func double(_ g: UITapGestureRecognizer) { if g.state == .ended { handlers?.doubleTap(side(of: g)) } }
+        @objc func single(_ g: UITapGestureRecognizer) { if g.state == .ended { debug("single"); handlers?.singleTap(side(of: g)) } }
+        @objc func double(_ g: UITapGestureRecognizer) { if g.state == .ended { debug("double"); handlers?.doubleTap(side(of: g)) } }
+
+        private func debug(_ name: String) {
+            #if DEBUG
+            PlayerDebug.count(name)
+            #endif
+        }
 
         @objc func pan(_ g: UIPanGestureRecognizer) {
             guard let v = g.view, let h = handlers else { return }
             let t = g.translation(in: v)
             switch g.state {
             case .began:
+                debug("panBegan")
                 axis = nil
                 side = PlayerGestures.side(x: g.location(in: v).x - t.x, width: v.bounds.width)   // where the finger went down
             case .changed:
@@ -99,11 +106,11 @@ struct GestureSurface: UIViewRepresentable {
             }
         }
 
-        @objc func pinch(_ g: UIPinchGestureRecognizer) { if g.state == .ended { handlers?.pinchEnded(g.scale) } }
+        @objc func pinch(_ g: UIPinchGestureRecognizer) { if g.state == .ended { debug("pinch"); handlers?.pinchEnded(g.scale) } }
 
         @objc func hold(_ g: UILongPressGestureRecognizer) {
             switch g.state {
-            case .began: holding = true; handlers?.hold(true)
+            case .began: holding = true; debug("holdBegan"); handlers?.hold(true)
             case .ended, .cancelled, .failed: if holding { holding = false; handlers?.hold(false) }
             default: break
             }

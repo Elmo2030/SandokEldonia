@@ -15,7 +15,7 @@ final class PhoneModel: LibraryModel {
         catch {   // no disk: an in-memory database keeps the app usable, nothing is saved this session
             opened = (try! AppDatabase(), nil); failure = error.localizedDescription
         }
-        super.init(db: opened.db, dbMovedAside: opened.movedAside)
+        super.init(db: opened.db, secrets: KeychainSecretStore(legacy: DatabaseSecretStore(db: opened.db)), dbMovedAside: opened.movedAside)   // passwords in the iOS Keychain
         syncMessage = failure
     }
 

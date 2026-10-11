@@ -11,7 +11,7 @@ struct PasswordSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section { SecureField(L("field.password"), text: $password) } header: { Text(String(format: L("password.body"), account.name)) }
+                Section { SecureField(L("field.password"), text: $password) } header: { Text(String(format: L("password.body.ios"), account.name)) }
             }
             .navigationTitle(L("password.title"))
             .navigationBarTitleDisplayMode(.inline)

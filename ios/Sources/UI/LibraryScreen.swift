@@ -21,11 +21,11 @@ struct LibraryScreen: View {
                     ContentUnavailableView { Label(L("library.empty"), systemImage: "books.vertical") } description: { Text(L("library.empty.hint")) }
                 } else {
                     ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 20, pinnedViews: .sectionHeaders) {
+                        LazyVStack(alignment: .leading, spacing: 20) {
                             if !shelf.isEmpty { ContinueShelf(entries: shelf) }
                             if hasFavorites {
                                 Text(L("cat.favorites")).font(.title3.weight(.semibold)).accessibilityAddTraits(.isHeader).padding(.horizontal, 16)
-                                GroupedSections(groups: favorites, alwaysHeaders: false)
+                                GroupedSections(groups: favorites, alwaysHeaders: true, pinned: false)
                             }
                         }
                         .padding(.top, 12).padding(.bottom, 24)

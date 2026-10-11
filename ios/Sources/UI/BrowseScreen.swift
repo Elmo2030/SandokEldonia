@@ -209,7 +209,7 @@ private struct CategorySheet: View {
             }
             .frame(minHeight: 44).contentShape(Rectangle())
         }
-        .accessibilityAddTraits(model.selectedCategory == tag ? [.isSelected] : [])
+        .buttonStyle(.plain).accessibilityAddTraits(model.selectedCategory == tag ? [.isSelected] : [])
     }
 }
 
@@ -347,6 +347,7 @@ struct PosterScroll: View {
 struct GroupedSections: View {
     let groups: [(ItemType, [Item])]
     var alwaysHeaders = false
+    var pinned = true
     @Environment(\.horizontalSizeClass) private var sizeClass
     @ScaledMetric private var scale = 1.0
 
@@ -362,7 +363,7 @@ struct GroupedSections: View {
             } header: {
                 if shown.count > 1 || alwaysHeaders {
                     Text(AppSection(type).title).font(.title3.weight(.semibold)).accessibilityAddTraits(.isHeader)
-                        .padding(.horizontal, 16).padding(.vertical, 8).frame(maxWidth: .infinity, alignment: .leading).background(.bar)
+                        .padding(.horizontal, 16).padding(.vertical, 8).frame(maxWidth: .infinity, alignment: .leading).background(pinned ? AnyShapeStyle(.bar) : AnyShapeStyle(.clear))
                 }
             }
         }

@@ -172,7 +172,7 @@ struct ArtworkImage<Placeholder: View>: View {
 
     var body: some View {
         ZStack {
-            placeholder().opacity(image == nil ? 1 : 0)
+            placeholder().opacity(image == nil ? 1 : 0).animation(reduce ? nil : .easeOut(duration: 0.12), value: image == nil)
             if let image {
                 Image(uiImage: image).resizable().aspectRatio(contentMode: fill ? .fill : .fit).transition(.opacity)
             }

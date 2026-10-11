@@ -29,7 +29,7 @@ struct OnboardingView: View {
         }
         .task {
             #if DEBUG
-            if UserDefaults.standard.string(forKey: "uiSheet") == "add", sizeClass != .regular { path = [SourceDraft()] }
+            if ["add", "addfilled"].contains(UserDefaults.standard.string(forKey: "uiSheet")), sizeClass != .regular { path = [SourceDraft()] }
             #endif
         }
     }
@@ -71,38 +71,40 @@ private struct Welcome: View {
     @State private var shown = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 22) {
-                Spacer(minLength: 24)
-                LogoTile(size: 112)
-                    .scaleEffect(shown || reduce ? 1 : 0.88).opacity(shown || reduce ? 1 : 0)
-                VStack(spacing: 10) {
-                    Text(L("onb.welcome.title")).font(.largeTitle.weight(.bold)).multilineTextAlignment(.center).accessibilityAddTraits(.isHeader)
-                    Text(L("onb.welcome.body")).font(.title3).foregroundStyle(.secondary).multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: 460)
-                Label { Text(L("onb.noChannels")).font(.footnote).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true) } icon: {
-                    Image(systemName: "info.circle").foregroundStyle(Brand.accentText)
-                }
-                .padding(14).frame(maxWidth: 460, alignment: .leading)
-                .background(Brand.surface.opacity(0.8), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                if showsAction {
-                    VStack(spacing: 12) {
-                        Button { Haptics.tap(); start(nil) } label: { Text(L("account.add")).font(.headline).frame(maxWidth: .infinity, minHeight: 36) }
-                            .buttonStyle(.borderedProminent).controlSize(.large)
-                        HStack(spacing: 10) {
-                            Text(L("onb.paste.hint")).font(.subheadline).foregroundStyle(.secondary)
-                            PasteLink { var d = SourceDraft(); d.apply(pasted: $0); start(d) }
-                        }
+        GeometryReader { geo in
+            ScrollView {
+                VStack(spacing: 22) {
+                    LogoTile(size: 112)
+                        .scaleEffect(shown || reduce ? 1 : 0.88).opacity(shown || reduce ? 1 : 0)
+                    VStack(spacing: 10) {
+                        Text(L("onb.welcome.title")).font(.largeTitle.weight(.bold)).multilineTextAlignment(.center).accessibilityAddTraits(.isHeader)
+                        Text(L("onb.welcome.body")).font(.title3).foregroundStyle(.secondary).multilineTextAlignment(.center)
                     }
-                    .frame(maxWidth: 460).padding(.top, 8)
+                    .frame(maxWidth: 460)
+                    Label { Text(L("onb.noChannels")).font(.footnote).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true) } icon: {
+                        Image(systemName: "info.circle").foregroundStyle(Brand.accentText)
+                    }
+                    .padding(14).frame(maxWidth: 460, alignment: .leading)
+                    .background(Brand.surface.opacity(0.8), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 }
-                Spacer(minLength: 24)
+                .padding(.horizontal, 24).padding(.vertical, 24)
+                .frame(maxWidth: .infinity, minHeight: geo.size.height)
             }
-            .padding(.horizontal, 24)
-            .frame(maxWidth: .infinity)
+            .scrollBounceBehavior(.basedOnSize)
         }
-        .scrollBounceBehavior(.basedOnSize)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if showsAction {
+                VStack(spacing: 12) {
+                    Button { Haptics.tap(); start(nil) } label: { Text(L("account.add")).font(.headline).frame(maxWidth: .infinity, minHeight: 36) }
+                        .buttonStyle(.borderedProminent).controlSize(.large)
+                    HStack(spacing: 10) {
+                        Text(L("onb.paste.hint")).font(.subheadline).foregroundStyle(.secondary)
+                        PasteLink { var d = SourceDraft(); d.apply(pasted: $0); start(d) }
+                    }
+                }
+                .frame(maxWidth: 460).padding(.horizontal, 24).padding(.bottom, 12).padding(.top, 8).frame(maxWidth: .infinity)
+            }
+        }
         .onAppear { withAnimation(reduce ? nil : .smooth(duration: 0.5)) { shown = true } }
     }
 }
@@ -204,6 +206,9 @@ struct SourceFormView: View {
                         PasteLink { draft.apply(pasted: $0) }
                     }
                 }.brandRows()
+            }
+            if model.accounts.isEmpty, let m = model.syncMessage {      // saving failed (disk, keychain): say so instead of doing nothing
+                Section { Label(m, systemImage: "exclamationmark.triangle.fill").foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true) }.brandRows()
             }
             if case .failed(let m) = state {
                 Section { Label(m, systemImage: "exclamationmark.triangle.fill").foregroundStyle(.red).fixedSize(horizontal: false, vertical: true) }.brandRows()

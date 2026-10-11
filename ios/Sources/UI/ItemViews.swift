@@ -38,11 +38,13 @@ private struct ProgramLine: View {
     var body: some View {
         let p = model.epgPrograms(item)
         if let now = p.now {
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(now.title).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
-                ProgressBar(value: now.end > now.start ? Date().timeIntervalSince(now.start) / now.end.timeIntervalSince(now.start) : 0,
-                            height: 3, track: Color.primary.opacity(0.12)).frame(maxWidth: 160)
-                if let next = p.next { Text("\(L("epg.next")): \(next.title)").font(.caption).foregroundStyle(.tertiary).lineLimit(1) }
+                HStack(spacing: 8) {
+                    ProgressBar(value: now.end > now.start ? Date().timeIntervalSince(now.start) / now.end.timeIntervalSince(now.start) : 0,
+                                height: 3, track: Color.primary.opacity(0.12)).frame(width: 56)
+                    if let next = p.next { Text("\(L("epg.next")): \(next.title)").font(.caption).foregroundStyle(.secondary).lineLimit(1) }
+                }
             }
         }
     }

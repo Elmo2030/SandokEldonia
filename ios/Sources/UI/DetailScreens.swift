@@ -108,7 +108,7 @@ struct DetailSheet: View {
                     }
                     HStack(spacing: 10) {
                         Button { Haptics.press(); dismiss(); model.play(item) } label: {
-                            Label(L(resumable ? "info.resume" : "info.play"), systemImage: "play.fill").font(.headline).frame(maxWidth: .infinity, minHeight: 36)
+                            HStack(spacing: 8) { Image(systemName: "play.fill"); Text(L(resumable ? "info.resume" : "info.play")) }.font(.headline).foregroundStyle(.white).frame(maxWidth: .infinity, minHeight: 36)
                         }
                         .buttonStyle(.borderedProminent).controlSize(.large)
                         if let url = info?.trailerURL { IconAction(symbol: "play.rectangle", label: L("info.trailer")) { trailer = TrailerLink(url: url) }.transition(.opacity) }
@@ -261,8 +261,8 @@ struct SeriesScreen: View {
             HStack(spacing: 10) {
                 if let next = upNext {
                     Button { play(next.episode) } label: {
-                        Label(String(format: L(next.resume ? "series.continueEp" : "series.playEp"), next.episode.season, next.episode.number), systemImage: "play.fill")
-                            .font(.headline).frame(maxWidth: .infinity, minHeight: 36)
+                        HStack(spacing: 8) { Image(systemName: "play.fill"); Text(String(format: L(next.resume ? "series.continueEp" : "series.playEp"), next.episode.season, next.episode.number)) }
+                            .font(.headline).foregroundStyle(.white).frame(maxWidth: .infinity, minHeight: 36)
                     }
                     .buttonStyle(.borderedProminent).controlSize(.large)
                 } else { Spacer(minLength: 0) }
@@ -300,7 +300,7 @@ struct SeriesScreen: View {
             }
             .frame(minHeight: 48).contentShape(Rectangle())
         }
-        .accessibilityElement(children: .combine)
+        .buttonStyle(.plain).accessibilityElement(children: .combine)
     }
 
     private func play(_ e: Episode) { Haptics.press(); dismiss(); model.playEpisode(e, of: series) }

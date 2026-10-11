@@ -34,7 +34,7 @@ struct SettingsScreen: View {
                 }
             }
             .sheet(isPresented: $adding) { NavigationStack { SourceFormView(mode: .add, draft: SourceDraft(), presentation: .sheet) } }
-            .task {
+            .task(id: ui.debugSheet) {
                 #if DEBUG
                 switch ui.debugSheet {
                 case "about": path = [.about]

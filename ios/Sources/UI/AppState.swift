@@ -1,6 +1,8 @@
 import SwiftUI
 import IPTVCore
 import IPTVAppKit
+import GRDB
+import UIKit
 
 enum AppSection: String, Hashable, CaseIterable {
     case live, movies, series, library, settings
@@ -75,18 +77,48 @@ enum DebugLaunch {
         for k in ["playlist", "recentSearches", "refreshHours", "hiddenCategoryWords", "appearance"] { d.removeObject(forKey: k) }
     }
 
+    /// Favorites and resume points, so the library, the shelves and the series screen have something to show.
+    @MainActor private static func seed(_ model: PhoneModel) async {
+        guard let a = model.accounts.first, let aid = a.id, model.favoriteKeys.isEmpty else { return }
+        let items = (try? await model.db.dbQueue.read { try Item.filter(Column("accountId") == aid).order(Column("id")).fetchAll($0) }) ?? []
+        func pick(_ t: ItemType, _ idx: [Int]) -> [Item] { let l = items.filter { $0.type == t }; return idx.compactMap { $0 < l.count ? l[$0] : nil } }
+        let live = pick(.live, [0, 2, 6]), movies = pick(.movie, [1, 4, 9, 13]), series = pick(.series, [0, 2, 4])
+        for s in series.prefix(2) {
+            if let eps = try? await SyncService(db: model.db).episodes(account: a, password: "demo", seriesId: s.streamId), eps.count > 2 {
+                let first = s.id == series[0].id
+                try? await model.db.dbQueue.write { d in
+                    try UserData.saveProgress(d, accountId: aid, type: .series, streamId: "ep:\(eps[0].streamId)", position: first ? 2650 : 1800, duration: 2700)
+                    try UserData.saveProgress(d, accountId: aid, type: .series, streamId: "ep:\(eps[1].streamId)", position: first ? 1100 : 20, duration: 2700)
+                }
+            }
+        }
+        try? await model.db.dbQueue.write { d in
+            for (i, m) in movies.prefix(3).enumerated() { try UserData.saveProgress(d, accountId: aid, type: .movie, streamId: m.streamId, position: [1500, 4200, 600][i], duration: 6000) }
+            for i in live + movies.prefix(2) + series.prefix(2) { _ = try UserData.toggleFavorite(d, accountId: aid, type: i.type, streamId: i.streamId) }
+        }
+        model.loadFavorites()
+        await ui_reload(model)
+    }
+    @MainActor private static func ui_reload(_ model: PhoneModel) async { model.scheduleSearch() }
+
     @MainActor static func run(_ model: PhoneModel, _ ui: UIState) async {
         if let s = d.string(forKey: "demoServer"), model.accounts.isEmpty {
             await model.addAccount(Account(name: d.string(forKey: "demoName") ?? "Demo", kind: .xtream, server: s, username: "demo"), password: "demo")
         }
+        if d.bool(forKey: "demoSeed") { await seed(model) }
         if let s = d.string(forKey: "uiSection"), let sec = AppSection(rawValue: s) {
             ui.section = sec
             if let t = sec.itemType { model.tab = t }
         }
         if let c = d.string(forKey: "uiCategory") { model.selectedCategory = c }
         if let s = d.string(forKey: "uiScope"), let sc = SearchScopeChoice(rawValue: s) { model.scope = sc }
-        if let q = d.string(forKey: "uiSearch") { model.searchText = q }
+        if let o = d.string(forKey: "uiOrientation"), let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first {
+            scene.requestGeometryUpdate(.iOS(interfaceOrientations: o == "landscape" ? .landscapeRight : .portrait))
+        }
         try? await Task.sleep(for: .milliseconds(600))
+        if let q = d.string(forKey: "uiSearch") { model.searchText = q }        // after the section change, which clears the search
+        try? await Task.sleep(for: .milliseconds(400))
+        await ui.reloadContinue(model)
         if let s = d.string(forKey: "uiSheet") {
             switch s {
             case "info": ui.openInfo = model.results.first { $0.type == .movie }

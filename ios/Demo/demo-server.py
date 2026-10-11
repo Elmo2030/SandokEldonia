@@ -74,7 +74,6 @@ def logo(name):
     if p.exists(): return p
     h1 = hue_of(name); a, b = hsv(h1, 0.7, 0.9), hsv((h1 + 0.1) % 1, 0.8, 0.55)
     def px(x, y):
-        if (x - 64) ** 2 + (y - 64) ** 2 > 62 ** 2: return (0, 0, 0)  # PNG without alpha: the corners stay dark
         t = (x + y) / 256; c = [u + (v - u) * t for u, v in zip(a, b)]
         if abs((x - 64) - (y - 64) * 0.9) < 9 and abs(y - 64) < 34: c = [255, 255, 255]          # a bold stroke as the mark
         return c
@@ -118,7 +117,7 @@ def series_info(item):
     for s in range(1, seasons + 1):
         eps[str(s)] = []
         for e in range(1, 7 + item["num"] % 4):
-            eid += 1; eps[str(s)].append({"id": str(eid), "episode_num": e, "season": s, "title": f"S{s} E{e} · " + ["The Arrival", "Low Tide", "A Letter", "Crossing", "Quiet Rooms", "What the River Knows", "Open Doors", "Home Again", "Long Light"][(e + s) % 9],
+            eid += 1; eps[str(s)].append({"id": str(eid), "episode_num": e, "season": s, "title": ["The Arrival", "Low Tide", "A Letter", "Crossing", "Quiet Rooms", "What the River Knows", "Open Doors", "Home Again", "Long Light"][(e + s) % 9],
                                           "container_extension": "mp4", "info": {"duration_secs": 2700}})
     return {"info": info("series", item), "episodes": eps}
 

@@ -23,7 +23,7 @@ targets:
     platform: iOS
     sources:
       - path: Sources
-      - { path: Resources, optional: true, excludes: ["Info-extra.plist"] }   # icon, privacy manifest, InfoPlist strings...: the resources work (may be missing; Info-extra.plist is merged by ios-setup.sh)
+      - { path: Resources, optional: true, excludes: ["Info-extra.plist", "Acknowledgements.md"] }   # icon, privacy manifest, InfoPlist strings...: the resources work (may be missing; Info-extra.plist is merged by ios-setup.sh)
       - path: Generated/cacert.pem               # scripts/make-ca-bundle.sh
       - path: ../Sources/IPTVMac/Resources       # the 31 shared Localizable.strings, not copied
         includes: ["*.lproj/Localizable.strings"]
@@ -71,3 +71,20 @@ targets:
         ITSAppUsesNonExemptEncryption: false                    # only standard TLS (URLSession and mbedTLS inside libmpv); confirm in App Store Connect
         NSAppTransportSecurity: { NSAllowsArbitraryLoads: true }   # like the Mac app: IPTV panels are mostly plain http (libmpv's sockets bypass ATS anyway)
         NSLocalNetworkUsageDescription: IPTVMac connects to playlists and streams on your local network.
+  IPTVPhoneTests:                                  # unit tests of the app layer (run in the simulator, hosted by the app: `xcodebuild test`)
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    dependencies:
+      - target: IPTVPhone
+      - { package: IPTVMac, product: IPTVCore }
+      - { package: IPTVMac, product: IPTVAppKit }
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.goelir.IPTVMac.tests
+schemes:
+  IPTVPhone:
+    build: { targets: { IPTVPhone: all } }
+    run: { config: Debug }
+    test: { config: Debug, targets: [IPTVPhoneTests] }

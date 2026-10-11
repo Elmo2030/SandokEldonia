@@ -193,9 +193,9 @@ struct Monogram: View {
     var font: Font = .headline
 
     static func initials(_ name: String) -> String {
-        let words = name.split(whereSeparator: { !$0.isLetter && !$0.isNumber })
+        let words = name.split(whereSeparator: { !$0.isLetter && !$0.isNumber })   // "  " has none
         let letters = words.prefix(2).compactMap(\.first)
-        return (letters.isEmpty ? String(name.prefix(1)) : String(letters)).uppercased()
+        return (letters.isEmpty ? String(name.trimmingCharacters(in: .whitespaces).prefix(1)) : String(letters)).uppercased()
     }
     /// Blue to magenta, the family of the logo; stable across launches (Swift's own hash is not).
     static func hue(_ name: String) -> Double {

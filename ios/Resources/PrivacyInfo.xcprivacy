@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- App privacy manifest. Evidence and what is verified vs assumed: ios/RESOURCES.md, section "PrivacyInfo.xcprivacy".
+     Collects nothing, tracks nothing: no analytics or advertising code, credentials go only to the provider the user typed in.
+     Required-reason API categories (reason codes from Apple's "Describing use of required reason API", read 2026-10-11):
+       FileTimestamp  C617.1  stat/fstat/lstat in libmpv/FFmpeg/mbedTLS/libxml2 and FileManager attributes on files inside the app container
+                      3B52.1  the same on files the user picked in the Files app (playlist, subtitle, backup)
+       SystemBootTime 35F9.1  mach_absolute_time (libmpv clock) and ProcessInfo.systemUptime (seek-preview throttle): elapsed time between events
+       DiskSpace      E174.1  libmpv calls fstatfs to read the filesystem type; no listed reason fits that exactly, E174.1 is the closest (ASSUMED)
+       UserDefaults   CA92.1  settings and last playlist, own domain only -->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>C617.1</string>
+				<string>3B52.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategorySystemBootTime</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>35F9.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>E174.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

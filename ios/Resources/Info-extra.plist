@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Info.plist keys for the iPhone/iPad app that Xcode cannot derive from build settings. Set INFOPLIST_FILE to this file together with
+     GENERATE_INFOPLIST_FILE = YES: Xcode adds CFBundleIdentifier, versions, executable, UIDeviceFamily, the icon keys, etc. around it.
+     Every decision (why these keys, why not UIFileSharingEnabled / LSSupportsOpeningDocumentsInPlace / NSBonjourServices) is in ios/RESOURCES.md. -->
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<!-- Fallback; the per-language value lives in <lang>.lproj/InfoPlist.strings. -->
+	<key>CFBundleDisplayName</key>
+	<string>IPTVMac</string>
+	<!-- One entry per Sources/IPTVMac/Resources/*.lproj (scripts/ios-assets-check.sh keeps the two lists equal). -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>ar</string>
+		<string>bg</string>
+		<string>bn</string>
+		<string>cs</string>
+		<string>de</string>
+		<string>el</string>
+		<string>en</string>
+		<string>es</string>
+		<string>fa</string>
+		<string>fr</string>
+		<string>he</string>
+		<string>hi</string>
+		<string>hu</string>
+		<string>id</string>
+		<string>it</string>
+		<string>ja</string>
+		<string>ko</string>
+		<string>nl</string>
+		<string>pl</string>
+		<string>pt</string>
+		<string>ro</string>
+		<string>ru</string>
+		<string>sq</string>
+		<string>sv</string>
+		<string>th</string>
+		<string>tr</string>
+		<string>uk</string>
+		<string>ur</string>
+		<string>vi</string>
+		<string>zh-Hans</string>
+		<string>zh-Hant</string>
+	</array>
+
+	<!-- Dark launch screen: LaunchBackground colour and LogoMark image come from Assets.xcassets. -->
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+		<key>UIImageName</key>
+		<string>LogoMark</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<false/>
+	</dict>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!-- Audio keeps playing with the screen locked or the app in the background (guideline 2.5.4); Picture in Picture needs it too. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
+
+	<!-- OWNER DECISION before the first upload. Encryption is only standard TLS: URLSession (part of iOS) and mbedTLS inside libmpv. Apple's table puts
+	     "industry standard algorithm, not provided within the Apple operating system" (mbedTLS) under the French encryption declaration, so NO is only right
+	     if you conclude that is exempt; otherwise set this to true and answer in App Store Connect. Details: ios/RESOURCES.md. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<!-- IPTV panels are mostly plain http (as on macOS). Only the Xtream API calls (URLSession) are subject to ATS; libmpv sockets are not. -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<!-- Shown the first time the app connects to a private address (192.168.x.x, 10.x.x.x, *.local ...). English fallback; translations in <lang>.lproj/InfoPlist.strings. -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>IPTVMac connects to playlists and streams on your home network, such as an IPTV box or a media server. It only contacts the addresses you add yourself and never scans your network.</string>
+
+	<!-- "Open in IPTVMac" from Files / Share: playlists and subtitle files. Handled copy-in (no LSSupportsOpeningDocumentsInPlace). -->
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>M3U Playlist</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.m3u-playlist</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Subtitles</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>io.github.goelir.iptvmac.subrip</string>
+				<string>io.github.goelir.iptvmac.ass</string>
+				<string>io.github.goelir.iptvmac.ssa</string>
+				<string>org.w3.webvtt</string>
+			</array>
+		</dict>
+	</array>
+	<!-- .m3u/.m3u8 (public.m3u-playlist) and .vtt (org.w3.webvtt) are system types. SubRip and SubStation have none, so they are imported here. -->
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>io.github.goelir.iptvmac.subrip</string>
+			<key>UTTypeDescription</key>
+			<string>SubRip subtitles</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>srt</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>application/x-subrip</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>io.github.goelir.iptvmac.ass</string>
+			<key>UTTypeDescription</key>
+			<string>Advanced SubStation Alpha subtitles</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ass</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>io.github.goelir.iptvmac.ssa</string>
+			<key>UTTypeDescription</key>
+			<string>SubStation Alpha subtitles</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ssa</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

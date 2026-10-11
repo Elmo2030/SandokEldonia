@@ -1,0 +1,2 @@
+"CFBundleDisplayName" = "IPTVMac";
+"NSLocalNetworkUsageDescription" = "IPTVMac은 IPTV 박스나 미디어 서버처럼 홈 네트워크에 있는 재생목록과 스트림에 연결합니다. 직접 추가한 주소에만 접속하며 네트워크를 검색하지 않습니다.";

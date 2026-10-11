@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Hap një lidhje të dytë me ofruesin tuaj. Çaktivizojeni nëse luajtja ndalon ose ofruesi juaj lejon vetëm një lidhje.";
 "player.seekBar" = "Pozicioni i luajtjes";
 "player.seekValue" = "%@ nga %@";
+"player.live" = "Drejtpërdrejt";
+"player.channelPrev" = "Kanali i mëparshëm";
+"player.channelNext" = "Kanali tjetër";
+"player.scale.fit" = "Përshtat";
+"player.scale.fill" = "Mbush";
+"player.scale.stretch" = "Shtrij";
+"player.subtitleAdjust" = "Rregullo titrat…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Ndriçimi";
+"player.volume" = "Volumi";
+"player.replay" = "Luaj përsëri";
 "settings.clock" = "Shfaq orën në luajtës";
 "settings.seekStep" = "Hapi i kalimit (tastet me shigjeta dhe butonat e kalimit)";
 "settings.barsHide" = "Fshih kontrollet pas";

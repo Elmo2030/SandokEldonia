@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Öppnar en andra anslutning till din leverantör. Stäng av om uppspelningen avbryts eller om din leverantör bara tillåter en anslutning.";
 "player.seekBar" = "Uppspelningsposition";
 "player.seekValue" = "%@ av %@";
+"player.live" = "Live";
+"player.channelPrev" = "Föregående kanal";
+"player.channelNext" = "Nästa kanal";
+"player.scale.fit" = "Anpassa";
+"player.scale.fill" = "Fyll";
+"player.scale.stretch" = "Sträck";
+"player.subtitleAdjust" = "Justera undertexter…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Ljusstyrka";
+"player.volume" = "Volym";
+"player.replay" = "Spela igen";
 "settings.clock" = "Visa klockan i spelaren";
 "settings.seekStep" = "Hoppsteg (piltangenter och hoppknappar)";
 "settings.barsHide" = "Dölj reglagen efter";

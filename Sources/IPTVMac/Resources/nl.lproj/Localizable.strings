@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Opent een tweede verbinding met je aanbieder. Zet dit uit als het afspelen stopt of je aanbieder maar één verbinding toestaat.";
 "player.seekBar" = "Afspeelpositie";
 "player.seekValue" = "%@ van %@";
+"player.live" = "Live";
+"player.channelPrev" = "Vorige zender";
+"player.channelNext" = "Volgende zender";
+"player.scale.fit" = "Passend";
+"player.scale.fill" = "Vullen";
+"player.scale.stretch" = "Uitrekken";
+"player.subtitleAdjust" = "Ondertitels aanpassen…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Helderheid";
+"player.volume" = "Volume";
+"player.replay" = "Opnieuw afspelen";
 "settings.clock" = "Toon de tijd in de speler";
 "settings.seekStep" = "Sprongstap (pijltjestoetsen en sprongknoppen)";
 "settings.barsHide" = "Verberg de bediening na";

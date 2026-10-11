@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Ανοίγει δεύτερη σύνδεση με τον πάροχό σας. Απενεργοποιήστε το αν η αναπαραγωγή σταματά ή αν ο πάροχός σας επιτρέπει μόνο μία σύνδεση.";
 "player.seekBar" = "Θέση αναπαραγωγής";
 "player.seekValue" = "%@ από %@";
+"player.live" = "Ζωντανά";
+"player.channelPrev" = "Προηγούμενο κανάλι";
+"player.channelNext" = "Επόμενο κανάλι";
+"player.scale.fit" = "Προσαρμογή";
+"player.scale.fill" = "Γέμισμα";
+"player.scale.stretch" = "Έκταση";
+"player.subtitleAdjust" = "Ρύθμιση υποτίτλων…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Φωτεινότητα";
+"player.volume" = "Ένταση";
+"player.replay" = "Αναπαραγωγή ξανά";
 "settings.clock" = "Εμφάνιση της ώρας στο πρόγραμμα αναπαραγωγής";
 "settings.seekStep" = "Βήμα μετάβασης (πλήκτρα βελών και κουμπιά μετάβασης)";
 "settings.barsHide" = "Απόκρυψη των χειριστηρίων μετά από";

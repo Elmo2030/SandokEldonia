@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "یک اتصال دوم به ارائه‌دهنده شما باز می‌کند. اگر پخش متوقف شد یا ارائه‌دهنده شما فقط یک اتصال را مجاز می‌داند، آن را خاموش کنید.";
 "player.seekBar" = "موقعیت پخش";
 "player.seekValue" = "%@ از %@";
+"player.live" = "زنده";
+"player.channelPrev" = "کانال قبلی";
+"player.channelNext" = "کانال بعدی";
+"player.scale.fit" = "جا شدن";
+"player.scale.fill" = "پر کردن";
+"player.scale.stretch" = "کشیدن";
+"player.subtitleAdjust" = "تنظیم زیرنویس…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "روشنایی";
+"player.volume" = "میزان صدا";
+"player.replay" = "پخش دوباره";
 "settings.clock" = "نمایش ساعت در پخش‌کننده";
 "settings.seekStep" = "گام پرش (کلیدهای جهت‌نما و دکمه‌های پرش)";
 "settings.barsHide" = "پنهان کردن کنترل‌ها پس از";

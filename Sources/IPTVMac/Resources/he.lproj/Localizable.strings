@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "פותח חיבור שני אל הספק שלך. כבה אם ההפעלה נעצרת או אם הספק שלך מאפשר חיבור אחד בלבד.";
 "player.seekBar" = "מיקום ההפעלה";
 "player.seekValue" = "%@ מתוך %@";
+"player.live" = "שידור חי";
+"player.channelPrev" = "ערוץ קודם";
+"player.channelNext" = "ערוץ הבא";
+"player.scale.fit" = "התאמה";
+"player.scale.fill" = "מילוי";
+"player.scale.stretch" = "מתיחה";
+"player.subtitleAdjust" = "התאמת כתוביות…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "בהירות";
+"player.volume" = "עוצמת שמע";
+"player.replay" = "נגן שוב";
 "settings.clock" = "הצג את השעה בנגן";
 "settings.seekStep" = "גודל הדילוג (מקשי החצים וכפתורי הדילוג)";
 "settings.barsHide" = "הסתר את הבקרים אחרי";

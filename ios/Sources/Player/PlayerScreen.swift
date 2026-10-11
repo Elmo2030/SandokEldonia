@@ -142,7 +142,11 @@ struct PlayerScreen: View {
                         if !player.isLive { SeekRow(player: player, containerWidth: width).padding(.horizontal, 12) }
                     }
                     .foregroundStyle(.white)
-                    .background { LinearGradient(colors: [.black.opacity(0.5), .clear, .black.opacity(0.55)], startPoint: .top, endPoint: .bottom).allowsHitTesting(false) }
+                    .background {
+                        LinearGradient(stops: [.init(color: .black.opacity(0.55), location: 0), .init(color: .clear, location: 0.38),
+                                               .init(color: .clear, location: 0.6), .init(color: .black.opacity(0.75), location: 1)],
+                                       startPoint: .top, endPoint: .bottom).allowsHitTesting(false)
+                    }
                     .offset(y: visible || reduceMotion ? 0 : 6)
                     .opacity(visible ? 1 : 0).allowsHitTesting(visible)
                     TransportCluster(player: player, compact: true).opacity(visible ? 1 : 0).allowsHitTesting(visible)

@@ -68,10 +68,15 @@ final class PhonePlayer {
     var error: String? { core.failed ? [L("player.error"), core.failure].compactMap { $0 }.joined(separator: ": ") : nil }
 
     // MARK: preferences (the same defaults as the Mac player)
-    var seekStep: Int { UserDefaults.standard.object(forKey: "seekStep") as? Int ?? 10 }
+    var seekStep: Int { Self.number("seekStep", 10).map(Int.init) ?? 10 }
     var networkPreviews: Bool { UserDefaults.standard.bool(forKey: "seekPreview") }
     var autoNextEpisode: Bool { UserDefaults.standard.object(forKey: "autoNextEpisode") as? Bool ?? true }
-    private var barsHide: Double { UserDefaults.standard.object(forKey: "barsHideSeconds") as? Double ?? 3 }
+    private var barsHide: Double { Self.number("barsHideSeconds", 3) ?? 3 }
+
+    /// A stored number (the Mac settings store Ints and Doubles; a launch argument arrives as text, which `double(forKey:)` also reads).
+    private static func number(_ key: String, _ fallback: Double) -> Double? {
+        UserDefaults.standard.object(forKey: key) == nil ? fallback : UserDefaults.standard.double(forKey: key)
+    }
 
     init(request: PlayRequest) {
         self.request = request
@@ -79,9 +84,9 @@ final class PhonePlayer {
         core = PlaybackController(subLang: d.string(forKey: "prefSubLang"), audioLang: d.string(forKey: "prefAudioLang"))
         view = MPVVideoView(player: core.mpv)
         videoScale = VideoScale(rawValue: d.string(forKey: "videoScale") ?? "") ?? .fit
-        subScale = d.object(forKey: "subScale") as? Double ?? 1
-        subDelay = d.object(forKey: "subDelay") as? Double ?? 0
-        controls = ControlsVisibility(hideAfter: d.object(forKey: "barsHideSeconds") as? Double ?? 3)
+        subScale = Self.number("subScale", 1) ?? 1
+        subDelay = Self.number("subDelay", 0) ?? 0
+        controls = ControlsVisibility(hideAfter: Self.number("barsHideSeconds", 3) ?? 3)
         core.mpv.apply(videoScale)
         core.mpv.apply(BufferSize(rawValue: d.string(forKey: "bufferSize") ?? "") ?? .normal)
         applySubtitleStyle()

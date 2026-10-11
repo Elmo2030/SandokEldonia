@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "آپ کے فراہم کنندہ سے دوسرا کنکشن کھولتا ہے۔ اگر پلے بیک رک جائے یا آپ کا فراہم کنندہ صرف ایک کنکشن کی اجازت دیتا ہو تو اسے بند کر دیں۔";
 "player.seekBar" = "پلے بیک کی پوزیشن";
 "player.seekValue" = "%@ / %@";
+"player.live" = "براہِ راست";
+"player.channelPrev" = "پچھلا چینل";
+"player.channelNext" = "اگلا چینل";
+"player.scale.fit" = "فٹ";
+"player.scale.fill" = "بھریں";
+"player.scale.stretch" = "کھینچیں";
+"player.subtitleAdjust" = "سب ٹائٹلز ایڈجسٹ کریں…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "چمک";
+"player.volume" = "آواز";
+"player.replay" = "دوبارہ چلائیں";
 "settings.clock" = "پلیئر میں وقت دکھائیں";
 "settings.seekStep" = "چھلانگ کا وقفہ (ایرو کیز اور اسکپ بٹن)";
 "settings.barsHide" = "کنٹرولز چھپائیں اتنی دیر بعد";

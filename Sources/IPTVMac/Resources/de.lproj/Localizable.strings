@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Öffnet eine zweite Verbindung zu deinem Anbieter. Schalte die Option aus, wenn die Wiedergabe stoppt oder dein Anbieter nur eine Verbindung erlaubt.";
 "player.seekBar" = "Wiedergabeposition";
 "player.seekValue" = "%@ von %@";
+"player.live" = "Live";
+"player.channelPrev" = "Vorheriger Sender";
+"player.channelNext" = "Nächster Sender";
+"player.scale.fit" = "Einpassen";
+"player.scale.fill" = "Füllen";
+"player.scale.stretch" = "Strecken";
+"player.subtitleAdjust" = "Untertitel anpassen…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Helligkeit";
+"player.volume" = "Lautstärke";
+"player.replay" = "Erneut abspielen";
 "settings.clock" = "Uhrzeit im Player anzeigen";
 "settings.seekStep" = "Sprungweite (Pfeiltasten und Sprungtasten)";
 "settings.barsHide" = "Steuerelemente ausblenden nach";

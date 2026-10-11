@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Sağlayıcınıza ikinci bir bağlantı açar. Oynatma duruyorsa veya sağlayıcınız yalnızca tek bağlantıya izin veriyorsa kapatın.";
 "player.seekBar" = "Oynatma konumu";
 "player.seekValue" = "%@ / %@";
+"player.live" = "Canlı";
+"player.channelPrev" = "Önceki kanal";
+"player.channelNext" = "Sonraki kanal";
+"player.scale.fit" = "Sığdır";
+"player.scale.fill" = "Doldur";
+"player.scale.stretch" = "Uzat";
+"player.subtitleAdjust" = "Altyazıları ayarla…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Parlaklık";
+"player.volume" = "Ses düzeyi";
+"player.replay" = "Yeniden oynat";
 "settings.clock" = "Oynatıcıda saati göster";
 "settings.seekStep" = "Atlama adımı (ok tuşları ve atlama düğmeleri)";
 "settings.barsHide" = "Denetimleri şu süre sonra gizle";

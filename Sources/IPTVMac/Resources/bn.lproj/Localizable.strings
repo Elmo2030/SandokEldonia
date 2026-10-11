@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "আপনার প্রদানকারীর সঙ্গে দ্বিতীয় একটি সংযোগ খোলে। প্লেব্যাক বন্ধ হয়ে গেলে বা আপনার প্রদানকারী শুধু একটি সংযোগের অনুমতি দিলে এটি বন্ধ করুন।";
 "player.seekBar" = "প্লেব্যাকের অবস্থান";
 "player.seekValue" = "%@ / %@";
+"player.live" = "লাইভ";
+"player.channelPrev" = "আগের চ্যানেল";
+"player.channelNext" = "পরের চ্যানেল";
+"player.scale.fit" = "ফিট";
+"player.scale.fill" = "ভরাট";
+"player.scale.stretch" = "প্রসারিত";
+"player.subtitleAdjust" = "সাবটাইটেল সামঞ্জস্য…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "উজ্জ্বলতা";
+"player.volume" = "ভলিউম";
+"player.replay" = "আবার চালান";
 "settings.clock" = "প্লেয়ারে সময় দেখান";
 "settings.seekStep" = "স্কিপের ধাপ (অ্যারো কী ও স্কিপ বোতাম)";
 "settings.barsHide" = "এত সময় পরে কন্ট্রোল লুকান";

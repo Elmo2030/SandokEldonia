@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Deschide o a doua conexiune către furnizorul tău. Dezactivează opțiunea dacă redarea se oprește sau dacă furnizorul tău permite o singură conexiune.";
 "player.seekBar" = "Poziția de redare";
 "player.seekValue" = "%@ din %@";
+"player.live" = "Live";
+"player.channelPrev" = "Canalul anterior";
+"player.channelNext" = "Canalul următor";
+"player.scale.fit" = "Potrivire";
+"player.scale.fill" = "Umplere";
+"player.scale.stretch" = "Întindere";
+"player.subtitleAdjust" = "Reglează subtitrările…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Luminozitate";
+"player.volume" = "Volum";
+"player.replay" = "Redă din nou";
 "settings.clock" = "Afișează ora în player";
 "settings.seekStep" = "Pasul de salt (tastele săgeți și butoanele de salt)";
 "settings.barsHide" = "Ascunde controalele după";

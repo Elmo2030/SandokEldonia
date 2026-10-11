@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "会向服务商打开第二个连接。如果播放中断，或服务商只允许一个连接，请关闭此选项。";
 "player.seekBar" = "播放位置";
 "player.seekValue" = "%@ / %@";
+"player.live" = "直播";
+"player.channelPrev" = "上一个频道";
+"player.channelNext" = "下一个频道";
+"player.scale.fit" = "适应";
+"player.scale.fill" = "填充";
+"player.scale.stretch" = "拉伸";
+"player.subtitleAdjust" = "调整字幕…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "亮度";
+"player.volume" = "音量";
+"player.replay" = "重新播放";
 "settings.clock" = "在播放器中显示时间";
 "settings.seekStep" = "跳转步长（方向键和跳转按钮）";
 "settings.barsHide" = "无操作后隐藏控制栏";

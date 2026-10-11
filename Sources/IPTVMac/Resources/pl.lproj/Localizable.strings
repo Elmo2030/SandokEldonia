@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Otwiera drugie połączenie z dostawcą. Wyłącz, jeśli odtwarzanie się zatrzymuje lub dostawca zezwala tylko na jedno połączenie.";
 "player.seekBar" = "Pozycja odtwarzania";
 "player.seekValue" = "%@ z %@";
+"player.live" = "Na żywo";
+"player.channelPrev" = "Poprzedni kanał";
+"player.channelNext" = "Następny kanał";
+"player.scale.fit" = "Dopasuj";
+"player.scale.fill" = "Wypełnij";
+"player.scale.stretch" = "Rozciągnij";
+"player.subtitleAdjust" = "Dostosuj napisy…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Jasność";
+"player.volume" = "Głośność";
+"player.replay" = "Odtwórz ponownie";
 "settings.clock" = "Pokazuj czas w odtwarzaczu";
 "settings.seekStep" = "Krok przewijania (klawisze strzałek i przyciski przewijania)";
 "settings.barsHide" = "Ukrywaj elementy sterujące po";

@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Második kapcsolatot nyit a szolgáltatóhoz. Kapcsolja ki, ha a lejátszás megáll, vagy ha a szolgáltatója csak egy kapcsolatot engedélyez.";
 "player.seekBar" = "Lejátszási pozíció";
 "player.seekValue" = "%@ / %@";
+"player.live" = "Élő";
+"player.channelPrev" = "Előző csatorna";
+"player.channelNext" = "Következő csatorna";
+"player.scale.fit" = "Illesztés";
+"player.scale.fill" = "Kitöltés";
+"player.scale.stretch" = "Nyújtás";
+"player.subtitleAdjust" = "Feliratok beállítása…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Fényerő";
+"player.volume" = "Hangerő";
+"player.replay" = "Lejátszás újra";
 "settings.clock" = "Idő megjelenítése a lejátszóban";
 "settings.seekStep" = "Ugrás lépésköze (nyílbillentyűk és ugrógombok)";
 "settings.barsHide" = "Vezérlők elrejtése ennyi idő után";

@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "プロバイダへの2つ目の接続を開きます。再生が止まる場合や、プロバイダが接続を1つしか許可していない場合は、オフにしてください。";
 "player.seekBar" = "再生位置";
 "player.seekValue" = "%@ / %@";
+"player.live" = "ライブ";
+"player.channelPrev" = "前のチャンネル";
+"player.channelNext" = "次のチャンネル";
+"player.scale.fit" = "フィット";
+"player.scale.fill" = "塗りつぶし";
+"player.scale.stretch" = "引き伸ばし";
+"player.subtitleAdjust" = "字幕を調整…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "明るさ";
+"player.volume" = "音量";
+"player.replay" = "もう一度再生";
 "settings.clock" = "プレーヤーに時刻を表示";
 "settings.seekStep" = "スキップ間隔（矢印キーとスキップボタン）";
 "settings.barsHide" = "コントロールを自動的に隠すまでの時間";

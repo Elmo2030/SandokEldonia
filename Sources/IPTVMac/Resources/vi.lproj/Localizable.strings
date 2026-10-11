@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Mở kết nối thứ hai tới nhà cung cấp của bạn. Hãy tắt nếu phát bị dừng hoặc nhà cung cấp của bạn chỉ cho phép một kết nối.";
 "player.seekBar" = "Vị trí phát";
 "player.seekValue" = "%@ trên %@";
+"player.live" = "Trực tiếp";
+"player.channelPrev" = "Kênh trước";
+"player.channelNext" = "Kênh tiếp theo";
+"player.scale.fit" = "Vừa khít";
+"player.scale.fill" = "Lấp đầy";
+"player.scale.stretch" = "Kéo giãn";
+"player.subtitleAdjust" = "Điều chỉnh phụ đề…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Độ sáng";
+"player.volume" = "Âm lượng";
+"player.replay" = "Phát lại";
 "settings.clock" = "Hiển thị giờ trong trình phát";
 "settings.seekStep" = "Bước tua (phím mũi tên và nút tua)";
 "settings.barsHide" = "Ẩn các nút điều khiển sau";

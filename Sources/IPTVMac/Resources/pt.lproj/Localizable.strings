@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Abre uma segunda conexão com o seu provedor. Desative se a reprodução parar ou se o seu provedor permitir apenas uma conexão.";
 "player.seekBar" = "Posição de reprodução";
 "player.seekValue" = "%@ de %@";
+"player.live" = "Ao vivo";
+"player.channelPrev" = "Canal anterior";
+"player.channelNext" = "Próximo canal";
+"player.scale.fit" = "Ajustar";
+"player.scale.fill" = "Preencher";
+"player.scale.stretch" = "Esticar";
+"player.subtitleAdjust" = "Ajustar legendas…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Brilho";
+"player.volume" = "Volume";
+"player.replay" = "Reproduzir novamente";
 "settings.clock" = "Mostrar a hora no player";
 "settings.seekStep" = "Salto (teclas de seta e botões de salto)";
 "settings.barsHide" = "Ocultar os controles após";

@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "제공업체에 두 번째 연결을 엽니다. 재생이 멈추거나 제공업체가 연결을 하나만 허용하면 끄세요.";
 "player.seekBar" = "재생 위치";
 "player.seekValue" = "%@ / %@";
+"player.live" = "라이브";
+"player.channelPrev" = "이전 채널";
+"player.channelNext" = "다음 채널";
+"player.scale.fit" = "맞춤";
+"player.scale.fill" = "채우기";
+"player.scale.stretch" = "늘이기";
+"player.subtitleAdjust" = "자막 조정…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "밝기";
+"player.volume" = "볼륨";
+"player.replay" = "다시 재생";
 "settings.clock" = "플레이어에 시간 표시";
 "settings.seekStep" = "건너뛰기 간격(방향키 및 건너뛰기 버튼)";
 "settings.barsHide" = "컨트롤 자동 숨김 시간";

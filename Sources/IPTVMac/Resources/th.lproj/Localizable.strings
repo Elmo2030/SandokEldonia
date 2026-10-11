@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "เปิดการเชื่อมต่อที่สองไปยังผู้ให้บริการของคุณ ปิดตัวเลือกนี้หากการเล่นหยุด หรือผู้ให้บริการของคุณอนุญาตเพียงหนึ่งการเชื่อมต่อ";
 "player.seekBar" = "ตำแหน่งการเล่น";
 "player.seekValue" = "%@ จาก %@";
+"player.live" = "สด";
+"player.channelPrev" = "ช่องก่อนหน้า";
+"player.channelNext" = "ช่องถัดไป";
+"player.scale.fit" = "พอดี";
+"player.scale.fill" = "เต็ม";
+"player.scale.stretch" = "ยืด";
+"player.subtitleAdjust" = "ปรับคำบรรยาย…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "ความสว่าง";
+"player.volume" = "ระดับเสียง";
+"player.replay" = "เล่นอีกครั้ง";
 "settings.clock" = "แสดงเวลาในเครื่องเล่น";
 "settings.seekStep" = "ระยะข้าม (ปุ่มลูกศรและปุ่มข้าม)";
 "settings.barsHide" = "ซ่อนตัวควบคุมหลังจาก";

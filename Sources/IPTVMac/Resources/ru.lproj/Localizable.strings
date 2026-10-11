@@ -90,6 +90,17 @@
 "settings.seekPreviewNote" = "Открывает второе подключение к вашему провайдеру. Отключите, если воспроизведение останавливается или провайдер разрешает только одно подключение.";
 "player.seekBar" = "Позиция воспроизведения";
 "player.seekValue" = "%@ из %@";
+"player.live" = "В эфире";
+"player.channelPrev" = "Предыдущий канал";
+"player.channelNext" = "Следующий канал";
+"player.scale.fit" = "Вписать";
+"player.scale.fill" = "Заполнить";
+"player.scale.stretch" = "Растянуть";
+"player.subtitleAdjust" = "Настроить субтитры…";
+"player.airplay" = "AirPlay";
+"player.brightness" = "Яркость";
+"player.volume" = "Громкость";
+"player.replay" = "Повторить";
 "settings.clock" = "Показывать время в плеере";
 "settings.seekStep" = "Шаг перемотки (клавиши со стрелками и кнопки перемотки)";
 "settings.barsHide" = "Скрывать элементы управления через";

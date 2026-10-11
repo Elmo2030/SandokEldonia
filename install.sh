@@ -48,7 +48,7 @@ main() {
 
   local WORK MNT
   WORK="$(mktemp -d)"; MNT="$WORK/mnt"
-  trap 'hdiutil detach "'"$MNT"'" -quiet 2>/dev/null || true; rm -rf "'"$WORK"'"' EXIT
+  trap 'hdiutil detach "'"$MNT"'" -quiet 2>/dev/null || hdiutil detach -force "'"$MNT"'" -quiet 2>/dev/null || true; rm -rf "'"$WORK"'"' EXIT
 
   say "Looking up the latest release..."
   local JSON URL SHA SIG TAG

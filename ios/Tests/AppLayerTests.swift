@@ -51,4 +51,19 @@ final class AppLayerTests: XCTestCase {
             XCTAssertNotEqual(L(k), k, "\(k) is missing from Localizable.strings")
         }
     }
+
+    /// A provider's 2000x3000 poster must not stay that big in memory: it is shrunk to what the grid needs, once, and then served from memory.
+    func testImageStoreShrinksAndCaches() async throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("poster-\(UUID().uuidString).png")
+        let big = UIGraphicsImageRenderer(size: CGSize(width: 2000, height: 3000), format: { let f = UIGraphicsImageRendererFormat(); f.scale = 1; return f }())
+            .pngData { ctx in UIColor.purple.setFill(); ctx.fill(CGRect(x: 0, y: 0, width: 2000, height: 3000)) }
+        try big.write(to: url)
+        defer { try? FileManager.default.removeItem(at: url) }
+        XCTAssertNil(ImageStore.shared.cached(url, maxPixel: 300))
+        let img = await ImageStore.shared.image(url, maxPixel: 300)
+        let px = try XCTUnwrap(img).size.height * img!.scale
+        XCTAssertLessThanOrEqual(px, 300)
+        XCTAssertNotNil(ImageStore.shared.cached(url, maxPixel: 300))               // the grid's next scroll past it costs nothing
+        XCTAssertNil(ImageStore.shared.cached(url, maxPixel: 900))                  // another size is another entry
+    }
 }

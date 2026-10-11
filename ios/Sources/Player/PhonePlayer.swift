@@ -35,6 +35,7 @@ final class PhonePlayer {
     var toast: (symbol: String?, text: String, id: Int)?
     var dragScrub: (time: Double, delta: Double)?
     var boosting = false                   // long press: 2x while held
+    private(set) var pipActive = false     // the Picture in Picture window is up
     private(set) var episodes: [Episode] = []
     private(set) var canZapNext = false
     private(set) var canZapPrevious = false
@@ -98,6 +99,9 @@ final class PhonePlayer {
             self.core.play(self.request.url, isLive: self.request.isLive, start: self.request.start)
         }
         pushRemoteCommands()
+        view.pipCommands = (setPlaying: { [weak self] on in self?.setPlaying(on) }, skip: { [weak self] s in self?.skip(by: s) },
+                            restore: { [weak self] in self?.pipActive = false })
+        view.onPiPChange = { [weak self] on in self?.pipActive = on }
         observers = [
             NotificationCenter.default.addObserver(forName: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
                 MainActor.assumeIsolated { self?.voiceOver = UIAccessibility.isVoiceOverRunning }
@@ -144,6 +148,7 @@ final class PhonePlayer {
     func close(restoringBrightness: Bool = true) {
         guard !closed else { return }
         closed = true
+        view.stopPiP()
         core.close()            // saves the position
         timer?.invalidate(); timer = nil
         queueTask?.cancel(); hudTasks.values.forEach { $0.cancel() }
@@ -257,7 +262,12 @@ final class PhonePlayer {
         controls.tick(now: Date(), holding: holdControls)
         system.setScreenAwake(!paused)
         system.updateNowPlaying(nowPlayingState)
+        if view.pipMode == "pip" { view.syncPiP(position: position, duration: duration, paused: paused, speed: speed, live: isLive) }
     }
+
+    /// The video moves into the system's floating window (the app can go away; the sound and the window go on).
+    func startPiP() { if view.startPiP() { touchControls() } }
+    var canPiP: Bool { MPVVideoView.pipSupported }
 
     private var nowPlayingState: NowPlayingState {
         NowPlayingState(title: request.title, subtitle: liveProgramme, isLive: request.isLive, position: position, duration: duration,

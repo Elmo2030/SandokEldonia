@@ -24,6 +24,15 @@ public final class MPVVideoView: UIView {
     private var bufferSize = CGSize.zero
     private var gate = BackgroundVideoGate()   // the tested state machine behind the two notifications below
     private var observers: [NSObjectProtocol] = []
+    /// Which render context mpv has: OpenGL ES (on screen), software (Picture in Picture window), or none (backgrounded without PiP).
+    private enum Output { case gl, pip, off }
+    private var output = Output.gl
+    private var pipOutput: MPVPiPOutput?
+    /// Picture in Picture started (true) or ended (false). Ending in the background pauses (the window's close button).
+    public var onPiPChange: ((Bool) -> Void)?
+    public var pipCommands: (setPlaying: (Bool) -> Void, skip: (Double) -> Void, restore: () -> Void) = ({ _ in }, { _ in }, {}) {
+        didSet { pipOutput?.commands = .init(setPlaying: pipCommands.setPlaying, skip: pipCommands.skip, restore: pipCommands.restore) }
+    }
     /// Test seam kept for parity with the macOS view: centre pixel (r, g, b) of every frame right after mpv draws it.
     public var onFrame: ((UInt8, UInt8, UInt8) -> Void)?
 
@@ -39,6 +48,34 @@ public final class MPVVideoView: UIView {
                                                       kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8]
         EAGLContext.setCurrent(gl)
 
+        guard makeGLContext() else { return }
+        player.onTeardown = { [weak self] in self?.shutdown() }
+
+        // An app that issues OpenGL ES commands in the background is terminated by iOS. The video track is switched off
+        // while backgrounded (audio keeps playing, UIBackgroundModes audio) and back on in the foreground (BackgroundVideoGate).
+        gate = BackgroundVideoGate(inBackground: UIApplication.shared.applicationState == .background)
+        let nc = NotificationCenter.default
+        observers = [
+            nc.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
+                guard let self, self.gate.didEnterBackground() == .finishGLThenVideoOff, self.output == .gl else { return }   // PiP keeps drawing without GLES
+                EAGLContext.setCurrent(self.gl); glFinish()
+                self.player.setProperty("vid", "no")
+            },
+            nc.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
+                guard let self, self.gate.willEnterForeground() == .videoAuto else { return }
+                switch self.output {
+                case .pip: break                                   // the window is still up; it switches back when it ends
+                case .off: self.switchTo(.gl)
+                case .gl: self.player.setProperty("vid", "auto"); self.setNeedsLayout()
+                }
+            },
+        ]
+    }
+
+
+    /// Creates mpv's OpenGL render context on this view's EAGL context (the software one must be gone).
+    private func makeGLContext() -> Bool {
+        EAGLContext.setCurrent(gl)
         let ok: Bool = "opengl".withCString { api in
             var initParams = mpv_opengl_init_params(get_proc_address: getProcAddress, get_proc_address_ctx: nil)
             return withUnsafeMutablePointer(to: &initParams) { ip in
@@ -50,36 +87,33 @@ public final class MPVVideoView: UIView {
                 return mpv_render_context_create(&render, player.handle, &params) >= 0
             }
         }
-        guard ok, let render else { return }
+        guard ok, let render else { return false }
         mpv_render_context_set_update_callback(render, { ctx in
             let v = Unmanaged<MPVVideoView>.fromOpaque(ctx!).takeUnretainedValue()
             DispatchQueue.main.async { v.drawFrame() }
         }, Unmanaged.passUnretained(self).toOpaque())
-        player.onTeardown = { [weak self] in self?.shutdown() }
+        return true
+    }
 
-        // An app that issues OpenGL ES commands in the background is terminated by iOS. The video track is switched off
-        // while backgrounded (audio keeps playing, UIBackgroundModes audio) and back on in the foreground (BackgroundVideoGate).
-        gate = BackgroundVideoGate(inBackground: UIApplication.shared.applicationState == .background)
-        let nc = NotificationCenter.default
-        observers = [
-            nc.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
-                guard let self, self.gate.didEnterBackground() == .finishGLThenVideoOff else { return }
-                EAGLContext.setCurrent(self.gl); glFinish()
-                self.player.setProperty("vid", "no")
-            },
-            nc.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
-                guard let self, self.gate.willEnterForeground() == .videoAuto else { return }
-                self.player.setProperty("vid", "auto")
-                self.setNeedsLayout()
-            },
-        ]
+    private func freeGLContext() {
+        guard let r = render else { return }
+        render = nil
+        EAGLContext.setCurrent(gl)
+        glFinish()
+        mpv_render_context_set_update_callback(r, nil, nil)
+        mpv_render_context_free(r)
+        if fbo != 0 { glDeleteFramebuffers(1, &fbo); glDeleteRenderbuffers(1, &rbo); fbo = 0; rbo = 0; bufferSize = .zero }
     }
 
     required init?(coder: NSCoder) { fatalError() }
 
     deinit { observers.forEach(NotificationCenter.default.removeObserver) }
 
-    public override func layoutSubviews() { super.layoutSubviews(); drawFrame() }
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        pipOutput?.layer.frame = bounds
+        drawFrame()
+    }
 
     /// (Re)creates the renderbuffer-backed framebuffer when the layer size changes.
     private func ensureBuffers() {
@@ -94,7 +128,7 @@ public final class MPVVideoView: UIView {
     }
 
     private func drawFrame() {
-        guard let render, gate.mayDraw, window != nil || superview != nil else { return }
+        guard let render, output == .gl, gate.mayDraw, window != nil || superview != nil else { return }
         EAGLContext.setCurrent(gl)
         ensureBuffers()
         guard bufferSize.width > 0 else { return }
@@ -121,12 +155,91 @@ public final class MPVVideoView: UIView {
     }
 
     public func shutdown() {
-        guard let r = render else { return }
-        render = nil
-        EAGLContext.setCurrent(gl)
-        mpv_render_context_set_update_callback(r, nil, nil)
-        mpv_render_context_free(r)
-        if fbo != 0 { glDeleteFramebuffers(1, &fbo); glDeleteRenderbuffers(1, &rbo); fbo = 0; rbo = 0 }
+        pipOutput?.stop()
+        pipOutput?.onActiveChange = nil
+        pipOutput?.stopRendering()
+        pipOutput?.layer.removeFromSuperlayer()
+        pipOutput = nil
+        freeGLContext()
+    }
+
+    // MARK: Picture in Picture
+
+    public static var pipSupported: Bool { MPVPiPOutput.supported }
+    public var pipActive: Bool { pipOutput?.active ?? false }
+    /// Frames the software renderer has delivered to the PiP layer (debug status, tests).
+    public var pipFrames: Int { pipOutput?.frames ?? 0 }
+    public var pipAutoFlag: Bool? { pipOutput?.autoStartFlag }
+    public var pipMode: String { switch output { case .gl: "gl"; case .pip: "pip"; case .off: "off" } }
+
+    /// Switches mpv to the software renderer and opens the PiP window over the app. False when the device cannot do it.
+    @discardableResult
+    public func startPiP() -> Bool {
+        guard MPVPiPOutput.supported, UIApplication.shared.applicationState == .active else { return false }
+        if pipOutput == nil {
+            let o = MPVPiPOutput(player: player)
+            o.commands = .init(setPlaying: pipCommands.setPlaying, skip: pipCommands.skip, restore: pipCommands.restore)
+            o.layer.frame = bounds
+            o.onActiveChange = { [weak self] active, restored in self?.pipChanged(active, restored: restored) }
+            pipOutput = o
+        }
+        guard let o = pipOutput else { return false }
+        layer.addSublayer(o.layer)                               // only on screen while PiP mode is on: otherwise iOS may start it by itself
+        guard switchTo(.pip) else { o.layer.removeFromSuperlayer(); return false }
+        o.start()
+        return true
+    }
+
+    public func stopPiP() { pipOutput?.stop() }
+
+    /// Position, rate and length for the PiP window's controls; the video size for its frames.
+    public func syncPiP(position: Double, duration: Double, paused: Bool, speed: Double, live: Bool) {
+        guard let o = pipOutput else { return }
+        o.videoSize = (player.double("video-params/dw") ?? 0, player.double("video-params/dh") ?? 0)
+        o.sync(position: position, duration: duration, paused: paused, speed: speed, live: live)
+    }
+
+    private func pipChanged(_ active: Bool, restored: Bool) {
+        if !active {
+            pipOutput?.layer.removeFromSuperlayer()
+            if UIApplication.shared.applicationState == .background {
+                switchTo(.off)                                     // closed with its X while the app is away: no video, and stop the sound too
+                if !restored { pipCommands.setPlaying(false) }
+            } else {
+                switchTo(.gl)
+            }
+        }
+        onPiPChange?(active)
+    }
+
+    /// Swaps mpv's render context. The video track goes off while no context exists, then back on with the new one;
+    /// the software path needs frames in system memory (`videotoolbox-copy`) and `sw-fast` to keep up.
+    @discardableResult
+    private func switchTo(_ target: Output) -> Bool {
+        guard target != output else { return true }
+        player.setProperty("vid", "no")
+        switch output {
+        case .gl: freeGLContext()
+        case .pip: pipOutput?.stopRendering()
+        case .off: break
+        }
+        var ok = true
+        switch target {
+        case .gl:
+            player.setProperty("hwdec", "videotoolbox"); player.setProperty("sw-fast", "no")
+            ok = makeGLContext()
+            if ok { player.setProperty("vid", "auto"); setNeedsLayout() }
+        case .pip:
+            player.setProperty("hwdec", "videotoolbox-copy"); player.setProperty("sw-fast", "yes")
+            ok = pipOutput?.startRendering() ?? false
+            if ok { player.setProperty("vid", "auto") }
+        case .off: break
+        }
+        if ok { output = target } else {                         // could not set the new one up: go back to the picture that worked
+            output = .off
+            if target != .gl { switchTo(.gl) }
+        }
+        return ok
     }
 }
 #endif

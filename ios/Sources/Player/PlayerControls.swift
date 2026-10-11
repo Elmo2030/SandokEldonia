@@ -313,6 +313,9 @@ struct TitleBar: View {
             .shadow(color: .black.opacity(0.4), radius: 4, y: 1)
             Spacer(minLength: 8)
             if let item = player.request.item { FavoriteButton(item: item) }
+            if player.canPiP {
+                PlayerButton(symbol: "pip.enter", label: L("player.pip")) { player.startPiP() }.accessibilityIdentifier("player.pip")
+            }
             RoutePicker().frame(width: 44, height: 44)
         }
         .foregroundStyle(.white)

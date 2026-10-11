@@ -20,6 +20,7 @@ import IPTVPlayer
 ///   -playerSheet speed|subtitles  open that sheet 2.5 s after the player appears
 ///   -playerFile <path>            the movie for player-local (default /tmp/iptvplayer-media/vod.mkv)
 ///   -statusFile <path>            write a JSON status (position, frames drawn, app state, lock screen info...) every 0.5 s
+///   -playerPiP YES                start Picture in Picture 1.5 s after the player appears (commandFile: pip-start | pip-stop)
 ///   -commandFile <path>           each line appended to this file is run once: interrupt-began | interrupt-ended | route-unplugged
 ///                                 (posts the real AVAudioSession notifications, so the app's own handlers answer them)
 @MainActor enum PlayerDebug {
@@ -67,6 +68,7 @@ import IPTVPlayer
         case "toast": p.toast = ("arrow.up.left.and.arrow.down.right", p.scaleName(.fill), 1)
         default: break
         }
+        if d.bool(forKey: "playerPiP") { p.startPiP() }
         if d.object(forKey: "playerSpeed") != nil { p.setSpeed(d.double(forKey: "playerSpeed")) }
         if d.object(forKey: "playerSeek") != nil { p.seek(to: d.double(forKey: "playerSeek")) }
         if let path = d.string(forKey: "statusFile") { startStatus(model, path) }
@@ -105,6 +107,8 @@ import IPTVPlayer
                 NotificationCenter.default.post(name: AVAudioSession.routeChangeNotification, object: AVAudioSession.sharedInstance(),
                                                 userInfo: [AVAudioSessionRouteChangeReasonKey: AVAudioSession.RouteChangeReason.oldDeviceUnavailable.rawValue])
             case "play": model?.player?.setPlaying(true)
+            case "pip-start": model?.player?.startPiP()
+            case "pip-stop": model?.player?.view.stopPiP()
             default: break
             }
         }
@@ -128,6 +132,7 @@ import IPTVPlayer
                     s["tracks"] = p.tracks.count; s["controlsVisible"] = p.controlsVisible; s["error"] = p.error ?? ""
                     s["scale"] = p.videoScale.rawValue; s["title"] = p.request.title; s["hwdec"] = m.string("hwdec-current") ?? "?"
                     s["audioOut"] = m.string("current-ao") ?? "?"; s["aoDevices"] = m.string("audio-device-list") ?? "?"; s["audioCodec"] = m.string("audio-codec-name") ?? "?"; s["aoOpt"] = m.string("ao") ?? "?"; s["audioParams"] = m.string("audio-params/samplerate") ?? "?"; s["volume"] = m.string("volume") ?? "?"
+                    s["pip"] = ["supported": MPVVideoView.pipSupported, "mode": p.view.pipMode, "active": p.view.pipActive, "frames": p.view.pipFrames, "auto": p.view.pipAutoFlag.map { $0 ? "yes" : "no" } ?? "n/a"] as [String: Any]
                     s["brightness"] = p.levels.brightness; s["buffering"] = p.buffering; s["atEnd"] = p.atEnd; s["live"] = p.isLive
                     s["videoParams"] = "\(m.string("video-params/w") ?? "?")x\(m.string("video-params/h") ?? "?")"
                 } else { s["player"] = "none" }

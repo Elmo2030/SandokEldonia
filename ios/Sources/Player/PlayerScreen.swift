@@ -79,6 +79,7 @@ struct PlayerScreen: View {
         ZStack {
             VideoSurface(view: player.view).ignoresSafeArea()
             GestureSurface(handlers: handlers, live: player.isLive).ignoresSafeArea()
+            Color.black.opacity(transportVisible ? 0.32 : 0).ignoresSafeArea().allowsHitTesting(false)   // the controls stay readable over a white picture
             PlayerHUD(player: player)
             VStack(spacing: 0) {
                 TitleBar(player: player).padding(.horizontal, 10).padding(.top, 10)

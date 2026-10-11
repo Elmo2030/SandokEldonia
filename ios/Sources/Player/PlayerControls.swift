@@ -252,6 +252,7 @@ struct TransportCluster: View {
         }
         .foregroundStyle(.white)
         .shadow(color: .black.opacity(0.35), radius: 6, y: 1)
+        .environment(\.layoutDirection, .leftToRight)      // playback controls are not mirrored in right-to-left languages (Apple's rule)
     }
 }
 
@@ -269,6 +270,7 @@ struct SeekRow: View {
         }
         .font(.caption.weight(.medium).monospacedDigit())
         .foregroundStyle(.white.opacity(0.9))
+        .environment(\.layoutDirection, .leftToRight)      // the timeline runs left to right in every language
         .environment(\.layoutDirection, .leftToRight)      // the time bar stays left to right in Hebrew and Arabic
     }
 }

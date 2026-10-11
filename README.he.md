@@ -217,7 +217,7 @@ scripts/make-dmg.sh          # builds build/IPTVMac.dmg
 
 ## רכיבים של צד שלישי
 
-הגרסה כוללת libmpv מוכן מראש (mpv 0.36, ffmpeg 6, בנייה תחת GPL) מ-[media-kit/libmpv-darwin-build](https://github.com/media-kit/libmpv-darwin-build) גרסה v0.7.3 (sha256 `9bb168ec908b4801f4231f411e3278a0aea644a2b03ce375c880d2813ab7f949`). `scripts/make-app.sh` מוריד ומאמת אותו; קוד המקור של הרכיבים האלה זמין בפרויקטים שמקושרים כאן. החיפוש והאחסון משתמשים ב-[GRDB.swift](https://github.com/groue/GRDB.swift) (MIT). קטעי ההדגמה: "Sintel" © Blender Foundation, [CC-BY 3.0](https://durian.blender.org).
+הגרסה כוללת libmpv מוכן מראש (mpv 0.36 שנבנה עם `-Dgpl=false` ו-FFmpeg 6 שהוגדר עם `--enable-version3` בלי `--enable-gpl`, ולכן הספריות תחת LGPL) מ-[media-kit/libmpv-darwin-build](https://github.com/media-kit/libmpv-darwin-build) גרסה v0.7.3 (sha256 `9bb168ec908b4801f4231f411e3278a0aea644a2b03ce375c880d2813ab7f949`). `scripts/make-app.sh` מוריד ומאמת אותו; קוד המקור של הרכיבים האלה זמין בפרויקטים שמקושרים כאן. החיפוש והאחסון משתמשים ב-[GRDB.swift](https://github.com/groue/GRDB.swift) (MIT). קטעי ההדגמה: "Sintel" © Blender Foundation, [CC-BY 3.0](https://durian.blender.org).
 
 ## רישיון
 

@@ -71,7 +71,21 @@ private struct Welcome: View {
     /// The draft to start the form with (a pasted link), or nil for an empty one.
     let start: (SourceDraft?) -> Void
     @Environment(\.accessibilityReduceMotion) private var reduce
+    @Environment(\.dynamicTypeSize) private var type
     @State private var shown = false
+
+    private var actions: some View {
+        VStack(spacing: 12) {
+            Button { Haptics.tap(); start(nil) } label: { Text(L("account.add")).font(.headline).frame(maxWidth: .infinity, minHeight: 36) }
+                .buttonStyle(.borderedProminent).controlSize(.large)
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 10) { hint; PasteLink { var d = SourceDraft(); d.apply(pasted: $0); start(d) } }
+                VStack(spacing: 8) { hint; PasteLink { var d = SourceDraft(); d.apply(pasted: $0); start(d) } }
+            }
+        }
+        .frame(maxWidth: 460)
+    }
+    private var hint: some View { Text(L("onb.paste.hint")).font(.subheadline).foregroundStyle(.secondary) }
 
     var body: some View {
         GeometryReader { geo in
@@ -89,6 +103,7 @@ private struct Welcome: View {
                     }
                     .padding(14).frame(maxWidth: 460, alignment: .leading)
                     .background(Brand.surface.opacity(0.8), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    if showsAction && type.isAccessibilitySize { actions }          // big text: the buttons scroll with the page
                 }
                 .padding(.horizontal, 24).padding(.vertical, 24)
                 .frame(maxWidth: .infinity, minHeight: geo.size.height)
@@ -96,16 +111,8 @@ private struct Welcome: View {
             .scrollBounceBehavior(.basedOnSize)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if showsAction {
-                VStack(spacing: 12) {
-                    Button { Haptics.tap(); start(nil) } label: { Text(L("account.add")).font(.headline).frame(maxWidth: .infinity, minHeight: 36) }
-                        .buttonStyle(.borderedProminent).controlSize(.large)
-                    HStack(spacing: 10) {
-                        Text(L("onb.paste.hint")).font(.subheadline).foregroundStyle(.secondary)
-                        PasteLink { var d = SourceDraft(); d.apply(pasted: $0); start(d) }
-                    }
-                }
-                .frame(maxWidth: 460).padding(.horizontal, 24).padding(.bottom, 12).padding(.top, 8).frame(maxWidth: .infinity)
+            if showsAction && !type.isAccessibilitySize {
+                actions.padding(.horizontal, 24).padding(.bottom, 12).padding(.top, 8).frame(maxWidth: .infinity)
             }
         }
         .onAppear { withAnimation(reduce ? nil : .smooth(duration: 0.5)) { shown = true } }

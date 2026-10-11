@@ -96,6 +96,7 @@ private struct CategoryChips: View {
     @Environment(PhoneModel.self) private var model
     @Environment(UIState.self) private var ui
     @State private var showAll = false
+    @ScaledMetric(relativeTo: .subheadline) private var barHeight = 48
 
     private struct Chip: Identifiable { let tag: String; let title: String; var symbol: String?; var id: String { tag } }
 
@@ -130,7 +131,7 @@ private struct CategoryChips: View {
             }
         }
         .padding(.leading, 4)
-        .frame(minHeight: 48)
+        .frame(height: min(barHeight, 96))
         .background(.bar)
         .sheet(isPresented: $showAll) { CategorySheet() }
         .onChange(of: ui.debugSheet) { _, s in if s == "categories" { showAll = true } }

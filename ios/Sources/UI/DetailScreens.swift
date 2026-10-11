@@ -88,6 +88,16 @@ private struct ActionRow<Primary: View, Secondary: View>: View {
     }
 }
 
+/// Poster beside the text; with big text the poster sits above it (the text would otherwise be squeezed into a sliver).
+private struct HeaderStack<Content: View>: View {
+    @ViewBuilder let content: Content
+    @Environment(\.dynamicTypeSize) private var type
+    var body: some View {
+        if type.isAccessibilitySize { VStack(alignment: .leading, spacing: 12) { content } }
+        else { HStack(alignment: .top, spacing: 16) { content } }
+    }
+}
+
 /// A movie (or any title that is not a series): poster, facts and a Play button.
 struct DetailSheet: View {
     @Environment(PhoneModel.self) private var model
@@ -106,7 +116,7 @@ struct DetailSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    HStack(alignment: .top, spacing: 16) {
+                    HeaderStack {
                         PosterImage(item: item, url: DebugArt.url(item) ?? info?.posterURL, maxPixel: 480).frame(width: 112)
                         VStack(alignment: .leading, spacing: 8) {
                             Text(item.name).font(.title2.weight(.bold)).fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
@@ -260,7 +270,7 @@ struct SeriesScreen: View {
     private var header: some View {
         let fav = model.isFavorite(series)
         return VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top, spacing: 16) {
+            HeaderStack {
                 PosterImage(item: series, url: DebugArt.url(series) ?? info?.posterURL, maxPixel: 420).frame(width: 100)
                 VStack(alignment: .leading, spacing: 8) {
                     Text(series.name).font(.title2.weight(.bold)).fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)

@@ -70,7 +70,7 @@ struct ChannelRow: View {
         HStack(spacing: 4) {
             Button { Haptics.tap(); RecentSearches().add(model.searchText); model.play(item) } label: {
                 HStack(spacing: 12) {
-                    ChannelLogo(item: item).frame(width: logo, height: logo)
+                    ChannelLogo(item: item).frame(width: min(logo, 76), height: min(logo, 76))
                     VStack(alignment: .leading, spacing: 3) {
                         Text(item.name).font(.body.weight(.medium)).foregroundStyle(current ? Brand.accentText : Color.primary).lineLimit(2)
                         ProgramLine(item: item)

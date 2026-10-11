@@ -20,6 +20,7 @@ import IPTVPlayer
 ///   -playerSheet speed|subtitles  open that sheet 2.5 s after the player appears
 ///   -playerFile <path>            the movie for player-local (default /tmp/iptvplayer-media/vod.mkv)
 ///   -statusFile <path>            write a JSON status (position, frames drawn, app state, lock screen info...) every 0.5 s
+///   -playerWindowShot YES         save the app window (without the GL video) as Documents/window.png after 6 s
 ///   -playerSnapshot YES           save the next GL frame as Documents/snapshot.png (what the video view really draws)
 ///   -hwdec <mode>                 set mpv hwdec after the start (videotoolbox | videotoolbox-copy | no)
 ///   -playerPiP YES                start Picture in Picture 1.5 s after the player appears (commandFile: pip-start | pip-stop)
@@ -76,6 +77,13 @@ import IPTVPlayer
         case "boost": p.boosting = true
         case "toast": p.toast = ("arrow.up.left.and.arrow.down.right", p.scaleName(.fill), 1)
         default: break
+        }
+        if d.bool(forKey: "playerWindowShot") {          // the app's own window (UIKit + SwiftUI, not the GL video): what the app itself draws
+            try? await Task.sleep(for: .seconds(6))
+            if let w = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first?.keyWindow {
+                let img = UIGraphicsImageRenderer(bounds: w.bounds).image { _ in w.drawHierarchy(in: w.bounds, afterScreenUpdates: true) }
+                try? img.pngData()?.write(to: URL(fileURLWithPath: resolved("window.png")))
+            }
         }
         if d.bool(forKey: "playerSnapshot") { try? await Task.sleep(for: .seconds(3)); p.view.snapshotPath = resolved("snapshot.png") }   // the GL framebuffer, to Documents
         if let h = d.string(forKey: "hwdec") { p.core.mpv.setProperty("hwdec", h) }       // experiment: which decoder path draws on this device

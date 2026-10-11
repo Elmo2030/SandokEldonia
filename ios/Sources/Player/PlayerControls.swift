@@ -10,7 +10,7 @@ extension View {
     /// The floating dark translucent surface (the Mac player's control panel, as an iOS material).
     func playerSurface(radius: CGFloat = 20) -> some View {
         background {
-            ZStack { Rectangle().fill(.ultraThinMaterial); Color.black.opacity(0.4) }
+            Color.black.opacity(0.62)
                 .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
         }
         .overlay { RoundedRectangle(cornerRadius: radius, style: .continuous).strokeBorder(.white.opacity(0.12)) }
@@ -210,7 +210,7 @@ struct PlayPauseButton: View {
     var body: some View {
         Button { if player.atEnd && !player.isLive { player.core.replay() } else { player.togglePause() } } label: {
             ZStack {
-                Circle().fill(.ultraThinMaterial).overlay(Circle().fill(.black.opacity(0.35))).overlay(Circle().strokeBorder(.white.opacity(0.14)))
+                Circle().fill(.black.opacity(0.55)).overlay(Circle().strokeBorder(.white.opacity(0.14)))
                 if player.buffering && !player.paused {
                     ProgressView().controlSize(.large).tint(.white)
                 } else {
@@ -302,7 +302,7 @@ struct TitleBar: View {
         HStack(alignment: .center, spacing: 8) {
             Button { player.onClose?() } label: {
                 Image(systemName: "xmark").font(.body.weight(.semibold)).frame(width: 40, height: 40)
-                    .background(.ultraThinMaterial, in: Circle()).overlay(Circle().fill(.black.opacity(0.35))).overlay(Circle().strokeBorder(.white.opacity(0.12)))
+                    .background(Color.black.opacity(0.55), in: Circle()).overlay(Circle().strokeBorder(.white.opacity(0.12)))
                     .frame(width: 48, height: 48).contentShape(Rectangle())
             }
             .buttonStyle(PlayerPressStyle()).accessibilityLabel(L("player.close"))

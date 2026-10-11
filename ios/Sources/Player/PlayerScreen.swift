@@ -132,7 +132,7 @@ struct PlayerScreen: View {
                         HStack {
                             Button { player.onClose?() } label: {
                                 Image(systemName: "chevron.down").font(.body.weight(.semibold)).frame(width: 40, height: 40)
-                                    .background(.ultraThinMaterial, in: Circle()).overlay(Circle().fill(.black.opacity(0.35)))
+                                    .background(Color.black.opacity(0.55), in: Circle())
                                     .frame(width: 48, height: 48).contentShape(Rectangle())
                             }
                             .buttonStyle(PlayerPressStyle()).accessibilityLabel(L("player.close"))
@@ -221,7 +221,15 @@ private struct VideoSurface: UIViewRepresentable {
 /// The MPVolumeView that lets the volume gesture change the system volume (it also keeps the system volume HUD from covering the picture).
 private struct VolumeHost: UIViewRepresentable {
     let view: UIView
-    func makeUIView(context: Context) -> UIView { view }
+    /// SwiftUI puts the view at the centre of the screen: inside a clipping box, parked far outside it, its slider thumb (a white dot) cannot show.
+    func makeUIView(context: Context) -> UIView {
+        let box = UIView()
+        box.clipsToBounds = true
+        box.isUserInteractionEnabled = false
+        view.frame = CGRect(x: -2000, y: -2000, width: 10, height: 10)
+        box.addSubview(view)
+        return box
+    }
     func updateUIView(_ uiView: UIView, context: Context) {}
 }
 

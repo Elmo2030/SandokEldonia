@@ -1,0 +1,2 @@
+"CFBundleDisplayName" = "IPTVMac";
+"NSLocalNetworkUsageDescription" = "IPTVMac ansluter till spellistor och strömmar i ditt hemnätverk, till exempel en IPTV-box eller en mediaserver. Appen kontaktar bara adresser som du lägger till själv och söker aldrig igenom ditt nätverk.";

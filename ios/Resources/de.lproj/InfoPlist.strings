@@ -1,0 +1,2 @@
+"CFBundleDisplayName" = "IPTVMac";
+"NSLocalNetworkUsageDescription" = "IPTVMac verbindet sich mit Playlists und Streams in deinem Heimnetz, zum Beispiel mit einer IPTV-Box oder einem Mediaserver. Die App kontaktiert nur Adressen, die du selbst hinzufügst, und durchsucht dein Netzwerk nie.";

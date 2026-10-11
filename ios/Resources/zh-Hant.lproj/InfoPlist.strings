@@ -1,0 +1,2 @@
+"CFBundleDisplayName" = "IPTVMac";
+"NSLocalNetworkUsageDescription" = "IPTVMac 會連線到你家用網路中的播放清單和串流，例如 IPTV 機上盒或媒體伺服器。它只會連到你自己新增的位址，絕不掃描你的網路。";

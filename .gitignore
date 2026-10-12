@@ -9,3 +9,6 @@ build/
 ios/*.xcodeproj
 ios/Generated/
 build-appstore/
+
+__pycache__/
+*.pyc

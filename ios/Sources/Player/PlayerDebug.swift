@@ -10,7 +10,7 @@ import IPTVPlayer
 /// typing (`xcrun simctl launch <device> <bundle id> -uiState player-live ...`). Needs the fake panel and the media of ios/UITests/Fixtures
 /// (`make-media.sh`, `fake_panel.py`) on 127.0.0.1:8765 (`-panel http://host:port` to change it). Never compiled into a release build.
 ///
-///   -uiState  player-url (-playerURL <url> [-playerLive YES]) | player-live | player-vod | player-series | player-local | player-error
+///   -uiState  player-url (-playerURL <url> [-playerLive YES] [-playerTitle <text>]) | player-live | player-vod | player-series | player-local | player-error
 ///   -playerControls hidden        start with the controls faded out
 ///   -playerOrientation portrait|landscape      force the interface orientation (default: iPhone starts landscape)
 ///   -playerSeek <seconds>         seek there after the start
@@ -45,7 +45,7 @@ import IPTVPlayer
         guard let state = d.string(forKey: "uiState"), state.hasPrefix("player") else { return }
         if let o = d.string(forKey: "playerOrientation") { _ = o }          // read by PlayerOrientation.enter()
         if state == "player-url", let u = d.string(forKey: "playerURL").flatMap(URL.init(string:)) {          // a stream from the network
-            model.startPlayback(PlayRequest(title: "Network test", url: u, isLive: d.bool(forKey: "playerLive"), item: nil))
+            model.startPlayback(PlayRequest(title: d.string(forKey: "playerTitle") ?? "Network test", url: u, isLive: d.bool(forKey: "playerLive"), item: nil))
         } else if state == "player-local" || state == "player-error" {
             let file = resolved(d.string(forKey: "playerFile") ?? "/tmp/iptvplayer-media/vod.mkv")
             let url = state == "player-error" ? URL(string: "http://127.0.0.1:9/none.mkv")! : URL(fileURLWithPath: file)

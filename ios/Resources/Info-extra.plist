@@ -94,39 +94,7 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>IPTVMac connects to playlists and streams on your home network, such as an IPTV box or a media server. It only contacts the addresses you add yourself and never scans your network.</string>
 
-	<!-- "Open in IPTVMac" from Files / Share: playlists and subtitle files. Handled copy-in: LSSupportsOpeningDocumentsInPlace is NO (App Store Connect ITMS-90737 wants the key present). -->
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<false/>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>M3U Playlist</string>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-			<key>LSHandlerRank</key>
-			<string>Alternate</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.m3u-playlist</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>Subtitles</string>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-			<key>LSHandlerRank</key>
-			<string>Alternate</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>io.github.goelir.iptvmac.subrip</string>
-				<string>io.github.goelir.iptvmac.ass</string>
-				<string>io.github.goelir.iptvmac.ssa</string>
-				<string>org.w3.webvtt</string>
-			</array>
-		</dict>
-	</array>
+	<!-- No document types yet: "Open in IPTVMac" needs an onOpenURL handler (ios/RESOURCES.md, TODO). Declaring types the app does not handle would offer it in Files and then do nothing. -->
 	<!-- .m3u/.m3u8 (public.m3u-playlist) and .vtt (org.w3.webvtt) are system types. SubRip and SubStation have none, so they are imported here. -->
 	<key>UTImportedTypeDeclarations</key>
 	<array>

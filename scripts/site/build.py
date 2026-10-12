@@ -25,7 +25,7 @@ YT_INSTALL = "https://youtu.be/TgaoFEEMg48"
 INSTALL_CMD = "curl -fsSL https://raw.githubusercontent.com/Goelir/IPTVMac/main/install.sh | bash"
 UPDATED = "2026-10-06"
 ISSUES = REPO + "/issues"
-CONTACT_EMAIL = ""   # public contact address for the privacy and support pages. Apple's "Support URL" must lead to real contact information (an email address is the usual one): set it, then rebuild. Empty = the GitHub issues page is the only contact.
+CONTACT_EMAIL = "shayanaccs736@gmail.com"   # public contact address for the privacy and support pages. Apple's "Support URL" must lead to real contact information (an email address is the usual one): set it, then rebuild. Empty = the GitHub issues page is the only contact.
 DEMO_PLAYLIST = BASE + "review/ReviewPlaylist.m3u"   # docs/review/ReviewPlaylist.m3u, the open-licence test playlist (also the App Review playlist, see appstore/review-notes.txt)
 e = html.escape
 

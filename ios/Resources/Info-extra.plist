@@ -94,7 +94,9 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>IPTVMac connects to playlists and streams on your home network, such as an IPTV box or a media server. It only contacts the addresses you add yourself and never scans your network.</string>
 
-	<!-- "Open in IPTVMac" from Files / Share: playlists and subtitle files. Handled copy-in (no LSSupportsOpeningDocumentsInPlace). -->
+	<!-- "Open in IPTVMac" from Files / Share: playlists and subtitle files. Handled copy-in: LSSupportsOpeningDocumentsInPlace is NO (App Store Connect ITMS-90737 wants the key present). -->
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>

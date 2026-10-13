@@ -6,6 +6,7 @@ class IPTVError implements Exception {
   static const badConfig = IPTVError._('badConfig');
   static const badCredentials = IPTVError._('badCredentials');
   static const emptyResponse = IPTVError._('emptyResponse');
+  static const partialResponse = IPTVError._('partialResponse');
   static const accountInactive = IPTVError._('accountInactive');
   static IPTVError http(int code) => IPTVError._('http', code);
 
@@ -21,6 +22,7 @@ class IPTVError implements Exception {
         'badConfig' => 'Invalid server address',
         'badCredentials' => 'Wrong username or password',
         'emptyResponse' => 'The server returned an empty list; keeping your saved data',
+        'partialResponse' => 'The provider returned an empty list for some sections right now; keeping your saved ones. Try again later',
         _ => 'The subscription is not active (expired or disabled)',
       };
 

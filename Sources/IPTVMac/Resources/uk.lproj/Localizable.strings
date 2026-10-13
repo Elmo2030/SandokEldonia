@@ -3,6 +3,9 @@
 "tab.movies" = "Фільми";
 "tab.series" = "Серіали";
 "cat.all" = "Усі";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Вибране";
 "cat.continue" = "Продовжити перегляд";
 "cat.filter" = "Фільтр категорій";

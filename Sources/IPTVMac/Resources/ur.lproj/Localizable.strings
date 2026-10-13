@@ -3,6 +3,9 @@
 "tab.movies" = "فلمیں";
 "tab.series" = "سیریز";
 "cat.all" = "سب";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "پسندیدہ";
 "cat.continue" = "دیکھنا جاری رکھیں";
 "cat.filter" = "زمرے فلٹر کریں";

@@ -73,6 +73,12 @@ class LibraryModel extends ChangeNotifier {
   ItemType tab = ItemType.live;
   List<Category> categories = [];
 
+  /// Items per category, by [categoryTag] (for the category screen).
+  Map<String, int> categoryCounts = {};
+
+  /// The section opens on the category screen; picking a category (or its All row) leads into the list, the filter button back.
+  bool showCategoryIndex = true;
+
   /// "__all", "__fav", "__hist", or a category tag (see [categoryTag]).
   String selectedCategory = '__all';
   String searchText = '';
@@ -192,6 +198,7 @@ class LibraryModel extends ChangeNotifier {
     if (t == tab) return;
     tab = t;
     selectedCategory = '__all';
+    showCategoryIndex = true;
     searchText = '';
     loadCategories();
     scheduleSearch(immediate: true);
@@ -207,6 +214,15 @@ class LibraryModel extends ChangeNotifier {
     final rows = db.read((d) => d.select(
         'SELECT * FROM category WHERE type = ? AND (? IS NULL OR accountId = ?) ORDER BY accountId, id', [tab.name, aid, aid]));
     categories = categoryFilter.visibleCategories([for (final r in rows) Category.fromRow(r)]);
+    final counts = db.read((d) => d.select(
+        'SELECT accountId, categoryId, COUNT(*) AS n FROM item WHERE type = ? AND (? IS NULL OR accountId = ?) GROUP BY accountId, categoryId',
+        [tab.name, aid, aid]));
+    categoryCounts = {for (final r in counts) if (r['categoryId'] != null) allPlaylists ? '${r['accountId']}|${r['categoryId']}' : '${r['categoryId']}': r['n'] as int};
+  }
+
+  void openCategoryIndex() {
+    showCategoryIndex = true;
+    notifyListeners();
   }
 
   /// In All mode a category is tagged `accountId|remoteId` (remote ids repeat across playlists); otherwise by remote id.
@@ -214,6 +230,7 @@ class LibraryModel extends ChangeNotifier {
 
   void selectCategory(String tag) {
     selectedCategory = tag;
+    showCategoryIndex = false;
     scheduleSearch(immediate: true);
     notifyListeners();
   }

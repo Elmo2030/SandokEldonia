@@ -34,6 +34,7 @@ class SyncService {
     // Only the types that came back with items are replaced: a panel that answers [] for one section while it rebuilds its
     // cache must not wipe that section (and the favorites that point into it).
     final typeList = items.map((i) => i.type).toSet().map((t) => "'${t.name}'").join(','); // our own enum, not user input
+    final had = db.read((d) => d.select('SELECT DISTINCT type FROM item WHERE accountId = ?', [aid])).map((r) => r['type']).toSet();
     db.write((d) {
       d.execute('UPDATE item SET stale = 1 WHERE accountId = ? AND type IN ($typeList)', [aid]);
       d.execute('DELETE FROM category WHERE accountId = ? AND type IN ($typeList)', [aid]);
@@ -58,6 +59,8 @@ class SyncService {
       }
       d.execute('DELETE FROM item WHERE accountId = ? AND stale = 1', [aid]);
     });
+    // The rest is stored; tell the user that a section that used to be there came back empty (a provider that is rebuilding or limiting).
+    if (had.any((t) => !items.any((i) => i.type.name == t))) throw IPTVError.partialResponse;
   }
 
   // Xtream

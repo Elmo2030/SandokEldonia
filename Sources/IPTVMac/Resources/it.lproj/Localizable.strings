@@ -3,6 +3,9 @@
 "tab.movies" = "Film";
 "tab.series" = "Serie TV";
 "cat.all" = "Tutte";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Preferiti";
 "cat.continue" = "Continua a guardare";
 "cat.filter" = "Filtra categorie";

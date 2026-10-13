@@ -10,6 +10,7 @@ import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/app/sync_worker.dart';
 import 'package:iptvmac/core/app_database.dart';
 import 'package:iptvmac/core/models.dart';
+import 'package:iptvmac/ui/category_index.dart';
 import 'package:iptvmac/core/secret_store.dart';
 import 'package:iptvmac/downloads/downloads_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -121,8 +122,14 @@ Future<void> settle(WidgetTester tester, [int turns = 6]) async {
   }
 }
 
-/// [settle] then let every animation and frame finish.
-Future<void> go(WidgetTester tester) async {
+/// [settle] then let every animation and frame finish. A section opens on the category screen; unless [index] is true this
+/// steps into its first row ("All channels/movies/series") so the tests see the list.
+Future<void> go(WidgetTester tester, {bool index = false}) async {
   await settle(tester, 3);
   await tester.pumpAndSettle();
+  if (!index && find.byType(CategoryIndex).evaluate().isNotEmpty) {
+    await tester.tap(find.descendant(of: find.byType(CategoryIndex), matching: find.byType(ListTile)).first);
+    await settle(tester, 3);
+    await tester.pumpAndSettle();
+  }
 }

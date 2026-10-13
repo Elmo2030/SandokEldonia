@@ -3,6 +3,9 @@
 "tab.movies" = "Filmer";
 "tab.series" = "Serier";
 "cat.all" = "Alla";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Favoriter";
 "cat.continue" = "Fortsätt titta";
 "cat.filter" = "Filtrera kategorier";

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:iptvmac/core/models.dart';
+import 'package:iptvmac/ui/category_index.dart';
 import 'package:iptvmac/core/user_data.dart';
 import 'package:iptvmac/player/play_request.dart';
 import 'package:iptvmac/ui/play.dart' as play;
@@ -106,6 +107,23 @@ void main() {
     await go(tester);
     expect(find.text('News 24'), findsOneWidget);
     expect(h.model.searchText, '');
+  });
+
+  testWidgets('a section opens on its categories: All channels first, every category with a count, a row leads into the list', (tester) async {
+    final h = await Harness.create(tester, withAccount: true, sync: true);
+    await h.pumpApp(tester);
+    await go(tester, index: true);
+    expect(find.byType(CategoryIndex), findsOneWidget);
+    expect(find.text('All channels'), findsOneWidget);
+    expect(find.text('News'), findsOneWidget);
+    expect(find.text('Night Show'), findsNothing); // channels only show once a row is chosen
+    await tester.tap(find.text('News'));
+    await go(tester, index: true);
+    expect(find.byType(CategoryIndex), findsNothing);
+    expect(find.text('Sport One'), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.filter_list)); // the filter button leads back to the categories
+    await go(tester, index: true);
+    expect(find.byType(CategoryIndex), findsOneWidget);
   });
 
   testWidgets('category chips filter, favorites chip, hidden words remove categories', (tester) async {

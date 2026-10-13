@@ -3,6 +3,9 @@
 "tab.movies" = "أفلام";
 "tab.series" = "مسلسلات";
 "cat.all" = "الكل";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "المفضلة";
 "cat.continue" = "متابعة المشاهدة";
 "cat.filter" = "تصفية الفئات";

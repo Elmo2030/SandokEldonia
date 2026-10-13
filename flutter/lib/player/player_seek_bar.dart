@@ -5,7 +5,7 @@ import 'player_model.dart';
 import 'seek_bar_math.dart';
 
 /// Elapsed time, the bar, the time left. Always left-to-right, also in Hebrew and Arabic (Apple's rule for timelines).
-/// A live stream has no timeline: it shows the "Live" badge instead.
+/// A live stream has no timeline: it shows a "Live" button instead (jumps to the live edge).
 class PlayerSeekRow extends StatelessWidget {
   const PlayerSeekRow({super.key, required this.model});
   final PlayerModel model;
@@ -17,13 +17,19 @@ class PlayerSeekRow extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: model.isLive
-          ? Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle)),
-                const SizedBox(width: 8),
-                Text(l.playerLive, style: mono.copyWith(fontWeight: FontWeight.w600)),
-              ]),
+          ? InkWell( // a tap reloads the channel: it starts again at the live edge
+              onTap: () {
+                model.core.retry();
+                model.touchControls();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                child: Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle)),
+                  const SizedBox(width: 8),
+                  Text(l.playerLive, style: mono.copyWith(fontWeight: FontWeight.w600)),
+                ]),
+              ),
             )
           : Row(children: [
               SizedBox(width: 52, child: Text(SeekBarMath.format(model.dragScrub?.time ?? model.core.position), style: mono)),

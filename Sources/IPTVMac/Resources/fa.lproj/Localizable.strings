@@ -3,6 +3,9 @@
 "tab.movies" = "فیلم‌ها";
 "tab.series" = "سریال‌ها";
 "cat.all" = "همه";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "علاقه‌مندی‌ها";
 "cat.continue" = "ادامهٔ تماشا";
 "cat.filter" = "فیلتر دسته‌ها";

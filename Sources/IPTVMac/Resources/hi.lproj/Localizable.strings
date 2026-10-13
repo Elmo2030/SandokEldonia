@@ -3,6 +3,9 @@
 "tab.movies" = "फ़िल्में";
 "tab.series" = "सीरीज़";
 "cat.all" = "सभी";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "पसंदीदा";
 "cat.continue" = "देखना जारी रखें";
 "cat.filter" = "श्रेणियाँ फ़िल्टर करें";

@@ -111,7 +111,7 @@ struct PlayerScreen: View {
         VStack(spacing: 0) {
             if !player.isLive { SeekRow(player: player, containerWidth: width).padding(.horizontal, 6) }
             HStack(spacing: 0) {
-                if player.isLive { LiveBadge().padding(.leading, 10) }
+                if player.isLive { LiveBadge(player: player).padding(.leading, 10) }
                 UtilityRow(player: player, showSpeed: $showSpeed, importing: $importing, adjusting: $adjusting)
             }
         }
@@ -188,14 +188,18 @@ struct PlayerScreen: View {
     }
 }
 
+/// "Live": a tap reloads the channel, which starts it again at the live edge (after a pause or a long buffer it is behind).
 struct LiveBadge: View {
+    let player: PhonePlayer
     var body: some View {
-        HStack(spacing: 6) {
-            Circle().fill(.red).frame(width: 8, height: 8)
-            Text(L("player.live")).font(.caption.weight(.bold))
+        Button { player.retry(); player.touchControls() } label: {
+            HStack(spacing: 6) {
+                Circle().fill(.red).frame(width: 8, height: 8)
+                Text(L("player.live")).font(.caption.weight(.bold))
+            }
+            .padding(.vertical, 8).contentShape(Rectangle())
         }
-        .foregroundStyle(.white).fixedSize()
-        .accessibilityElement(children: .combine)
+        .buttonStyle(.plain).foregroundStyle(.white).fixedSize()
     }
 }
 

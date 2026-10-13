@@ -3,6 +3,9 @@
 "tab.movies" = "Filme";
 "tab.series" = "Seriale";
 "cat.all" = "Toate";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Favorite";
 "cat.continue" = "Continuă vizionarea";
 "cat.filter" = "Filtrează categoriile";

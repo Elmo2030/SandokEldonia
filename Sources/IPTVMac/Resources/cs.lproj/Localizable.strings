@@ -3,6 +3,9 @@
 "tab.movies" = "Filmy";
 "tab.series" = "Seriály";
 "cat.all" = "Vše";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Oblíbené";
 "cat.continue" = "Pokračovat ve sledování";
 "cat.filter" = "Filtrovat kategorie";

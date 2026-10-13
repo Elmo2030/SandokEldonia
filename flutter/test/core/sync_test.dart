@@ -165,7 +165,7 @@ void main() {
     expect(count(db, 'SELECT count(*) FROM item'), 5);
   });
 
-  test('a section that comes back null or false is empty, not an error, and keeps its old items', () async {
+  test('a section that comes back null or false keeps its old items and is reported as partial', () async {
     await svc.sync(a, password: 'p');
     server.handler = (r) => switch (actionOf(r)) {
           'get_vod_streams' || 'get_vod_categories' => res(200, 'null'),
@@ -174,7 +174,7 @@ void main() {
           'get_live_categories' => res(200, '[]'),
           _ => res(200, '{"user_info":{"auth":1}}'),
         };
-    await svc.sync(a, password: 'p');
+    await expectLater(svc.sync(a, password: 'p'), throwsA(IPTVError.partialResponse)); // stored, but the user is told
     expect(count(db, "SELECT count(*) FROM item WHERE type='movie'"), 2); // kept
     expect(count(db, "SELECT count(*) FROM item WHERE type='series'"), 1);
   });

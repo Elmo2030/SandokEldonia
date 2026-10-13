@@ -3,6 +3,9 @@
 "tab.movies" = "Ταινίες";
 "tab.series" = "Σειρές";
 "cat.all" = "Όλα";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Αγαπημένα";
 "cat.continue" = "Συνέχεια προβολής";
 "cat.filter" = "Φιλτράρισμα κατηγοριών";

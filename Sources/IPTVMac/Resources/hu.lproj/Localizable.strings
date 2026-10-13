@@ -3,6 +3,9 @@
 "tab.movies" = "Filmek";
 "tab.series" = "Sorozatok";
 "cat.all" = "Összes";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Kedvencek";
 "cat.continue" = "Nézés folytatása";
 "cat.filter" = "Kategóriák szűrése";

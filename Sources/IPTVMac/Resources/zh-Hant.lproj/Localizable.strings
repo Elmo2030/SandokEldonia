@@ -3,6 +3,9 @@
 "tab.movies" = "電影";
 "tab.series" = "影集";
 "cat.all" = "全部";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "我的最愛";
 "cat.continue" = "繼續觀看";
 "cat.filter" = "篩選類別";

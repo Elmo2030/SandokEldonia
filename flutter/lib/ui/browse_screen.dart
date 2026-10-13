@@ -3,7 +3,7 @@ import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/app/watch_progress.dart';
 import 'package:iptvmac/core/models.dart';
 import 'package:iptvmac/l10n/app_localizations.dart';
-import 'package:iptvmac/ui/category_sheet.dart';
+import 'package:iptvmac/ui/category_index.dart';
 import 'package:iptvmac/ui/item_views.dart';
 import 'package:iptvmac/ui/widgets.dart';
 import 'package:provider/provider.dart';
@@ -34,13 +34,14 @@ class _BrowseScreenState extends State<BrowseScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final searching = context.select<LibraryModel, bool>((m) => m.searchText.isNotEmpty);
+    final index = context.select<LibraryModel, bool>((m) => m.showCategoryIndex) && !searching;
     return Scaffold(
       appBar: AppBar(title: Text(sectionTitle(l, widget.type)), actions: const [PlaylistMenu()]),
       body: Column(children: [
         ValueListenableBuilder<bool>(valueListenable: _pulling, builder: (_, p, _) => p ? const SizedBox.shrink() : const StatusStrip()),
         const SearchField(),
-        if (searching) const ScopeChips() else CategoryChips(type: widget.type),
-        Expanded(child: ResultsView(type: widget.type, pulling: _pulling)),
+        if (searching) const ScopeChips() else if (!index) CategoryChips(type: widget.type),
+        Expanded(child: index ? CategoryIndex(type: widget.type) : ResultsView(type: widget.type, pulling: _pulling)),
       ]),
     );
   }
@@ -211,7 +212,7 @@ class _CategoryChipsState extends State<CategoryChips> {
     return SizedBox(
       height: 52,
       child: Row(children: [
-        IconButton(icon: const Icon(Icons.filter_list), tooltip: l.catTitle, onPressed: () => showCategorySheet(context)),
+        IconButton(icon: const Icon(Icons.filter_list), tooltip: l.catTitle, onPressed: m.openCategoryIndex),
         Expanded(
           child: ListView(
             controller: _scroll,

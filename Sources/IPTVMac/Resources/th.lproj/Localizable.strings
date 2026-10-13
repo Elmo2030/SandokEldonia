@@ -3,6 +3,9 @@
 "tab.movies" = "ภาพยนตร์";
 "tab.series" = "ซีรีส์";
 "cat.all" = "ทั้งหมด";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "รายการโปรด";
 "cat.continue" = "ดูต่อ";
 "cat.filter" = "กรองหมวดหมู่";

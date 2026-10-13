@@ -3,6 +3,9 @@
 "tab.movies" = "Film";
 "tab.series" = "Serial";
 "cat.all" = "Semua";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Favorit";
 "cat.continue" = "Lanjutkan menonton";
 "cat.filter" = "Filter kategori";

@@ -3,6 +3,9 @@
 "tab.movies" = "Filmler";
 "tab.series" = "Diziler";
 "cat.all" = "Tümü";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Favoriler";
 "cat.continue" = "İzlemeye devam et";
 "cat.filter" = "Kategorileri filtrele";

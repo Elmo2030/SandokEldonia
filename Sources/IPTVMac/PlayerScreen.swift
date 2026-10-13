@@ -136,6 +136,7 @@ struct PlayerScreen: View {
             if let item = request.item {
                 CatchupView(item: item) { url, title in
                     showCatchup = false
+                    pm.liveRequest = request
                     model.startPlayback(PlayRequest(title: title, url: url, isLive: false, item: nil))
                 }
             }
@@ -204,6 +205,7 @@ struct PlayerScreen: View {
             .accessibilityLabel(L(pm.paused ? "downloads.play" : "downloads.pause"))
             .motion(.smooth(duration: 0.2), value: pm.paused)
             if !request.isLive {
+                if let live = pm.liveRequest { liveButton { model.startPlayback(live) } }   // watching catch-up: back to the channel
                 Button { skip(-1) } label: { Image(systemName: "gobackward.\(seekStep)") }
                     .help(String(format: L("player.skipBack"), String(format: L("unit.seconds"), seekStep)))
                 Button { skip(1) } label: { Image(systemName: "goforward.\(seekStep)") }
@@ -211,7 +213,10 @@ struct PlayerScreen: View {
                 SeekBar(position: pm.position, duration: pm.duration, preview: pm.preview, containerWidth: playerWidth, active: $seekActive,
                         onSeek: { pm.mpv.seek(to: $0) }, onHover: { pm.previewHover($0) }, onSkip: { skip($0) })
                 Text("\(fmt(pm.position)) / \(fmt(pm.duration))").monospacedDigit().font(.caption).foregroundStyle(.white.opacity(0.85))
-            } else { Spacer() }
+            } else {
+                liveButton { pm.retry() }   // reloading starts the channel again at the live edge
+                Spacer()
+            }
             if !request.isLive {   // a live stream cannot run faster than real time
                 SpeedButton(speed: pm.speed, set: pm.setSpeed, open: $showSpeed)
             }
@@ -229,6 +234,12 @@ struct PlayerScreen: View {
         .background(.black.opacity(0.62), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(.white.opacity(0.12)) }
         .padding(.horizontal, 16).padding(.bottom, 14)
+    }
+
+    private func liveButton(_ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 5) { Circle().fill(.red).frame(width: 8, height: 8); Text(L("player.live")).font(.caption.weight(.bold)) }
+        }.help(L("player.live"))
     }
 
     private var sleepMenu: some View {

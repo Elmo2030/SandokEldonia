@@ -3,6 +3,9 @@
 "tab.movies" = "Филми";
 "tab.series" = "Сериали";
 "cat.all" = "Всички";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Любими";
 "cat.continue" = "Продължи гледането";
 "cat.filter" = "Филтриране на категориите";

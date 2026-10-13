@@ -3,6 +3,9 @@
 "tab.movies" = "সিনেমা";
 "tab.series" = "সিরিজ";
 "cat.all" = "সব";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "প্রিয়";
 "cat.continue" = "দেখা চালিয়ে যান";
 "cat.filter" = "ক্যাটাগরি ফিল্টার করুন";

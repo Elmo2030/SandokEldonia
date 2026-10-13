@@ -3,6 +3,9 @@
 "tab.movies" = "영화";
 "tab.series" = "시리즈";
 "cat.all" = "전체";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "즐겨찾기";
 "cat.continue" = "이어보기";
 "cat.filter" = "카테고리 필터";

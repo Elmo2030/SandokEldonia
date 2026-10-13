@@ -3,6 +3,9 @@
 "tab.movies" = "סרטים";
 "tab.series" = "סדרות";
 "cat.all" = "הכול";
+"cat.all.live" = "כל הערוצים";
+"cat.all.movies" = "כל הסרטים";
+"cat.all.series" = "כל הסדרות";
 "cat.favorites" = "מועדפים";
 "cat.continue" = "המשך צפייה";
 "cat.filter" = "סינון קטגוריות";

@@ -3,6 +3,9 @@
 "tab.movies" = "Filma";
 "tab.series" = "Seriale";
 "cat.all" = "Të gjitha";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Të preferuarat";
 "cat.continue" = "Vazhdo shikimin";
 "cat.filter" = "Filtro kategoritë";

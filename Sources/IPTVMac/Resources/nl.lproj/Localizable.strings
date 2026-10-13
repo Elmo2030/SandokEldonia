@@ -3,6 +3,9 @@
 "tab.movies" = "Films";
 "tab.series" = "Series";
 "cat.all" = "Alle";
+"cat.all.live" = "All channels";
+"cat.all.movies" = "All movies";
+"cat.all.series" = "All series";
 "cat.favorites" = "Favorieten";
 "cat.continue" = "Verder kijken";
 "cat.filter" = "Categorieën filteren";

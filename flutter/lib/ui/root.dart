@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/core/models.dart';
+import 'package:iptvmac/downloads/downloads_model.dart';
 import 'package:iptvmac/l10n/app_localizations.dart';
 import 'package:iptvmac/ui/browse_screen.dart';
 import 'package:iptvmac/ui/library_screen.dart';
@@ -84,12 +85,14 @@ class _RootScreenState extends State<RootScreen> {
     final l = AppLocalizations.of(context);
     final size = MediaQuery.sizeOf(context);
     final rail = size.width >= 600 || size.height < 480;
+    final running = context.select<DownloadsModel, int>((d) => d.activeCount); // a count on the Library tab, where Downloads is
+    Widget library(IconData i) => Badge(isLabelVisible: running > 0, label: Text('$running'), child: Icon(i));
     final dests = [
-      (Icons.live_tv_outlined, Icons.live_tv, l.tabLive),
-      (Icons.movie_outlined, Icons.movie, l.tabMovies),
-      (Icons.video_library_outlined, Icons.video_library, l.tabSeries),
-      (Icons.bookmarks_outlined, Icons.bookmarks, l.tabLibrary),
-      (Icons.settings_outlined, Icons.settings, l.settingsTitle),
+      (const Icon(Icons.live_tv_outlined), const Icon(Icons.live_tv), l.tabLive),
+      (const Icon(Icons.movie_outlined), const Icon(Icons.movie), l.tabMovies),
+      (const Icon(Icons.video_library_outlined), const Icon(Icons.video_library), l.tabSeries),
+      (library(Icons.bookmarks_outlined), library(Icons.bookmarks), l.tabLibrary),
+      (const Icon(Icons.settings_outlined), const Icon(Icons.settings), l.settingsTitle),
     ];
     final body = switch (_index) {
       0 => const BrowseScreen(key: ValueKey(0), type: ItemType.live),
@@ -109,7 +112,7 @@ class _RootScreenState extends State<RootScreen> {
                 onDestinationSelected: _select,
                 labelType: NavigationRailLabelType.all,
                 backgroundColor: Colors.transparent,
-                destinations: [for (final d in dests) NavigationRailDestination(icon: Icon(d.$1), selectedIcon: Icon(d.$2), label: Text(d.$3))],
+                destinations: [for (final d in dests) NavigationRailDestination(icon: d.$1, selectedIcon: d.$2, label: Text(d.$3))],
               ),
             ),
           ),
@@ -122,7 +125,7 @@ class _RootScreenState extends State<RootScreen> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: _select,
-        destinations: [for (final d in dests) NavigationDestination(icon: Icon(d.$1), selectedIcon: Icon(d.$2), label: d.$3)],
+        destinations: [for (final d in dests) NavigationDestination(icon: d.$1, selectedIcon: d.$2, label: d.$3)],
       ),
     );
   }

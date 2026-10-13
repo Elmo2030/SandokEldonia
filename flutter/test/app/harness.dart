@@ -11,6 +11,7 @@ import 'package:iptvmac/app/sync_worker.dart';
 import 'package:iptvmac/core/app_database.dart';
 import 'package:iptvmac/core/models.dart';
 import 'package:iptvmac/core/secret_store.dart';
+import 'package:iptvmac/downloads/downloads_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// An invented Xtream provider at http://panel.test (user "u", password "p"): two channels, two movies, one series with
@@ -100,13 +101,13 @@ class Harness {
     return h;
   }
 
-  Future<void> pumpApp(WidgetTester tester, {Locale? locale, double textScale = 1, Size size = const Size(400, 800)}) async {
+  Future<void> pumpApp(WidgetTester tester, {Locale? locale, double textScale = 1, Size size = const Size(400, 800), DownloadsModel? downloads}) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = size;
     tester.platformDispatcher.textScaleFactorTestValue = textScale;
     addTearDown(tester.view.reset);
     addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-    await tester.pumpWidget(IptvApp(model: model, locale: locale));
+    await tester.pumpWidget(IptvApp(model: model, locale: locale, downloads: downloads));
     await settle(tester, 2);
   }
 }

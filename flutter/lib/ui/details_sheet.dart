@@ -3,8 +3,11 @@ import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/app/sync_worker.dart';
 import 'package:iptvmac/core/item_info.dart';
 import 'package:iptvmac/core/models.dart';
+import 'package:iptvmac/downloads/download_entry.dart';
+import 'package:iptvmac/downloads/library_downloads.dart';
 import 'package:iptvmac/l10n/app_localizations.dart';
 import 'package:iptvmac/ui/artwork.dart';
+import 'package:iptvmac/ui/download_button.dart';
 import 'package:iptvmac/ui/info_parts.dart';
 import 'package:iptvmac/ui/item_views.dart';
 import 'package:iptvmac/ui/play.dart';
@@ -110,6 +113,8 @@ class _DetailsSheetState extends State<DetailsSheet> {
             },
           ),
           if (info?.trailerURL != null) IconButton.filledTonal(icon: const Icon(Icons.smart_display_outlined), tooltip: l.infoTrailer, onPressed: () => openTrailer(info!.trailerURL!)),
+          if (m.canDownload(item))
+            DownloadButton(tonal: true, entryKey: DownloadEntry.keyOf(item.accountId, item.type, item.streamId, null), start: (d) => m.downloadMovie(d, item)),
           FavoriteButton(favorite: fav, tonal: true, onPressed: () => m.toggleFavorite(item)),
         ]),
         const SizedBox(height: 20),

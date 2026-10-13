@@ -247,10 +247,13 @@ class DownloadsModel extends ChangeNotifier {
 
   /// Checks the finished files again (the user may have deleted one with a file manager).
   void refreshFiles() {
+    var changed = false;
     for (final e in _entries.where((e) => e.status == DownloadStatus.done)) {
-      e.missing = !File(e.path).existsSync();
+      final gone = !File(e.path).existsSync();
+      changed |= gone != e.missing;
+      e.missing = gone;
     }
-    notifyListeners();
+    if (changed) notifyListeners();
   }
 
   void _deleteFile(DownloadEntry e) {

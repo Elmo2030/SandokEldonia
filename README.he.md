@@ -195,7 +195,7 @@ https://iptv-org.github.io/iptv/index.m3u
 IPTVMac היא אפליקציית Mac שאפשר להוריד כבר היום. שתי אפליקציות נוספות חולקות איתה את הנגן והעיצוב, וקוד המקור שלהן במאגר הזה:
 
 - **iPhone ו-iPad** (`ios/`): הוגשה ל-App Store וממתינה לבדיקה. בנייה: `scripts/ios-setup.sh` ואז פותחים את `ios/IPTVPhone.xcodeproj` (ראו [ios/README.md](ios/README.md)).
-- **Android** (`flutter/`): בבדיקות בטא, עדיין בלי הורדה. Flutter ו-libmpv, 31 שפות שנוצרות מאותן מחרוזות. בנייה: `cd flutter && flutter pub get && flutter test && flutter build apk` (Flutter 3.47, JDK 17, Android SDK 36; ראו [flutter/PLAN.md](flutter/PLAN.md)). Android 8 ומעלה.
+- **Android** (`flutter/`): בבדיקות בטא, עדיין בלי הורדה. Flutter ו-libmpv, 31 שפות שנוצרות מאותן מחרוזות. נגן מגע עם מחוות, תמונה בתוך תמונה, קול שממשיך כשהמסך כבוי, כפתור סיבוב מסך, והורדות של סרטים ופרקים לצפייה בלי רשת (אפליקציית ה-Android היא היחידה, לצד ה-Mac, שיש בה הורדות; באייפון אין). בנייה: `cd flutter && flutter pub get && flutter test && flutter build apk` (Flutter 3.47, JDK 17, Android SDK 36; ראו [flutter/PLAN.md](flutter/PLAN.md)). Android 8 ומעלה.
 
 ## בנייה מקוד המקור
 

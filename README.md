@@ -181,7 +181,7 @@ See [SECURITY.md](SECURITY.md) for how updates are protected, the known limits, 
 IPTVMac is a Mac app you can download today. Two more apps share its engine and its design, and their source is in this repository:
 
 - **iPhone and iPad** (`ios/`): submitted to the App Store, waiting for review. Build with `scripts/ios-setup.sh`, then open `ios/IPTVPhone.xcodeproj` (see [ios/README.md](ios/README.md)).
-- **Android** (`flutter/`): in beta testing, no download yet. Flutter and libmpv, 31 languages generated from the same strings. Build: `cd flutter && flutter pub get && flutter test && flutter build apk` (Flutter 3.47, JDK 17, Android SDK 36; see [flutter/PLAN.md](flutter/PLAN.md)). Android 8 or later.
+- **Android** (`flutter/`): in beta testing, no download yet. Flutter and libmpv, 31 languages generated from the same strings. Touch player with gestures, Picture in Picture, sound that keeps playing with the screen off, a rotate button, and downloads of movies and episodes for offline viewing (the Android app is the one that has downloads next to the Mac app; the iPhone app does not). Build: `cd flutter && flutter pub get && flutter test && flutter build apk` (Flutter 3.47, JDK 17, Android SDK 36; see [flutter/PLAN.md](flutter/PLAN.md)). Android 8 or later.
 
 ## Build from source
 

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:iptvmac/ui/item_actions.dart';
 import 'package:iptvmac/ui/bidi.dart';
 import 'package:flutter/semantics.dart';
 import 'package:iptvmac/app/library_model.dart';
@@ -203,7 +204,7 @@ class PosterCell extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
         onTap: () => openItem(context, item),
-        onLongPress: () => m.toggleFavorite(item),
+        onLongPress: () => item.type == ItemType.movie ? showItemActions(context, item) : m.toggleFavorite(item),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Stack(children: [
             PosterImage(name: item.name, url: artUri(item.icon)),

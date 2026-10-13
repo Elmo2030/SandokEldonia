@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -26,6 +27,9 @@ int count(AppDatabase db, String sql) => db.read((d) => d.select(sql).first.valu
 /// A fresh temporary directory, deleted by the caller.
 Directory tempDir(String prefix) => Directory.systemTemp.createTempSync('iptvmac-$prefix-');
 
+/// A UTF-8 response (`http.Response(String)` would use Latin-1 and choke on Hebrew).
+http.Response res(int code, String body) => http.Response.bytes(utf8.encode(body), code);
+
 /// A `MockClient` whose answer a test can change between requests (like the Swift tests' global handler), counting calls.
 class FakeServer {
   FakeServer([this.handler]);
@@ -33,7 +37,7 @@ class FakeServer {
   int calls = 0;
 
   /// Answers every request with this status and body.
-  void reply(int code, String body) => handler = (_) => http.Response(body, code);
+  void reply(int code, String body) => handler = (_) => res(code, body);
 
   late final MockClient client = MockClient((r) async {
     calls++;

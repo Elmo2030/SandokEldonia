@@ -1,3 +1,5 @@
+import 'player_system.dart';
+
 // The decisions the player takes about the system around it (calls and other apps, headphones), as plain values: the Android glue
 // (audio_session) maps audio focus onto these and does what they say. Headphones unplugged is Android's own
 // "becoming noisy" broadcast: it always means pause, so it needs no policy.
@@ -37,4 +39,32 @@ class InterruptionPolicy {
 
   /// The user pressed play or pause during the interruption: that choice wins over the automatic resume.
   void userChose() => _pausedByInterruption = false;
+}
+
+/// The system extrapolates the elapsed time from the rate, so the media session is only told what it cannot extrapolate: the title,
+/// pause/speed, the duration, the buffering state, or a jump of the position (a seek). Without this the notification is rebuilt 4 times a second.
+class NowPlayingThrottle {
+  NowPlaying? _last;
+  DateTime _lastAt = DateTime.fromMillisecondsSinceEpoch(0);
+
+  bool shouldPublish(NowPlaying s, DateTime now) {
+    final need = _needed(s, now);
+    if (need) {
+      _last = s;
+      _lastAt = now;
+    }
+    return need;
+  }
+
+  void reset() => _last = null;
+
+  bool _needed(NowPlaying s, DateTime now) {
+    final l = _last;
+    if (l == null) return true;
+    if (l.title != s.title || l.subtitle != s.subtitle || l.isLive != s.isLive || l.paused != s.paused || l.speed != s.speed) return true;
+    if (l.buffering != s.buffering || l.canNext != s.canNext || l.canPrevious != s.canPrevious) return true;
+    if ((l.duration - s.duration).abs() > 1) return true;
+    final expected = l.position + (l.paused ? 0 : now.difference(_lastAt).inMicroseconds / 1e6 * l.speed);
+    return !s.isLive && (s.position - expected).abs() > 2;
+  }
 }

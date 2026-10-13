@@ -4,17 +4,17 @@ import 'package:iptvmac/player/player_options.dart';
 
 void main() {
   test('a touch belongs to the half it started in', () {
-    expect(PlayerGestures.side(10, 800), Side.left);
-    expect(PlayerGestures.side(399, 800), Side.left);
-    expect(PlayerGestures.side(400, 800), Side.right);
-    expect(PlayerGestures.side(790, 800), Side.right);
+    expect(PlayerGestures.side(10, 800), TouchSide.left);
+    expect(PlayerGestures.side(399, 800), TouchSide.left);
+    expect(PlayerGestures.side(400, 800), TouchSide.right);
+    expect(PlayerGestures.side(790, 800), TouchSide.right);
   });
 
   test('a drag picks its axis once and after the slop', () {
     expect(PlayerGestures.axis(4, 6), null);
-    expect(PlayerGestures.axis(30, 8), Axis.horizontal);
-    expect(PlayerGestures.axis(-3, -25), Axis.vertical);
-    expect(PlayerGestures.axis(15, 15), Axis.horizontal, reason: 'a tie goes to scrubbing');
+    expect(PlayerGestures.axis(30, 8), DragAxis.horizontal);
+    expect(PlayerGestures.axis(-3, -25), DragAxis.vertical);
+    expect(PlayerGestures.axis(15, 15), DragAxis.horizontal, reason: 'a tie goes to scrubbing');
     expect(PlayerGestures.axis(double.nan, 50), null);
   });
 
@@ -68,14 +68,14 @@ void main() {
     DateTime at(double s) => t0.add(Duration(milliseconds: (s * 1000).round()));
     final a = SkipAccumulator();
     expect(a.isChaining(t0), false);
-    expect(a.skip(Side.right, step: 10, now: t0), 10);
+    expect(a.skip(TouchSide.right, step: 10, now: t0), 10);
     expect(a.isChaining(at(0.5)), true);
-    expect(a.skip(Side.right, step: 10, now: at(0.5)), 20);
-    expect(a.skip(Side.right, step: 10, now: at(1.2)), 30, reason: 'each tap renews the window');
-    expect(a.skip(Side.left, step: 10, now: at(1.5)), -10, reason: 'another side starts over');
-    expect(a.skip(Side.left, step: 10, now: at(1.6)), -20);
+    expect(a.skip(TouchSide.right, step: 10, now: at(0.5)), 20);
+    expect(a.skip(TouchSide.right, step: 10, now: at(1.2)), 30, reason: 'each tap renews the window');
+    expect(a.skip(TouchSide.left, step: 10, now: at(1.5)), -10, reason: 'another side starts over');
+    expect(a.skip(TouchSide.left, step: 10, now: at(1.6)), -20);
     expect(a.isChaining(at(2.7)), false, reason: 'a pause of a second ends the chain');
-    expect(a.skip(Side.left, step: 15, now: at(5)), -15);
+    expect(a.skip(TouchSide.left, step: 15, now: at(5)), -15);
     a.reset();
     expect(a.count, 0);
     expect(a.side, null);

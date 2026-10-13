@@ -4,20 +4,20 @@ import 'player_options.dart';
 
 /// The numbers behind the touch gestures (drag to scrub, drag for brightness/volume, pinch for the video scale, double tap to skip),
 /// kept out of the widgets so they can be tested. Garbage input (NaN, a view without size) changes nothing.
-enum Side { left, right }
+enum TouchSide { left, right }
 
-enum Axis { horizontal, vertical }
+enum DragAxis { horizontal, vertical }
 
 enum VerticalEnd { commit, dismiss }
 
 abstract final class PlayerGestures {
   /// The half of the screen a touch started in (physical left/right, whatever the layout direction).
-  static Side side(double x, double width) => x < width / 2 ? Side.left : Side.right;
+  static TouchSide side(double x, double width) => x < width / 2 ? TouchSide.left : TouchSide.right;
 
   /// Which way a drag goes, decided once it moved [slop] points; null until then. Diagonal drags go to the stronger axis.
-  static Axis? axis(double dx, double dy, {double slop = 10}) {
+  static DragAxis? axis(double dx, double dy, {double slop = 10}) {
     if (!dx.isFinite || !dy.isFinite || math.max(dx.abs(), dy.abs()) < slop) return null;
-    return dx.abs() >= dy.abs() ? Axis.horizontal : Axis.vertical;
+    return dx.abs() >= dy.abs() ? DragAxis.horizontal : DragAxis.vertical;
   }
 
   /// Seconds a drag across the whole width covers: a quarter of the duration, between a minute and ten minutes.
@@ -52,7 +52,7 @@ abstract final class PlayerGestures {
 /// Repeated double taps on one side keep adding to one skip ("+10", "+20", "+30"); another side or a pause of a second starts over.
 class SkipAccumulator {
   static const window = Duration(seconds: 1);
-  Side? side;
+  TouchSide? side;
   int count = 0;
   DateTime _last = DateTime.fromMillisecondsSinceEpoch(0);
 
@@ -60,7 +60,7 @@ class SkipAccumulator {
   bool isChaining(DateTime now) => side != null && now.difference(_last) < window;
 
   /// Registers one skip of [step] seconds on [s]; returns the signed total of the chain so far (negative = backwards).
-  int skip(Side s, {required int step, required DateTime now}) {
+  int skip(TouchSide s, {required int step, required DateTime now}) {
     if (s == side && isChaining(now)) {
       count++;
     } else {
@@ -68,7 +68,7 @@ class SkipAccumulator {
       count = 1;
     }
     _last = now;
-    return (s == Side.left ? -1 : 1) * count * step;
+    return (s == TouchSide.left ? -1 : 1) * count * step;
   }
 
   void reset() {

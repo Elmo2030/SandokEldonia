@@ -26,6 +26,8 @@ class FakeEngine implements PlaybackEngine {
   @override
   double speed = 1;
   @override
+  double aspect = 0;
+  @override
   List<Track> tracks = [];
 
   @override

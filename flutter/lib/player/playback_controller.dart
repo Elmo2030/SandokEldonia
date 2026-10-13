@@ -14,13 +14,19 @@ import 'track_label.dart';
 /// progress saving that never writes a 0 position. No UI and no localization in here: [failure] is the engine's reason.
 class PlaybackController extends ChangeNotifier {
   /// [tickInterval] null = no timer (tests call [tick]); [retryDelay] is the pause before a live reload.
-  PlaybackController(this.engine, {Duration? tickInterval = const Duration(milliseconds: 250), this.retryDelay = LiveRecovery.delay}) {
+  PlaybackController(
+    this.engine, {
+    Duration? tickInterval = const Duration(milliseconds: 250),
+    this.retryDelay = LiveRecovery.delay,
+    this._clock = DateTime.now,
+  }) {
     _failureSub = engine.failures.listen((_) => _handleFailure());
     if (tickInterval != null) _timer = Timer.periodic(tickInterval, (_) => tick());
   }
 
   final PlaybackEngine engine;
   final Duration retryDelay;
+  final DateTime Function() _clock;
 
   String? source;
   bool isLive = false;
@@ -134,7 +140,7 @@ class PlaybackController extends ChangeNotifier {
 
   /// `true` plays, `false` pauses. A live stream that sat paused long enough is reloaded instead of resumed from its old cache.
   void setPlaying(bool play, [DateTime? now]) {
-    now ??= DateTime.now();
+    now ??= _clock();
     if (play) {
       if (atEnd && !isLive) {
         replay();
@@ -187,7 +193,7 @@ class PlaybackController extends ChangeNotifier {
 
   /// 0 turns the timer off.
   void setSleep(int minutes, [DateTime? now]) {
-    now ??= DateTime.now();
+    now ??= _clock();
     _sleep.set(minutes, now);
     sleepMinutesLeft = _sleep.remainingMinutes(now);
     notifyListeners();
@@ -197,7 +203,7 @@ class PlaybackController extends ChangeNotifier {
 
   void tick([DateTime? now]) {
     if (_closed) return;
-    now ??= DateTime.now();
+    now ??= _clock();
     if (_sleep.expired(now)) {
       _sleep.cancel();
       sleepMinutesLeft = null;

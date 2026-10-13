@@ -19,6 +19,9 @@ abstract class PlaybackEngine {
   /// The end of the file was reached (the engine stays on the last frame).
   bool get atEof;
   double get speed;
+
+  /// Width / height of the picture, 0 until it is known.
+  double get aspect;
   List<Track> get tracks;
 
   /// [start] in seconds (0 = from the beginning).

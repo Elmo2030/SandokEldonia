@@ -1,0 +1,376 @@
+{
+  "@@locale": "en",
+  "appName": "IPTVMac",
+  "tabLive": "Live",
+  "tabMovies": "Movies",
+  "tabSeries": "Series",
+  "catAll": "All",
+  "catFavorites": "Favorites",
+  "catContinue": "Continue watching",
+  "catFilter": "Filter categories",
+  "playlistAll": "All playlists",
+  "playlistLabel": "Playlist",
+  "aboutAcknowledgements": "Acknowledgements",
+  "aboutPrivacy": "Privacy",
+  "aboutPrivacyBody": "IPTVMac collects no data about you. It has no account, no analytics, no advertising and no tracking.\n\nYour sources, favorites and watch history stay on this device. The app only connects to the addresses you add yourself: your provider''s server, playlist, program guide, logos and streams.\n\nProvider passwords are kept in the iOS Keychain on this device only. They are never included in a backup file.\n\nIPTVMac includes no channels, movies or playlists. You bring your own source.",
+  "aboutSource": "Source code and licence",
+  "aboutVersion": "Version",
+  "catTitle": "Categories",
+  "commonCancel": "Cancel",
+  "emptyContinue": "Nothing to continue",
+  "emptyContinueHint": "Movies and episodes you stop halfway show up here.",
+  "emptyFavorites": "No favorites yet",
+  "emptyFavoritesHint": "Press and hold a title, then choose Add to favorites.",
+  "emptyFavoritesLive": "Swipe a channel to the left, then tap the star.",
+  "emptyNone": "Nothing here yet",
+  "emptyNoneHint": "Pull down to refresh, or check your source in Settings.",
+  "fieldServerInvalid": "This address does not look right. Example: http://host:8080",
+  "fieldUrlInvalid": "Enter the full link, starting with http:// or https://",
+  "infoResume": "Resume",
+  "libraryEmpty": "Your library is empty",
+  "libraryEmptyHint": "Favorites and the titles you started watching show up here.",
+  "onbNoChannels": "IPTVMac includes no channels, movies or playlists. Add a source from a provider you subscribe to.",
+  "onbPasteHint": "Copied a playlist link?",
+  "onbTestRunning": "Testing…",
+  "passwordBodyIos": "Enter the password for “{p1}”. It is stored in the iOS Keychain on this device.",
+  "@passwordBodyIos": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchRecent": "Recent searches",
+  "seriesContinueEp": "Continue S{p1} E{p2}",
+  "@seriesContinueEp": {
+    "placeholders": {
+      "p1": {
+        "type": "int"
+      },
+      "p2": {
+        "type": "int"
+      }
+    }
+  },
+  "seriesEpShort": "S{p1} E{p2}",
+  "@seriesEpShort": {
+    "placeholders": {
+      "p1": {
+        "type": "int"
+      },
+      "p2": {
+        "type": "int"
+      }
+    }
+  },
+  "seriesNoEpisodes": "No episodes found",
+  "seriesPlayEp": "Play S{p1} E{p2}",
+  "@seriesPlayEp": {
+    "placeholders": {
+      "p1": {
+        "type": "int"
+      },
+      "p2": {
+        "type": "int"
+      }
+    }
+  },
+  "seriesWatched": "Watched",
+  "settingsAbout": "About",
+  "settingsEditSource": "Edit source",
+  "settingsLanguageNote": "IPTVMac uses the language of your device. To use another language for this app only, choose it in iOS Settings.",
+  "settingsOpenIOS": "Open iOS Settings",
+  "settingsPasswordNote": "Leave the new password empty to keep the current one. Passwords are stored in the iOS Keychain.",
+  "settingsTitle": "Settings",
+  "sourceDeleteWarn": "The source, its favorites and its watch history are removed from this device. Your provider account is not affected.",
+  "syncNow": "Refresh",
+  "tabLibrary": "Library",
+  "scopeCategory": "In category",
+  "scopeType": "In section",
+  "scopeEverywhere": "Everywhere",
+  "searchPrompt": "Search",
+  "syncRunning": "Syncing…",
+  "syncFailed": "Sync failed",
+  "syncNotUpdated": "Showing saved data",
+  "emptyResults": "Nothing found",
+  "favAdd": "Add to favorites",
+  "favRemove": "Remove from favorites",
+  "playerClose": "Close",
+  "playerSubtitles": "Subtitles",
+  "playerAudio": "Audio",
+  "playerOff": "Off",
+  "playerAddSubtitle": "Add subtitle file…",
+  "playerCatchup": "Watch from the past",
+  "playerFullscreen": "Full screen",
+  "playerError": "Playback failed",
+  "playerRetry": "Retry",
+  "playerPip": "Picture in Picture",
+  "playerPipReturn": "Back to app",
+  "catchupTitle": "Catch-up",
+  "catchupNoEpg": "No program guide. Pick a time manually.",
+  "catchupPick": "Start time",
+  "catchupDuration": "Minutes",
+  "seriesSeason": "Season",
+  "onbWelcomeTitle": "Welcome to IPTVMac",
+  "onbWelcomeBody": "Watch live channels, movies and series from your IPTV provider. Let''s add your first source.",
+  "onbWhereTitle": "Where do the addresses go?",
+  "onbWhereXtream": "Xtream Codes: your provider gives you a server address (like http://host:8080), a username and a password. Enter them below.",
+  "onbWhereM3u": "M3U: give the source a name and paste the playlist link your provider gave you.",
+  "fieldKind": "Type",
+  "fieldName": "Name",
+  "fieldServer": "Server address",
+  "fieldUsername": "Username",
+  "fieldPassword": "Password",
+  "fieldUrl": "Playlist link",
+  "kindXtream": "Xtream Codes",
+  "kindM3u": "M3U",
+  "onbTest": "Test connection",
+  "onbTestOk": "Connected successfully",
+  "onbTestFail": "Connection failed",
+  "onbNext": "Next",
+  "onbBack": "Back",
+  "onbSave": "Save and sync",
+  "settingsAccounts": "Sources",
+  "settingsLanguageSub": "Preferred subtitle languages",
+  "settingsLanguageAudio": "Preferred audio languages",
+  "settingsSubscale": "Subtitle size",
+  "settingsSubdelay": "Subtitle delay (seconds)",
+  "settingsGuide": "Show quick start guide",
+  "settingsDelete": "Delete",
+  "accountAdd": "Add source…",
+  "settingsChangePassword": "Change password…",
+  "settingsNewPassword": "New password",
+  "updateAvailable": "Version {p1} is available",
+  "@updateAvailable": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNow": "Update now",
+  "updateNotes": "What''s new",
+  "updateLater": "Later",
+  "updateDownloading": "Downloading update…",
+  "updateReady": "Version {p1} is ready to install",
+  "@updateReady": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
+  "updateRestart": "Restart to update",
+  "updateFailed": "Update failed",
+  "updateManual": "Download manually",
+  "updateCheckNow": "Check for updates",
+  "updateAuto": "Check for updates automatically",
+  "updateAutoInstall": "Download updates automatically",
+  "updateUpToDate": "You have the latest version",
+  "updateDevBuild": "Updates are only available in the installed app",
+  "updateCurrent": "Current version: {p1}",
+  "@updateCurrent": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
+  "playerBack": "Back",
+  "playerErrorHint": "If this keeps happening, check the source''s password in Settings.",
+  "passwordTitle": "Password needed",
+  "passwordBody": "Enter the password for “{p1}”. It is stored privately on this Mac.",
+  "@passwordBody": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordNone": "Continue without password",
+  "playerSpeed": "Playback speed",
+  "playerSpeedNormal": "Normal",
+  "playerSpeedReset": "Normal speed",
+  "settingsSeekPreview": "Preview thumbnails on the seek bar",
+  "settingsSeekPreviewNote": "Opens a second connection to your provider. Turn it off if playback stops or your provider allows only one connection.",
+  "playerSeekBar": "Playback position",
+  "playerSeekValue": "{p1} of {p2}",
+  "@playerSeekValue": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      },
+      "p2": {
+        "type": "String"
+      }
+    }
+  },
+  "playerLive": "Live",
+  "playerChannelPrev": "Previous channel",
+  "playerChannelNext": "Next channel",
+  "playerScaleFit": "Fit",
+  "playerScaleFill": "Fill",
+  "playerScaleStretch": "Stretch",
+  "playerSubtitleAdjust": "Adjust subtitles…",
+  "playerAirplay": "AirPlay",
+  "playerBrightness": "Brightness",
+  "playerVolume": "Volume",
+  "playerReplay": "Play again",
+  "settingsClock": "Show the time in the player",
+  "settingsSeekStep": "Skip step (arrow keys and skip buttons)",
+  "settingsBarsHide": "Hide the controls after",
+  "settingsNever": "Never",
+  "settingsVideoScale": "Video scale",
+  "settingsScaleFit": "Fit (black bars)",
+  "settingsScaleFill": "Fill (crops the edges)",
+  "settingsScaleStretch": "Stretch",
+  "settingsVideoScaleHint": "Press A in the player to switch between the three.",
+  "settingsBuffer": "Network buffer",
+  "settingsBufferSmall": "Small",
+  "settingsBufferNormal": "Normal",
+  "settingsBufferLarge": "Large",
+  "settingsBufferHint": "A larger buffer helps on a slow or unstable connection.",
+  "unitSeconds": "{p1} seconds",
+  "@unitSeconds": {
+    "placeholders": {
+      "p1": {
+        "type": "int"
+      }
+    }
+  },
+  "unitMinutes": "{p1} minutes",
+  "@unitMinutes": {
+    "placeholders": {
+      "p1": {
+        "type": "int"
+      }
+    }
+  },
+  "unitMinutesShort": "{p1} min",
+  "@unitMinutesShort": {
+    "placeholders": {
+      "p1": {
+        "type": "int"
+      }
+    }
+  },
+  "playerSkipBack": "Back {p1}",
+  "@playerSkipBack": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
+  "playerSkipForward": "Forward {p1}",
+  "@playerSkipForward": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
+  "playerSleep": "Sleep timer",
+  "downloadsTitle": "Downloads",
+  "downloadsAdd": "Download",
+  "downloadsSeason": "Download season",
+  "downloadsChooseFolder": "Choose where to save downloaded movies and episodes",
+  "downloadsChoose": "Choose",
+  "downloadsNotChosen": "Asked at the first download",
+  "downloadsChange": "Change folder…",
+  "downloadsPause": "Pause",
+  "downloadsResume": "Resume",
+  "downloadsCancel": "Cancel",
+  "downloadsPlay": "Play",
+  "downloadsReveal": "Show in Finder",
+  "downloadsDelete": "Delete file",
+  "downloadsEmpty": "No downloads yet",
+  "downloadsQueued": "Waiting",
+  "downloadsDone": "Done",
+  "downloadsHint": "Downloads run one at a time. Many providers allow a single connection, so playing while downloading can fail. Unfinished downloads are not kept when the app quits.",
+  "epgNow": "Now",
+  "epgNext": "Next",
+  "settingsFullscreen": "Open playback in full screen (controls hide until you move the mouse)",
+  "nextTitle": "Up next",
+  "nextIn": "Playing in {p1} s",
+  "@nextIn": {
+    "placeholders": {
+      "p1": {
+        "type": "int"
+      }
+    }
+  },
+  "nextNow": "Play now",
+  "nextCancel": "Cancel",
+  "settingsAutoNext": "Play the next episode automatically",
+  "downloadsNoSpace": "Not enough free disk space",
+  "dbErrorTitle": "IPTVMac cannot open its database",
+  "dbErrorBody": "If another copy of IPTVMac is running, quit it and try again.",
+  "dbRecoveredTitle": "The database was damaged",
+  "dbRecoveredBody": "IPTVMac started with a fresh database (add your source again). The damaged file was kept here:\n{p1}",
+  "@dbRecoveredBody": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
+  "menuShowWindow": "Show Window",
+  "settingsTabGeneral": "General",
+  "settingsTabPlayer": "Player",
+  "settingsTabPlaylists": "Playlists",
+  "settingsAppearance": "Appearance",
+  "settingsSystem": "System",
+  "appearanceLight": "Light",
+  "appearanceDark": "Dark",
+  "settingsInterfaceLanguage": "Interface language",
+  "settingsLanguageRestart": "Takes effect after restarting IPTVMac.",
+  "settingsHideCategories": "Hide categories",
+  "settingsHideCategoriesWords": "Words to hide",
+  "settingsHideCategoriesNote": "Hide categories whose name contains these words (separate them with commas). Their channels, movies and series also disappear from search, favorites and continue watching. This is a plain filter, not a parental lock: anyone can change it here.",
+  "settingsRefresh": "Update playlists",
+  "settingsRefresh0": "Only when the app opens",
+  "settingsRefresh6": "Every 6 hours",
+  "settingsRefresh12": "Every 12 hours",
+  "settingsRefresh24": "Every 24 hours",
+  "settingsBackup": "Backup and restore",
+  "backupExport": "Export backup…",
+  "backupImport": "Import backup…",
+  "backupWarn": "The backup file lists your playlists with their addresses, which can include logins, so keep it private. Passwords of Xtream sources are not saved in it. Importing adds to your current sources and does not delete anything.",
+  "backupExported": "The backup was saved.",
+  "backupImported": "The backup was imported.",
+  "backupErrorInvalid": "This is not an IPTVMac backup file.",
+  "backupErrorVersion": "This backup comes from a different version of IPTVMac and cannot be read.",
+  "backupErrorTooLarge": "This file is too large to be a backup.",
+  "backupFailed": "The backup failed",
+  "settingsClearData": "Clear data",
+  "clearHistory": "Clear watch history",
+  "clearFavorites": "Clear favorites",
+  "clearImages": "Clear image cache",
+  "clearConfirm": "Clear",
+  "clearHistoryWarn": "Resume positions and the continue-watching lists of all sources will be erased. This cannot be undone.",
+  "clearFavoritesWarn": "Your favorites in all sources will be removed. This cannot be undone.",
+  "clearImagesWarn": "Saved logos and posters are removed and downloaded again when needed.",
+  "infoDetails": "Details",
+  "infoPlot": "Plot",
+  "infoCast": "Cast",
+  "infoDirector": "Director",
+  "infoGenre": "Genre",
+  "infoYear": "Release year",
+  "infoRating": "Rating",
+  "infoDuration": "Duration",
+  "infoCountry": "Country",
+  "infoTrailer": "Trailer",
+  "infoPlay": "Play",
+  "infoEmpty": "Your provider has no details for this title.",
+  "infoLoading": "Loading details…",
+  "infoError": "The details could not be loaded.",
+  "unitHoursShort": "{p1} h",
+  "@unitHoursShort": {
+    "placeholders": {
+      "p1": {
+        "type": "int"
+      }
+    }
+  }
+}

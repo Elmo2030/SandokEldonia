@@ -34,3 +34,8 @@ The 31 `.lproj/Localizable.strings` files become Flutter `.arb` files by a scrip
 - Speed: 100k rows inserted in 170-330 ms, a two-word prefix query returns 5000 rows in 50-70 ms on the emulator (the Swift target is 250 ms).
 - Player: media_kit/libmpv opens the HLS stream, reports 1920 wide and a running position (the first frame takes about 10 s in the software emulator). The video area stays BLACK in the emulator: media_kit logs "Emulator detected. Enforcing S/W rendering" and the emulator's EGL refuses the context (EGL_BAD_ATTRIBUTE), a known emulator limit. Verdict on the REAL OnePlus 13 (CPH2653, Android 16): the picture renders correctly (Big Buck Bunny HLS 1920 wide, hardware path, media_kit's own controls), position advances, FTS5 insert of 100k rows 217 ms and prefix query 68 ms. PHASE 0 PASSED.
 - Debug APK is 198 MB (all CPU types); the release APK per CPU type is much smaller: measure in phase 4.
+
+## Phase 1 results (core in Dart, branch flutter-core)
+- `flutter/lib/core/` (API in its README.md) and `flutter/test/core/` (132 tests ported from `Tests/IPTVCoreTests`, plus a performance test). Run: `cd flutter && flutter test`.
+- Host SQLite for the tests is the one bundled by the `sqlite3` package (3.54, FTS5 present); no emulator needed.
+- Speed on the Mac host (Dart VM, debug): 100k items fetched+parsed+inserted+indexed in about 1.1 s, re-sync 0.5 s, two-word prefix search returning 5000 rows 30 ms (target 250 ms).

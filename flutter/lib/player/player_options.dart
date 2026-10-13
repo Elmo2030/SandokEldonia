@@ -23,8 +23,8 @@ enum BufferSize {
 }
 
 /// Options of the libmpv instance. Streams, playlists and subtitles come from a third party: the Xtream password is in the URL, so
-/// HTTPS is verified, and everything that can run code or read the disk is off. No `tls-ca-file`: Android keeps its roots as one file per
-/// certificate in a directory, not as a bundle, so the TLS library's own store decides (checked on the phone, see README.md).
+/// HTTPS is verified, and everything that can run code or read the disk is off. The CA file is set by the engine (ca_bundle.dart): Android keeps
+/// its roots as one file per certificate in a directory, not as a bundle, and mpv's TLS library cannot read that.
 abstract final class EngineOptions {
   /// `hwdec` list: the first one that works wins, so a device without MediaCodec falls back to mpv's safe auto list.
   static const hwdec = 'mediacodec-copy,auto-safe';

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
 
+import 'ca_bundle.dart';
 import 'engine.dart';
 import 'player_options.dart';
 import 'track_label.dart';
@@ -14,7 +15,7 @@ class MediaKitEngine implements PlaybackEngine {
     _player = mk.Player(configuration: const mk.PlayerConfiguration(title: 'IPTVMac'));
     _video = VideoController(_player, configuration: VideoControllerConfiguration(hwdec: hwdec));
     _native = _player.platform as mk.NativePlayer;
-    unawaited(_applyOptions(tlsVerify, subLang, audioLang));
+    _ready = _applyOptions(tlsVerify, subLang, audioLang);
     _subs = [
       _player.stream.playing.listen((p) => _paused = !p),
       _player.stream.error.listen(_onError),
@@ -26,6 +27,7 @@ class MediaKitEngine implements PlaybackEngine {
   late final mk.Player _player;
   late final VideoController _video;
   late final mk.NativePlayer _native;
+  late final Future<void> _ready;           // the options are in before the first file opens
   late final List<StreamSubscription<Object?>> _subs;
   final _failures = StreamController<String>.broadcast();
   final _subtitleScale = ValueNotifier<double>(1);
@@ -43,6 +45,11 @@ class MediaKitEngine implements PlaybackEngine {
     };
     for (final e in options.entries) {
       await _set(e.key, e.value);
+    }
+    if (tlsVerify) {
+      try {
+        await _set('tls-ca-file', await CaBundle.path());
+      } catch (_) {} // no asset (a test): mpv falls back to its own store
     }
   }
 
@@ -108,7 +115,7 @@ class MediaKitEngine implements PlaybackEngine {
     _aid = 0;
     _sid = 0;
     final from = start > 1 ? Duration(seconds: start.toInt()) : null;
-    unawaited(_player.open(mk.Media(source, start: from)).catchError((Object _) {}));
+    unawaited(_ready.then((_) => _disposed ? null : _player.open(mk.Media(source, start: from))).catchError((Object _) {}));
   }
 
   @override

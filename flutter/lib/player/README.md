@@ -53,3 +53,14 @@ ControlsVisibility, InterruptionPolicy), the PlaybackController policy against a
 widget tests of `PlayerScreen` with a fake engine (controls show/hide, double-tap skip, error card + Retry, up-next card and
 countdown, zap, favourite, close/dispose, PiP hides the controls, menus, speed sheet, gestures, right-to-left transport).
 Device: see the section below.
+
+### Device (OnePlus 13, serial be1c9287)
+
+NOT RUN. The phone was connected at the start of the work (in use by the owner, so nothing was launched) and had dropped off adb by
+the time the lab APK was built, and stayed away. What was verified without it: the lab APK builds (`flutter build apk --debug -t
+lib/main_player_lab.dart`, Kotlin and merged manifest compile). Unverified on a device: the picture with the new engine
+options (`hwdec=mediacodec-copy,auto-safe`, `tls-verify=yes` without a CA file: if HTTPS streams fail to open, set `tlsVerify: false`
+in `MediaKitEngine` and report it), the gestures on a real touch screen, PiP (enter, play/pause action, auto-enter, dismiss),
+the audio_service notification, audio with the screen off, call/headphone interruptions, the notification permission prompt
+(Android 13+: `adb shell pm grant io.github.goelir.iptvmac android.permission.POST_NOTIFICATIONS`, or call the `requestNotificationPermission`
+channel method, which nothing calls yet).

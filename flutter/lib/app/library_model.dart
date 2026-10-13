@@ -514,6 +514,18 @@ class LibraryModel extends ChangeNotifier {
 
   Episode? episodeOf(PlayRequest r) => _episodeByUrl[r.url.toString()];
 
+  /// A downloaded file plays under the same progress key as the stream: remember which episode its (file) URL is.
+  void rememberEpisode(Uri url, Episode e) => _episodeByUrl[url.toString()] = e;
+
+  /// Starting a download of an Xtream source whose password is missing asks for it, like playing does. True when it is known.
+  bool ensurePassword(int accountId) {
+    final a = accountById(accountId);
+    if (a == null || hasPassword(a)) return true;
+    passwordPrompt = a;
+    notifyListeners();
+    return false;
+  }
+
   List<Episode> cachedEpisodes(Item series) => db.read((d) => [
         for (final r in d.select('SELECT * FROM episode WHERE accountId = ? AND seriesId = ? ORDER BY season, number', [series.accountId, series.streamId]))
           Episode.fromRow(r)

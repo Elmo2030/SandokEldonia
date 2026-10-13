@@ -19,6 +19,7 @@ NOTARIZED_FROM = "0.9.1"   # first release signed with a Developer ID and notari
 BASE = "https://goelir.github.io/IPTVMac/"
 REPO = "https://github.com/Goelir/IPTVMac"
 DOWNLOAD = REPO + "/releases/latest"
+ANDROID_APK = REPO + "/releases/tag/android-v0.1.0-beta.1"   # the Android beta is a PRE-release on purpose: releases/latest (the Mac updater and install.sh) must stay the Mac release
 FREE_REPO = "https://github.com/iptv-org/iptv"
 FREE_M3U = "https://iptv-org.github.io/iptv/index.m3u"
 YT_INSTALL = "https://youtu.be/TgaoFEEMg48"
@@ -236,6 +237,7 @@ HOME = {
           ("guides/m3u-playlist-on-mac.html", "How to play an M3U playlist on a Mac", "Add a playlist link and get Live, Movies and Series."),
           ("guides/picture-in-picture-iptv-mac.html", "Picture in Picture for IPTV on a Mac", "Keep a stream in a floating window while you do something else.")],
   cta_l=["Free.", "Open source."], cta_p="GPL-3.0. No account, no ads, no tracking.", cta_dl="Download for Mac", cta_src="Source on GitHub",
+  android_dl="Android beta (APK)", android_p="IPTVMac for Android is in public beta: download the APK (Android 8 or later; the arm64-v8a file suits almost every phone), allow installs from your browser or Files app, and install. The release notes have the details and the SHA-256 checksums.",
   foot="IPTVMac is a media player. It does not include or host any content; use only sources you are authorized to access. IPTVMac is not affiliated with iptv-org.",
   foot_about="A free, open source IPTV player for Mac.",
   foot_cols=[("Explore", [("#search", "Search"), ("#player", "Player"), ("#pip", "Picture in Picture"), ("#playlists", "Playlists"), ("#languages", "Languages"), ("#install", "Install")]),
@@ -320,6 +322,7 @@ HOME = {
           ("../guides/m3u-playlist-on-mac.html", "How to play an M3U playlist on a Mac", "מוסיפים קישור לרשימה ומקבלים ערוצים, סרטים וסדרות."),
           ("../guides/picture-in-picture-iptv-mac.html", "Picture in Picture for IPTV on a Mac", "משאירים סטרים בחלון צף ועושים משהו אחר.")],
   cta_l=["חינם.", "קוד פתוח."], cta_p="GPL-3.0. בלי חשבון, בלי פרסומות ובלי מעקב.", cta_dl="הורדה ל-Mac", cta_src="קוד המקור ב-GitHub",
+  android_dl="בטא ל-Android (APK)", android_p="IPTVMac ל-Android בבטא ציבורית: מורידים את ה-APK (Android 8 ומעלה; הקובץ arm64-v8a מתאים לכמעט כל טלפון), מאשרים התקנה מהדפדפן או מאפליקציית הקבצים, ומתקינים. בהערות הגרסה יש פרטים וסכומי SHA-256.",
   foot="IPTVMac הוא נגן. הוא לא כולל ולא מארח תוכן כלשהו; השתמשו רק במקורות שמותר לכם לגשת אליהם. IPTVMac אינו קשור ל-iptv-org.",
   foot_about="נגן IPTV חינמי ובקוד פתוח ל-Mac.",
   foot_cols=[("בעמוד", [("#search", "חיפוש"), ("#player", "נגן"), ("#pip", "תמונה בתוך תמונה"), ("#playlists", "רשימות"), ("#languages", "שפות"), ("#install", "התקנה")]),
@@ -488,6 +491,7 @@ def home(code):
 <p class="lede">{e(c["lede"])}</p>
 <div class="install-bar"><p><b>{e(c["cmd_b"])}</b> {e(c["cmd_t"])}</p>{cmd_block(c)}</div>
 <div class="actions"><a class="btn" data-fx-magnetic href="{DOWNLOAD}">{ICON_DL}{e(c["dl"])}</a><a class="link" href="{REPO}" rel="noopener">{ICON_GH}{e(c["src"])}</a>
+<a class="link" href="{ANDROID_APK}" rel="noopener">{ICON_DL}{e(c["android_dl"])}</a>
 <a class="link tour-link" href="{up}assets/demo.mp4">{ICON_PLAY}{e(c["tour"])}</a></div>
 <p class="meta">{e(c["meta"])}</p></div>
 <div class="hero-obj" data-fx-tilt><div class="pose"><div class="win hero-win">{hero_pic}</div>{hero_pip}</div></div>
@@ -522,7 +526,8 @@ def home(code):
 <p style="margin-top:14px"><a class="link" href="{YT_INSTALL}" rel="noopener">{ICON_PLAY}{e(c["video"])}</a></p></div>
 {term(c)}</div>
 <div class="note"><div><h3>{e(c["why_h"])}</h3><p>{e(c["why"])}</p></div>
-<div><h3>{e(c["dmg_h"])}</h3><ol class="steps">{steps}</ol><p class="old">{c["dmg_old"]}</p><a class="btn" href="{DOWNLOAD}">{ICON_DL}{e(c["dl"])}</a></div></div></div></section>
+<div><h3>{e(c["dmg_h"])}</h3><ol class="steps">{steps}</ol><p class="old">{c["dmg_old"]}</p><a class="btn" href="{DOWNLOAD}">{ICON_DL}{e(c["dl"])}</a></div></div>
+<div class="note"><div><h3>Android</h3><p>{e(c["android_p"])}</p><a class="btn" href="{ANDROID_APK}" rel="noopener">{ICON_DL}{e(c["android_dl"])}</a></div></div></div></section>
 '''
     # free playlists, faq, guides
     out += f'''<section class="free" id="free" aria-labelledby="free-h"><div class="wrap free-grid"><h2 id="free-h">{e(c["free_h"])}</h2><div><p>{e(c["free_p"])}</p>
@@ -534,7 +539,7 @@ def home(code):
 '''
     # closing
     out += f'''<section class="finale" id="get" data-fx-scene aria-labelledby="get-h"><div class="wrap"><h2 id="get-h"><span class="l">{e(c["cta_l"][0])}</span> <span class="l">{e(c["cta_l"][1])}</span></h2>
-<p>{e(c["cta_p"])}</p><div class="actions"><a class="btn fill big" data-fx-magnetic href="{DOWNLOAD}">{ICON_DL}{e(c["cta_dl"])}</a><a class="btn big" data-fx-magnetic href="{REPO}">{ICON_GH}{e(c["cta_src"])}</a></div>
+<p>{e(c["cta_p"])}</p><div class="actions"><a class="btn fill big" data-fx-magnetic href="{DOWNLOAD}">{ICON_DL}{e(c["cta_dl"])}</a><a class="btn big" data-fx-magnetic href="{ANDROID_APK}" rel="noopener">{ICON_DL}{e(c["android_dl"])}</a><a class="btn big" data-fx-magnetic href="{REPO}">{ICON_GH}{e(c["cta_src"])}</a></div>
 <p class="disc">{e(c["foot"])}</p></div></section>
 </main>
 '''

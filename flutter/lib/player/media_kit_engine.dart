@@ -172,6 +172,7 @@ class MediaKitEngine implements PlaybackEngine {
           fit: fit,
           controls: NoVideoControls,
           fill: Colors.black,
+          pauseUponEnteringBackgroundMode: false, // the default pauses the sound when the screen turns off; the media session decides what plays in the background
           subtitleViewConfiguration: SubtitleViewConfiguration(
             style: TextStyle(fontSize: 32 * scale, color: Colors.white, backgroundColor: const Color(0xAA000000), height: 1.3),
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 56),

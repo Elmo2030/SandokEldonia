@@ -5,9 +5,14 @@ import 'package:iptvmac/app/sync_worker.dart';
 import 'package:iptvmac/app/watch_progress.dart';
 import 'package:iptvmac/core/item_info.dart';
 import 'package:iptvmac/core/models.dart';
+import 'package:iptvmac/downloads/download_entry.dart';
+import 'package:iptvmac/downloads/downloads_model.dart';
+import 'package:iptvmac/downloads/library_downloads.dart';
 import 'package:iptvmac/l10n/app_localizations.dart';
 import 'package:iptvmac/ui/artwork.dart';
 import 'package:iptvmac/ui/browse_screen.dart';
+import 'package:iptvmac/ui/download_button.dart';
+import 'package:iptvmac/ui/missing_strings.dart';
 import 'package:iptvmac/ui/details_sheet.dart';
 import 'package:iptvmac/ui/info_parts.dart';
 import 'package:iptvmac/ui/item_views.dart';
@@ -72,6 +77,15 @@ class _SeriesScreenState extends State<SeriesScreen> {
     if (mounted) setState(() => _progress = m.episodeProgress(series)); // the resume points moved while watching
   }
 
+  Future<void> _downloadSeason(List<Episode> episodes) async {
+    final m = context.read<LibraryModel>(), d = context.read<DownloadsModel>();
+    final messenger = ScaffoldMessenger.of(context);
+    for (final e in episodes) {
+      if (await m.downloadEpisode(d, series, e) == AddResult.noUrl) return; // no password: the dialog is up, asking once is enough
+    }
+    messenger.showSnackBar(SnackBar(content: Text(Missing.downloadsAdded)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -97,6 +111,16 @@ class _SeriesScreenState extends State<SeriesScreen> {
         ));
       }
       final eps = [for (final e in _episodes) if (e.season == _season) e]..sort((a, b) => a.number.compareTo(b.number));
+      final saveable = [for (final e in eps) if (context.read<LibraryModel>().canDownloadEpisode(e)) e];
+      if (saveable.isNotEmpty && context.watch<DownloadsModel>().enabled) {
+        body.add(Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(start: 8),
+            child: TextButton.icon(key: const Key('download-season'), icon: const Icon(Icons.download_outlined), label: Text(l.downloadsSeason), onPressed: () => _downloadSeason(saveable)),
+          ),
+        ));
+      }
       body.add(Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         child: Card(
@@ -149,6 +173,7 @@ class _SeriesScreenState extends State<SeriesScreen> {
   Widget _episodeRow(BuildContext context, Episode e) {
     final l = AppLocalizations.of(context);
     final cs = Theme.of(context).colorScheme;
+    final m = context.read<LibraryModel>();
     final p = _progress[e.streamId];
     final isNext = _upNext?.episode.streamId == e.streamId;
     return InkWell(
@@ -167,6 +192,9 @@ class _SeriesScreenState extends State<SeriesScreen> {
                 if (p != null && !p.isWatched && p.fraction > 0.01) Padding(padding: const EdgeInsets.only(top: 4), child: SizedBox(width: 140, child: ProgressBar(value: p.fraction, height: 3))),
               ]),
             ),
+            if (m.canDownloadEpisode(e))
+              DownloadButton(
+                  entryKey: DownloadEntry.keyOf(series.accountId, series.type, series.streamId, e.streamId), start: (d) => m.downloadEpisode(d, series, e)),
             const SizedBox(width: 8),
             if (p?.isWatched == true) Icon(Icons.check_circle, color: cs.onSurfaceVariant, semanticLabel: l.seriesWatched) else Icon(Icons.play_arrow_rounded, size: 20, color: isNext ? cs.primary : cs.onSurfaceVariant.withValues(alpha: 0.6)),
           ]),

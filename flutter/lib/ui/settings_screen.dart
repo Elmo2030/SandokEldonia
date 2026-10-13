@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/core/backup.dart';
 import 'package:iptvmac/core/models.dart';
+import 'package:iptvmac/downloads/downloads_model.dart';
 import 'package:iptvmac/l10n/app_localizations.dart';
 import 'package:iptvmac/ui/about_screens.dart';
+import 'package:iptvmac/ui/downloads_screen.dart';
 import 'package:iptvmac/ui/missing_strings.dart';
 import 'package:iptvmac/ui/source_form.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +28,7 @@ class SettingsScreen extends StatelessWidget {
           child: ListView(padding: const EdgeInsets.only(bottom: 24), children: const [
             _SourcesSection(),
             _PreferencesSection(),
+            _DownloadsTile(),
             _HiddenCategoriesSection(),
             _BackupSection(),
             _ClearSection(),
@@ -283,6 +286,25 @@ class _ClearSection extends StatelessWidget {
             if (await confirm(context, title: e.value.$1, message: e.value.$2, action: l.clearConfirm)) await m.clear(e.key);
           },
         ),
+    ]);
+  }
+}
+
+class _DownloadsTile extends StatelessWidget {
+  const _DownloadsTile();
+
+  @override
+  Widget build(BuildContext context) {
+    if (!context.watch<DownloadsModel>().enabled) return const SizedBox.shrink();
+    final l = AppLocalizations.of(context);
+    return _Section(title: null, children: [
+      ListTile(
+        key: const Key('downloads-tile'),
+        leading: Icon(Icons.arrow_circle_down_outlined, color: Theme.of(context).colorScheme.primary),
+        title: Text(l.downloadsTitle),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const DownloadsScreen())),
+      ),
     ]);
   }
 }

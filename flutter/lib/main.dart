@@ -7,6 +7,7 @@ import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/app/secure_secret_store.dart';
 import 'package:iptvmac/app/sync_worker.dart';
 import 'package:iptvmac/core/app_database.dart';
+import 'package:iptvmac/downloads/open_downloads.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +42,8 @@ Future<void> main() async {
   );
   if (failure != null) model.syncMessage = failure;
   await model.loadAccounts(); // before the first frame: a returning user must not see the welcome screen for an instant
-  runApp(IptvApp(model: model));
+  final downloads = await openDownloads(model, dir);
+  runApp(IptvApp(model: model, downloads: downloads));
   await model.start();
   if (kDebugMode && const bool.fromEnvironment('DEMO_SEED')) await seedDemo(model);
 }

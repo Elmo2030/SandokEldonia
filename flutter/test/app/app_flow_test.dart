@@ -322,4 +322,17 @@ void main() {
       expect(tester.takeException(), isNull, reason: 'section $label');
     }
   });
+
+  testWidgets('a tablet gets a navigation rail and a wider poster grid; large text does not overflow', (tester) async {
+    final h = await Harness.create(tester, withAccount: true, sync: true);
+    await h.pumpApp(tester, size: const Size(1000, 700), textScale: 2);
+    await go(tester);
+    expect(find.byType(NavigationRail), findsOneWidget);
+    expect(find.byType(NavigationBar), findsNothing);
+    for (final label in ['Movies', 'Series', 'Library', 'Settings', 'Live']) {
+      await tester.tap(find.descendant(of: find.byType(NavigationRail), matching: find.text(label)));
+      await go(tester);
+      expect(tester.takeException(), isNull, reason: label);
+    }
+  });
 }

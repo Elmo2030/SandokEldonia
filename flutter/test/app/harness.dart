@@ -19,6 +19,8 @@ class FakeProvider {
   FakeProvider() {
     client = MockClient((r) async {
       calls.add(r.url);
+      if (fail) throw http.ClientException('connection refused ${r.url}'); // like the real client: the message holds the URL
+      if (r.url.path.endsWith('.m3u')) return res(m3u);
       final q = r.url.queryParameters;
       if (q['username'] != 'u' || q['password'] != 'p') return res('{"user_info":{"auth":0}}');
       return res(switch (q['action']) {
@@ -43,6 +45,12 @@ class FakeProvider {
   late final http.Client client;
   final calls = <Uri>[];
 
+  /// Makes every request fail (the provider is down).
+  bool fail = false;
+
+  /// What a playlist link answers (for the M3U test connection).
+  String m3u = '#EXTM3U';
+
   static http.Response res(String body) => http.Response.bytes(utf8.encode(body), 200);
 
   static String _epg() {
@@ -60,6 +68,9 @@ class Harness {
   final MemorySecretStore secrets;
   final FakeProvider provider;
   final LibraryModel model;
+
+  /// Without a tester: for plain `test()`s, which have real async.
+  static Future<Harness> createPlain({bool withAccount = false, bool sync = false}) => _create(withAccount: withAccount, sync: sync, prefs: const {});
 
   static Future<Harness> create(WidgetTester tester, {bool withAccount = false, bool sync = false, Map<String, Object> prefs = const {}}) async =>
       (await tester.runAsync(() => _create(withAccount: withAccount, sync: sync, prefs: prefs)))!;

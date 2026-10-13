@@ -166,7 +166,7 @@ class _PreferencesSection extends StatelessWidget {
         ),
       ]),
       _Section(title: null, note: Text(Missing.languageNote), children: [
-        ListTile(title: Text(l.settingsInterfaceLanguage), trailing: Text(Localizations.localeOf(context).toLanguageTag())),
+        ListTile(title: Text(l.settingsInterfaceLanguage), trailing: Text(languageName(Localizations.localeOf(context)))),
       ]),
     ]);
   }
@@ -303,4 +303,16 @@ class _AboutTile extends StatelessWidget {
       ),
     ]);
   }
+}
+
+/// The language's own name (the 31 languages of the app).
+String languageName(Locale l) {
+  const names = {
+    'ar': 'العربية', 'bg': 'Български', 'bn': 'বাংলা', 'cs': 'Čeština', 'de': 'Deutsch', 'el': 'Ελληνικά', 'en': 'English', 'es': 'Español',
+    'fa': 'فارسی', 'fr': 'Français', 'he': 'עברית', 'hi': 'हिन्दी', 'hu': 'Magyar', 'id': 'Indonesia', 'it': 'Italiano', 'ja': '日本語',
+    'ko': '한국어', 'nl': 'Nederlands', 'pl': 'Polski', 'pt': 'Português', 'ro': 'Română', 'ru': 'Русский', 'sq': 'Shqip', 'sv': 'Svenska',
+    'th': 'ไทย', 'tr': 'Türkçe', 'uk': 'Українська', 'ur': 'اردو', 'vi': 'Tiếng Việt',
+  };
+  if (l.languageCode == 'zh') return l.scriptCode == 'Hant' ? '繁體中文' : '简体中文';
+  return names[l.languageCode] ?? l.toLanguageTag();
 }

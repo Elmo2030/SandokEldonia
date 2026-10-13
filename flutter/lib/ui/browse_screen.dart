@@ -170,9 +170,12 @@ class ScopeChips extends StatelessWidget {
     final m = context.watch<LibraryModel>();
     final l = AppLocalizations.of(context);
     final names = {SearchScope.category: l.scopeCategory, SearchScope.type: l.scopeType, SearchScope.everywhere: l.scopeEverywhere};
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Wrap(spacing: 8, children: [for (final s in SearchScope.values) AppChip(label: names[s]!, selected: m.scope == s, onTap: () => m.setScope(s))]),
+    return SizedBox(
+      width: double.infinity, // a Column would centre the wrapped chips
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Wrap(spacing: 8, children: [for (final s in SearchScope.values) AppChip(label: names[s]!, selected: m.scope == s, onTap: () => m.setScope(s))]),
+      ),
     );
   }
 }

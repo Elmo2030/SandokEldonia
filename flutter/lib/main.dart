@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:iptvmac/app/app.dart';
+import 'package:iptvmac/app/demo_seed.dart';
 import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/app/secure_secret_store.dart';
 import 'package:iptvmac/app/sync_worker.dart';
@@ -40,5 +42,6 @@ Future<void> main() async {
   if (failure != null) model.syncMessage = failure;
   await model.loadAccounts(); // before the first frame: a returning user must not see the welcome screen for an instant
   runApp(IptvApp(model: model));
-  model.start();
+  await model.start();
+  if (kDebugMode && const bool.fromEnvironment('DEMO_SEED')) await seedDemo(model);
 }

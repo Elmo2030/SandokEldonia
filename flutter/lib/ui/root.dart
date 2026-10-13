@@ -93,13 +93,16 @@ class _RootScreenState extends State<RootScreen> {
     if (rail) {
       return Scaffold(
         body: Row(children: [
-          SafeArea(
-            child: NavigationRail(
-              selectedIndex: _index,
-              onDestinationSelected: _select,
-              labelType: NavigationRailLabelType.all,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-              destinations: [for (final d in dests) NavigationRailDestination(icon: Icon(d.$1), selectedIcon: Icon(d.$2), label: Text(d.$3))],
+          ColoredBox(
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
+            child: SafeArea(
+              child: NavigationRail(
+                selectedIndex: _index,
+                onDestinationSelected: _select,
+                labelType: NavigationRailLabelType.all,
+                backgroundColor: Colors.transparent,
+                destinations: [for (final d in dests) NavigationRailDestination(icon: Icon(d.$1), selectedIcon: Icon(d.$2), label: Text(d.$3))],
+              ),
             ),
           ),
           Expanded(child: body),

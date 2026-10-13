@@ -77,6 +77,16 @@ void main() {
     });
   });
 
+  testWidgets('a source without a stored password asks for it instead of starting', (tester) async {
+    final s = await setup(tester);
+    final b = s.h.db.write((d) => Account(name: 'B', kind: AccountKind.xtream, server: 'http://other.test', username: 'x').insert(d));
+    await tester.runAsync(s.h.model.loadAccounts);
+    final r = await tester.runAsync(() => s.h.model.downloadMovie(s.downloads, Item(accountId: b.id!, type: ItemType.movie, name: 'M', streamId: '1', containerExt: 'mp4')));
+    expect(r, AddResult.noUrl);
+    expect(s.h.model.passwordPrompt?.id, b.id);
+    expect(s.engine.jobs, isEmpty);
+  });
+
   group('the button', () {
     testWidgets('a movie sheet has it; tapping starts the download with the playback URL, then shows progress', (tester) async {
       final s = await setup(tester);

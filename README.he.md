@@ -23,7 +23,7 @@ Xtream Codes ו-M3U, חיפוש מיידי, נגן מובנה עם כתוביו�
 
 </div>
 
-[**הורדה**](https://github.com/Goelir/IPTVMac/releases/latest) &nbsp;|&nbsp; [אתר](https://goelir.github.io/IPTVMac/he/) &nbsp;|&nbsp; [התקנה](#התקנה) &nbsp;|&nbsp; [יכולות](#יכולות) &nbsp;|&nbsp; [שאלות נפוצות](#שאלות-נפוצות) &nbsp;|&nbsp; [English](README.md)
+[**הורדה ל-Mac**](https://github.com/Goelir/IPTVMac/releases/latest) &nbsp;|&nbsp; [**בטא ל-Android (APK)**](https://github.com/Goelir/IPTVMac/releases/tag/android-v0.1.0-beta.1) &nbsp;|&nbsp; [אתר](https://goelir.github.io/IPTVMac/he/) &nbsp;|&nbsp; [התקנה](#התקנה) &nbsp;|&nbsp; [יכולות](#יכולות) &nbsp;|&nbsp; [שאלות נפוצות](#שאלות-נפוצות) &nbsp;|&nbsp; [English](README.md)
 
 <br>
 

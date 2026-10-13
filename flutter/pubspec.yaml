@@ -49,6 +49,12 @@ dependencies:
   flutter_secure_storage: ^11.2.0
   wakelock_plus: ^1.8.1
   cached_network_image: ^4.0.4
+  audio_service: ^0.18.19
+  audio_session: ^0.2.4
+  screen_brightness: ^2.1.11
+  volume_controller: ^3.7.1
+  file_picker: ^13.1.0
+  flutter_localized_locales: ^2.0.5
 
 dev_dependencies:
   flutter_test:

@@ -4,7 +4,7 @@ Status: started 2026-10-13. Flutter + media_kit (the same libmpv builds the iPho
 
 ## Decisions (made with the owner)
 - Framework: Flutter, Dart. Player: `media_kit` (libmpv). Database: SQLite with FTS5 (`unicode61 remove_diacritics`), the same schema as `Sources/IPTVCore/AppDatabase.swift`.
-- Location: `android/` in this repository (same history, same translations, same website).
+- Location: `flutter/` in this repository (not `android/`: the same code later builds Windows too) (same history, same translations, same website).
 - Package id: `io.github.goelir.iptvmac`. Minimum Android 8 (API 26).
 - Version 1: phones and tablets, distributed as a signed APK on GitHub Releases (no Play Store yet). Android TV and remote control: version 2.
 - Tests: headless emulator only (`emulator -no-window`), never a window popping up; a real phone later.
@@ -27,3 +27,10 @@ The 31 `.lproj/Localizable.strings` files become Flutter `.arb` files by a scrip
 - FTS5 availability in the SQLite that ships with Android (old versions lack it). Mitigation: bundle SQLite (`sqlite3_flutter_libs`), tested in phase 0.
 - 100k-item sync speed in Dart isolates. Mitigation: batch inserts in a transaction, measured against the Swift numbers (search under 250 ms).
 - Play Store policy for IPTV players (not needed for the APK route).
+
+## Phase 0 results (2026-10-13, headless emulator Android 16 arm64, debug build; real phone still to do)
+- Toolchain installed (Flutter 3.47.7, JDK 17, Android SDK 36); `flutter doctor` green for Android. Emulator: `emulator -avd iptv_api36 -no-window -no-audio -gpu host` (needs the AVD `iptv_api36`, created with avdmanager).
+- FTS5: present in the bundled SQLite 3.54 (`sqlite3_flutter_libs`). `unicode61 remove_diacritics 2` folds Latin accents (cafe finds Café, creme finds Crème). It does NOT fold Hebrew niqqud or Arabic tashkeel (a name stored with them is not found without them): same behaviour as the Apple apps (same tokenizer), channel names rarely carry them; fix later by normalizing text before indexing if wanted.
+- Speed: 100k rows inserted in 170-330 ms, a two-word prefix query returns 5000 rows in 50-70 ms on the emulator (the Swift target is 250 ms).
+- Player: media_kit/libmpv opens the HLS stream, reports 1920 wide and a running position (the first frame takes about 10 s in the software emulator). The video area stays BLACK in the emulator: media_kit logs "Emulator detected. Enforcing S/W rendering" and the emulator's EGL refuses the context (EGL_BAD_ATTRIBUTE), a known emulator limit. NOT a verdict: the picture must be checked on the real OnePlus 13 (USB debugging, `adb devices`).
+- Debug APK is 198 MB (all CPU types); the release APK per CPU type is much smaller: measure in phase 4.

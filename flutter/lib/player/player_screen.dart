@@ -61,7 +61,7 @@ class _PlayerScreenState extends State<PlayerScreen> with WidgetsBindingObserver
       await system.exit();
       return;
     }
-    setState(() => _model = PlayerModel(host: widget.host, request: widget.request, engine: engine, system: system, prefs: prefs, clock: widget.clock ?? DateTime.now));
+    setState(() => _model = PlayerModel(host: widget.host, request: widget.request, engine: engine, system: system, prefs: prefs, clock: widget.clock ?? DateTime.now, canRotate: phone));
   }
 
   @override

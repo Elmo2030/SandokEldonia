@@ -45,6 +45,9 @@ class FakeSystem extends PlayerSystem {
   final levels = <double>[];
   @override
   void setVolume(double v) => levels.add(v);
+  final portraits = <bool>[];
+  @override
+  Future<void> setPortrait(bool portrait) async => portraits.add(portrait);
 }
 
 Item item(String name, {ItemType type = ItemType.movie}) => Item(accountId: 1, type: type, name: name, streamId: name);
@@ -77,6 +80,25 @@ void playing(FakeEngine e, {double position = 5, double duration = 600}) {
 }
 
 void main() {
+  testWidgets('the rotate button turns a phone upright and back, and a tablet has none', (t) async {
+    final (e, _, sys) = await open(t, movie());
+    playing(e);
+    await t.pump(const Duration(milliseconds: 300));
+    await t.tap(find.byIcon(Icons.stay_current_portrait));
+    await t.pump(const Duration(milliseconds: 100));
+    expect(sys.portraits, [true]);
+    await t.tap(find.byIcon(Icons.stay_current_landscape));
+    await t.pump(const Duration(milliseconds: 100));
+    expect(sys.portraits, [true, false]);
+    await t.pumpWidget(const SizedBox());
+
+    final (e2, _, _) = await open(t, movie(), size: const Size(1200, 800));
+    playing(e2);
+    await t.pump(const Duration(milliseconds: 300));
+    expect(find.byIcon(Icons.stay_current_portrait), findsNothing);
+    await t.pumpWidget(const SizedBox());
+  });
+
   testWidgets('loads the request and shows the title, the transport and the seek bar', (t) async {
     final (e, _, _) = await open(t, movie());
     expect(e.loads.single, ('http://x/Sintel.mp4', 0.0));

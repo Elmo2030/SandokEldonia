@@ -61,6 +61,9 @@ class PlayerSystem {
   /// Landscape on phones, immersive bars, screen awake. Undone by [exit].
   Future<void> enter({required bool lockLandscape}) async {}
   Future<void> exit() async {}
+
+  /// The rotate button: upright (true) or landscape (false), until the player closes.
+  Future<void> setPortrait(bool portrait) async {}
   void setAwake(bool awake) {}
 
   /// 0...1; null when the system cannot tell.

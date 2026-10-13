@@ -3,4 +3,7 @@
 abstract final class MissingStrings {
   /// Name of the notification channel for the playback notification (shown in Android's app notification settings).
   static const playbackChannel = 'Playback';
+
+  /// The rotate button in the player (accessibility label): the screen goes upright or back to landscape.
+  static const rotateScreen = 'Rotate screen';
 }

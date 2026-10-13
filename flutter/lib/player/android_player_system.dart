@@ -36,6 +36,10 @@ class AndroidPlayerSystem extends PlayerSystem {
   }
 
   @override
+  Future<void> setPortrait(bool portrait) => SystemChrome.setPreferredOrientations(
+      portrait ? [DeviceOrientation.portraitUp] : [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+
+  @override
   Future<void> exit() async {
     updatePip(aspect: 0, playing: false, autoEnter: false);
     setAwake(false);

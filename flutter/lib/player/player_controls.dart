@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'missing_strings.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 
 import '../l10n/app_localizations.dart';
@@ -43,6 +44,12 @@ class PlayerTopBar extends StatelessWidget {
           },
         ),
       if (model.pipSupported) PlayerButton(icon: Icons.picture_in_picture_alt, label: l.playerPip, onPressed: model.startPip),
+      if (model.canRotate)
+        PlayerButton(
+          icon: model.portrait ? Icons.stay_current_landscape : Icons.stay_current_portrait,
+          label: MissingStrings.rotateScreen,
+          onPressed: model.toggleOrientation,
+        ),
     ]);
   }
 }

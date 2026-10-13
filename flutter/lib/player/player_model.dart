@@ -28,6 +28,7 @@ class PlayerModel extends ChangeNotifier {
     Duration? tickInterval = const Duration(milliseconds: 250),
     UpNext? upNext,
     DateTime Function() clock = DateTime.now,
+    this.canRotate = false,
   })  : _now = clock,
         core = PlaybackController(engine, tickInterval: tickInterval, clock: clock),
         upNext = upNext ?? UpNext(),
@@ -80,6 +81,8 @@ class PlayerModel extends ChangeNotifier {
   bool boosting = false; // long press: 2x while held
   bool pipActive = false;
   bool pipSupported = false;
+  bool portrait = false; // the rotate button turned the screen upright
+  final bool canRotate; // phones only: a tablet already follows the device
   bool canZapNext = false;
   bool canZapPrevious = false;
   bool hasNextEpisode = false;
@@ -300,6 +303,14 @@ class PlayerModel extends ChangeNotifier {
   }
 
   // Picture in Picture
+
+  /// The rotate button: upright and back to landscape, until the player closes.
+  Future<void> toggleOrientation() async {
+    portrait = !portrait;
+    notifyListeners();
+    await system.setPortrait(portrait);
+    touchControls();
+  }
 
   Future<void> startPip() async {
     if (await system.enterPip(aspect: core.engine.aspect, playing: !core.paused)) touchControls();

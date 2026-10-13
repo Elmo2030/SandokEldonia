@@ -82,6 +82,7 @@ class PlayerModel extends ChangeNotifier {
   bool pipSupported = false;
   bool canZapNext = false;
   bool canZapPrevious = false;
+  bool hasNextEpisode = false;
   ({TouchSide side, String label, int id})? skipHud;
   ({LevelKind kind, double value, int id})? levelHud;
   ({VideoScale scale, int id})? toast;
@@ -102,6 +103,7 @@ class PlayerModel extends ChangeNotifier {
   bool _closed = false;
   bool _wasPaused = true;
   double _lastAspect = 0;
+  DateTime _programmeAt = DateTime.fromMillisecondsSinceEpoch(0);
 
   void _save(double position, double duration) => host.saveProgress(request, position, duration);
 
@@ -112,7 +114,6 @@ class PlayerModel extends ChangeNotifier {
 
   bool get closed => _closed;
   bool get isLive => request.isLive;
-  bool get hasNextEpisode => !isLive && host.nextEpisode(request) != null;
 
   /// The first line of text under the title: the programme on now (live) or the request's own subtitle.
   String? get subtitle => (isLive ? programme : null) ?? request.subtitle;
@@ -131,7 +132,12 @@ class PlayerModel extends ChangeNotifier {
     if (_closed) return;
     controls.tick(_now(), holding: holdControls);
     system.setAwake(!core.paused);
-    programme = isLive ? host.liveProgramme(request) : null;
+    final now = _now();
+    if (now.difference(_programmeAt) >= const Duration(seconds: 5)) {
+      _programmeAt = now; // the host looks the guide and the queues up: not four times a second
+      programme = isLive ? host.liveProgramme(request) : null;
+      _refreshQueues();
+    }
     system.updateNowPlaying(NowPlaying(
       title: request.title,
       subtitle: subtitle,
@@ -200,6 +206,7 @@ class PlayerModel extends ChangeNotifier {
     upNext.cancel();
     core.play(r.url.toString(), live: r.isLive, start: r.start); // saves the old position, so `request` must still be the old one
     request = r;
+    _programmeAt = DateTime.fromMillisecondsSinceEpoch(0);
     _refreshQueues();
     touchControls();
   }
@@ -222,6 +229,7 @@ class PlayerModel extends ChangeNotifier {
   void _refreshQueues() {
     canZapNext = isLive && host.zap(request, 1) != null;
     canZapPrevious = isLive && host.zap(request, -1) != null;
+    hasNextEpisode = !isLive && host.nextEpisode(request) != null;
   }
 
   void _endChanged(bool ended) {

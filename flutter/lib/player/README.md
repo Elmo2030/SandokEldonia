@@ -47,4 +47,9 @@ Tests: `cd flutter && flutter test test/player`.
 
 ## Verification
 
-See the end of this file (filled in from the device runs).
+Host (`flutter test`, Mac): all pure-Dart logic with the same cases as `Tests/IPTVPlayerTests` (PlaybackSpeed, SeekBarMath,
+SleepTimer, TrackLabel with an injected name table, PlayerGestures, SkipAccumulator, LiveRecovery, EndOfMedia, PauseClock,
+ControlsVisibility, InterruptionPolicy), the PlaybackController policy against a fake engine, and
+widget tests of `PlayerScreen` with a fake engine (controls show/hide, double-tap skip, error card + Retry, up-next card and
+countdown, zap, favourite, close/dispose, PiP hides the controls, menus, speed sheet, gestures, right-to-left transport).
+Device: see the section below.

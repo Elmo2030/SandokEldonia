@@ -31,6 +31,7 @@ class AndroidPlayerSystem extends PlayerSystem {
 
   @override
   Future<void> enter({required bool lockLandscape}) async {
+    unawaited(_channel.invokeMethod<void>('requestNotificationPermission').catchError((Object _) {})); // Android 13+: the playback notification needs it
     await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     if (lockLandscape) await SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
   }

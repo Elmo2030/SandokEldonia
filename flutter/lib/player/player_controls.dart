@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:iptvmac/ui/bidi.dart';
 import 'missing_strings.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 
@@ -28,7 +29,7 @@ class PlayerTopBar extends StatelessWidget {
       const SizedBox(width: 8),
       Expanded(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-          Text(model.request.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600, shadows: _shadow)),
+          Text(model.request.title, textDirection: titleDirection(model.request.title), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600, shadows: _shadow)),
           if (subtitle != null && subtitle.isNotEmpty)
             Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 13, shadows: _shadow)),
         ]),

@@ -70,7 +70,15 @@ class _RootScreenState extends State<RootScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => PopScope(
+        canPop: _index == 0, // back from another tab goes to the first tab; from the first it leaves the app
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) _select(0);
+        },
+        child: _content(context),
+      );
+
+  Widget _content(BuildContext context) {
     final hasAccounts = context.select<LibraryModel, bool>((m) => m.accounts.isNotEmpty);
     if (!hasAccounts) return const OnboardingScreen();
     final l = AppLocalizations.of(context);

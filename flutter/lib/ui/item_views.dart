@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:iptvmac/ui/bidi.dart';
 import 'package:flutter/semantics.dart';
 import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/app/watch_progress.dart';
@@ -78,7 +79,7 @@ class ProgramLine extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 2),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(now.title, maxLines: big ? 2 : 1, overflow: TextOverflow.ellipsis, style: t),
+        Text(now.title, textDirection: titleDirection(now.title), maxLines: big ? 2 : 1, overflow: TextOverflow.ellipsis, style: t),
         if (big && p.next != null)
           Text('${l.epgNext}: ${p.next!.title}', maxLines: 2, overflow: TextOverflow.ellipsis, style: t)
         else if (!big)
@@ -137,7 +138,7 @@ class _ChannelRowState extends State<ChannelRow> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500, color: current ? cs.primary : null)),
+                  Text(item.name, textDirection: titleDirection(item.name), maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500, color: current ? cs.primary : null)),
                   ProgramLine(item: item),
                 ]),
               ),
@@ -221,7 +222,7 @@ class PosterCell extends StatelessWidget {
               Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: cs.primary, width: 3)))),
           ]),
           const SizedBox(height: 6),
-          Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium),
+          Text(item.name, textDirection: titleDirection(item.name), maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium),
         ]),
       ),
     );
@@ -309,7 +310,7 @@ class ContinueCard extends StatelessWidget {
             ),
         ]),
         const SizedBox(height: 6),
-        Text(item.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: t.bodyMedium),
+        Text(item.name, textDirection: titleDirection(item.name), maxLines: 1, overflow: TextOverflow.ellipsis, style: t.bodyMedium),
         if (label != null) Text(label, maxLines: 1, style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
       ]),
     );

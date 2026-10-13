@@ -176,6 +176,13 @@ Your sources are stored in `~/Library/Application Support/IPTVMac/` (readable by
 
 See [SECURITY.md](SECURITY.md) for how updates are protected, the known limits, and how to report a vulnerability privately.
 
+## Other platforms
+
+IPTVMac is a Mac app you can download today. Two more apps share its engine and its design, and their source is in this repository:
+
+- **iPhone and iPad** (`ios/`): submitted to the App Store, waiting for review. Build with `scripts/ios-setup.sh`, then open `ios/IPTVPhone.xcodeproj` (see [ios/README.md](ios/README.md)).
+- **Android** (`flutter/`): in beta testing, no download yet. Flutter and libmpv, 31 languages generated from the same strings. Build: `cd flutter && flutter pub get && flutter test && flutter build apk` (Flutter 3.47, JDK 17, Android SDK 36; see [flutter/PLAN.md](flutter/PLAN.md)). Android 8 or later.
+
 ## Build from source
 
     brew install mpv pkgconf     # mpv only supplies the C headers to compile against

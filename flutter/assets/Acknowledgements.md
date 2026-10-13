@@ -1,6 +1,6 @@
 # IPTVMac: acknowledgements and licences
 
-IPTVMac for iPhone and iPad plays streams from sources you add yourself. It contains no channels, films or other media of its own.
+IPTVMac plays streams from sources you add yourself. It contains no channels, films or other media of its own.
 
 The app is built on open-source software. This text lists what is inside the app, under which licence, and where to get the source code. The full licence texts are at the end.
 
@@ -70,7 +70,11 @@ Licence: Mozilla Public License 2.0. The file `cacert.pem` is the certificate li
 
 ### System libraries
 
-zlib, libiconv, SQLite and the Apple frameworks come from iOS and are not part of the app.
+zlib, libiconv and the platform frameworks come from the operating system and are not part of the app.
+
+### Android build
+
+The Android app is written with Flutter (BSD 3-Clause, Copyright The Flutter Authors) and plays video with the Android libmpv builds of the media-kit project (MIT, https://github.com/media-kit/media-kit), which bundle mpv and FFmpeg under the same LGPL terms described above. The version numbers above are those of the iPhone and iPad build; the Android build may carry different versions of the same libraries. The app also bundles SQLite (public domain, via the `sqlite3` Dart package, MIT) and the open-source Dart and Flutter packages listed in the project's `flutter/pubspec.lock`, each under its own permissive licence (MIT, BSD or Apache 2.0). Source: https://github.com/Goelir/IPTVMac (folder `flutter`).
 
 ## Source code and relinking (LGPL)
 

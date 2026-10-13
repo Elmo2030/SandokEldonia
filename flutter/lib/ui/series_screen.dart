@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iptvmac/ui/bidi.dart';
 import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/app/sync_worker.dart';
 import 'package:iptvmac/app/watch_progress.dart';
@@ -161,7 +162,7 @@ class _SeriesScreenState extends State<SeriesScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(e.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+                Text(e.title, textDirection: titleDirection(e.title), maxLines: 2, overflow: TextOverflow.ellipsis),
                 if (isNext) Text(l.nextTitle, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: cs.primary, fontWeight: FontWeight.w600)),
                 if (p != null && !p.isWatched && p.fraction > 0.01) Padding(padding: const EdgeInsets.only(top: 4), child: SizedBox(width: 140, child: ProgressBar(value: p.fraction, height: 3))),
               ]),

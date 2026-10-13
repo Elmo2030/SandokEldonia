@@ -190,6 +190,13 @@ https://iptv-org.github.io/iptv/index.m3u
 
 ב-[SECURITY.md](SECURITY.md) (באנגלית): איך העדכונים מוגנים, המגבלות הידועות, ואיך לדווח על פגיעות באופן פרטי.
 
+## פלטפורמות נוספות
+
+IPTVMac היא אפליקציית Mac שאפשר להוריד כבר היום. שתי אפליקציות נוספות חולקות איתה את הנגן והעיצוב, וקוד המקור שלהן במאגר הזה:
+
+- **iPhone ו-iPad** (`ios/`): הוגשה ל-App Store וממתינה לבדיקה. בנייה: `scripts/ios-setup.sh` ואז פותחים את `ios/IPTVPhone.xcodeproj` (ראו [ios/README.md](ios/README.md)).
+- **Android** (`flutter/`): בבדיקות בטא, עדיין בלי הורדה. Flutter ו-libmpv, 31 שפות שנוצרות מאותן מחרוזות. בנייה: `cd flutter && flutter pub get && flutter test && flutter build apk` (Flutter 3.47, JDK 17, Android SDK 36; ראו [flutter/PLAN.md](flutter/PLAN.md)). Android 8 ומעלה.
+
 ## בנייה מקוד המקור
 
 <div dir="ltr">

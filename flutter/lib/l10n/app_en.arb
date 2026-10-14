@@ -8,6 +8,14 @@
   "catAllLive": "All channels",
   "catAllMovies": "All movies",
   "catAllSeries": "All series",
+  "downloadsEta": "{p1} left",
+  "@downloadsEta": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
   "catFavorites": "Favorites",
   "catContinue": "Continue watching",
   "catFilter": "Filter categories",

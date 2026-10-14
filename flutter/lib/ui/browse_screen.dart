@@ -243,6 +243,9 @@ class ResultsView extends StatelessWidget {
     } else {
       final shelf = m.selectedCategory == '__all' && m.searchText.isEmpty ? m.continueEntries(type) : const <ContinueEntry>[];
       body = CustomScrollView(
+        // The offset is kept per section and category: coming back from the player (which rotates the phone, so the shell
+        // switches between the bottom bar and the rail and rebuilds this screen) or from another tab lands on the same row.
+        key: PageStorageKey<String>('results-${type.name}-${m.selectedCategory}-${m.searchText.isEmpty}'),
         physics: const AlwaysScrollableScrollPhysics(),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         slivers: [

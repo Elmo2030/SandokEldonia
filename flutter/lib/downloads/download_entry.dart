@@ -48,6 +48,30 @@ class DownloadEntry {
   /// Set at startup and when listing: a finished file that is no longer on the disk.
   bool missing = false;
 
+  /// Smoothed download speed in bytes per second while running (not saved), from the bytes seen at least a second apart.
+  double speed = 0;
+  int _sampleBytes = 0;
+  DateTime? _sampleAt;
+
+  void sample(DateTime now) {
+    final at = _sampleAt;
+    if (status != DownloadStatus.running || at == null || bytes < _sampleBytes) {
+      speed = 0;
+      _sampleBytes = bytes;
+      _sampleAt = status == DownloadStatus.running ? now : null;
+      return;
+    }
+    final secs = now.difference(at).inMilliseconds / 1000;
+    if (secs < 1) return;
+    final rate = (bytes - _sampleBytes) / secs;
+    speed = speed == 0 ? rate : speed * 0.7 + rate * 0.3;
+    _sampleBytes = bytes;
+    _sampleAt = now;
+  }
+
+  /// Time left at the current speed; null until a speed is known or when the size is not.
+  Duration? get eta => status == DownloadStatus.running && speed > 0 && total > bytes ? Duration(seconds: ((total - bytes) / speed).ceil()) : null;
+
   bool get isEpisode => episodeId != null;
   bool get active => status == DownloadStatus.queued || status == DownloadStatus.running;
   double get fraction => total > 0 ? (bytes / total).clamp(0.0, 1.0) : 0;

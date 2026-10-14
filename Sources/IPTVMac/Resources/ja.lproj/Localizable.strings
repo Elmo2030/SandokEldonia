@@ -6,6 +6,7 @@
 "cat.all.live" = "All channels";
 "cat.all.movies" = "All movies";
 "cat.all.series" = "All series";
+"downloads.eta" = "%@ left";
 "cat.favorites" = "お気に入り";
 "cat.continue" = "続きを見る";
 "cat.filter" = "カテゴリを絞り込む";

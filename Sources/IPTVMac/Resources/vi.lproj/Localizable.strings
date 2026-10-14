@@ -6,6 +6,7 @@
 "cat.all.live" = "All channels";
 "cat.all.movies" = "All movies";
 "cat.all.series" = "All series";
+"downloads.eta" = "%@ left";
 "cat.favorites" = "Yêu thích";
 "cat.continue" = "Xem tiếp";
 "cat.filter" = "Lọc danh mục";

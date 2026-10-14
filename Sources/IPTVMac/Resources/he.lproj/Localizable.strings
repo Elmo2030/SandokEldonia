@@ -6,6 +6,7 @@
 "cat.all.live" = "כל הערוצים";
 "cat.all.movies" = "כל הסרטים";
 "cat.all.series" = "כל הסדרות";
+"downloads.eta" = "נשארו %@";
 "cat.favorites" = "מועדפים";
 "cat.continue" = "המשך צפייה";
 "cat.filter" = "סינון קטגוריות";

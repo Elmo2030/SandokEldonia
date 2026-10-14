@@ -6,6 +6,7 @@
 "cat.all.live" = "All channels";
 "cat.all.movies" = "All movies";
 "cat.all.series" = "All series";
+"downloads.eta" = "%@ left";
 "cat.favorites" = "Favorieten";
 "cat.continue" = "Verder kijken";
 "cat.filter" = "Categorieën filteren";

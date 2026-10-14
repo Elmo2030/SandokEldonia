@@ -228,6 +228,7 @@ class DownloadsModel extends ChangeNotifier {
       case EngineState.canceled:
         e.status = DownloadStatus.canceled;
     }
+    e.sample(DateTime.now());
   }
 
   void _finish(DownloadEntry e) {

@@ -8,6 +8,7 @@
   "catAllLive": "All channels",
   "catAllMovies": "All movies",
   "catAllSeries": "All series",
+  "downloadsEta": "{p1} left",
   "catFavorites": "즐겨찾기",
   "catContinue": "이어보기",
   "catFilter": "카테고리 필터",

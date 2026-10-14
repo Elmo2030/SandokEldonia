@@ -6,6 +6,7 @@
 "cat.all.live" = "All channels";
 "cat.all.movies" = "All movies";
 "cat.all.series" = "All series";
+"downloads.eta" = "%@ left";
 "cat.favorites" = "প্রিয়";
 "cat.continue" = "দেখা চালিয়ে যান";
 "cat.filter" = "ক্যাটাগরি ফিল্টার করুন";

@@ -8,6 +8,7 @@
   "catAllLive": "All channels",
   "catAllMovies": "All movies",
   "catAllSeries": "All series",
+  "downloadsEta": "{p1} left",
   "catFavorites": "Preferiti",
   "catContinue": "Continua a guardare",
   "catFilter": "Filtra categorie",

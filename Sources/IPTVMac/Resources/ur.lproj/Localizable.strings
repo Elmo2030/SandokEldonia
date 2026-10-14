@@ -6,6 +6,7 @@
 "cat.all.live" = "All channels";
 "cat.all.movies" = "All movies";
 "cat.all.series" = "All series";
+"downloads.eta" = "%@ left";
 "cat.favorites" = "پسندیدہ";
 "cat.continue" = "دیکھنا جاری رکھیں";
 "cat.filter" = "زمرے فلٹر کریں";

@@ -126,6 +126,30 @@ void main() {
     expect(find.byType(CategoryIndex), findsOneWidget);
   });
 
+  testWidgets('the list keeps its place when the phone rotates and comes back (the player does that)', (tester) async {
+    final h = await Harness.create(tester, withAccount: true, sync: true);
+    h.db.write((d) {
+      for (var i = 100; i < 200; i++) {
+        d.execute("INSERT INTO item (accountId,type,name,categoryId,streamId,stale) VALUES (1,'live',?, '5', ?, 0)", ['Channel $i', '$i']);
+      }
+    });
+    await h.pumpApp(tester);
+    h.model.scheduleSearch(immediate: true);
+    await go(tester);
+    double offset() => tester.state<ScrollableState>(find.descendant(of: find.byType(CustomScrollView), matching: find.byType(Scrollable)).first).position.pixels;
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -2000));
+    await go(tester);
+    final before = offset();
+    expect(before, greaterThan(500));
+    tester.view.physicalSize = const Size(800, 400); // landscape: the shell swaps the bottom bar for the rail
+    await go(tester);
+    tester.view.physicalSize = const Size(400, 800);
+    await go(tester);
+    expect(offset(), closeTo(before, 1));
+    await tester.pumpWidget(const SizedBox());
+    await settle(tester, 20);
+  });
+
   testWidgets('category chips filter, favorites chip, hidden words remove categories', (tester) async {
     final h = await Harness.create(tester, withAccount: true, sync: true);
     await h.pumpApp(tester);

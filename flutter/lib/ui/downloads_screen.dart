@@ -13,6 +13,15 @@ import 'package:iptvmac/ui/widgets.dart';
 import 'package:provider/provider.dart';
 
 /// "1.4 GB", "230 MB": decimal units like the Mac app's byte formatter.
+/// "45 seconds", "12 min", "1 h 5 min": the time left of a download, in the units the player already uses.
+String etaText(AppLocalizations l, Duration d) {
+  final s = d.inSeconds;
+  if (s < 60) return l.unitSeconds(s < 1 ? 1 : s);
+  final m = (s / 60).round();
+  if (m < 60) return l.unitMinutesShort(m);
+  return m % 60 == 0 ? l.unitHoursShort(m ~/ 60) : '${l.unitHoursShort(m ~/ 60)} ${l.unitMinutesShort(m % 60)}';
+}
+
 String formatBytes(int bytes, [String? locale]) {
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
   var v = bytes.toDouble(), i = 0;
@@ -95,7 +104,13 @@ class _Row extends StatelessWidget {
       DownloadStatus.running || DownloadStatus.paused => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           ProgressBar(value: e.fraction, track: e.status == DownloadStatus.paused ? cs.onSurface.withValues(alpha: 0.2) : null),
           const SizedBox(height: 4),
-          Text(e.total > 0 ? '${formatBytes(e.bytes, locale)} / ${formatBytes(e.total, locale)}' : formatBytes(e.bytes, locale), style: small?.copyWith(fontFeatures: const [FontFeature.tabularFigures()])),
+          Text(
+            [
+              e.total > 0 ? '${formatBytes(e.bytes, locale)} / ${formatBytes(e.total, locale)}' : formatBytes(e.bytes, locale),
+              if (e.eta != null) l.downloadsEta(etaText(l, e.eta!)),
+            ].join(' · '),
+            style: small?.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
+          ),
         ]),
     };
     final actions = <Widget>[

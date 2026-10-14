@@ -1,6 +1,6 @@
 # IPTVMac for Android
 
-An IPTV player for your own M3U playlists and Xtream Codes logins, in Flutter with libmpv (media_kit). It contains no content. Same design as the Mac and iPhone apps: instant search over 100,000 items, a touch player with gestures, Picture in Picture, sound that keeps playing with the screen off (with notification controls), downloads of movies and episodes for offline viewing (direct files, in the app's own folder, long-press a movie or use the button in the details and episode rows), a rotate-to-portrait button, 31 languages, no account, no ads, no tracking. Android 8 or later. Download the APK from [GitHub Releases](https://github.com/Goelir/IPTVMac/releases/tag/android-v1.0.0), or build it from source.
+An IPTV player for your own M3U playlists and Xtream Codes logins, in Flutter with libmpv (media_kit). It contains no content. Same design as the Mac and iPhone apps: instant search over 100,000 items, a touch player with gestures, Picture in Picture, sound that keeps playing with the screen off (with notification controls), downloads of movies and episodes for offline viewing (direct files, in the app's own folder, long-press a movie or use the button in the details and episode rows), a rotate-to-portrait button, 31 languages, no account, no ads, no tracking. Android 8 or later. Download the APK from [GitHub Releases](https://github.com/Goelir/IPTVMac/releases/tag/android-v1.0.1), or build it from source.
 
     cd flutter
     flutter pub get

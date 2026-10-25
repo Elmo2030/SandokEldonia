@@ -30,6 +30,19 @@ class AppPrefs {
 
   set subscriptions(Map<int, SubscriptionInfo> v) => _p.setString('subscriptions', jsonEncode({for (final e in v.entries) '${e.key}': e.value.toJson()}));
 
+  /// Asking github.com now and then whether a newer APK is out (the Mac app has the same switch).
+  bool get autoCheckUpdates => _p.getBool('autoCheckUpdates') ?? true;
+  set autoCheckUpdates(bool v) => _p.setBool('autoCheckUpdates', v);
+
+  int get updateCheckedAt => _p.getInt('updateCheckedAt') ?? 0; // milliseconds since the epoch
+  set updateCheckedAt(int v) => _p.setInt('updateCheckedAt', v);
+
+  /// The newest Android version the feed named, and the one whose banner the user closed.
+  String? get latestAndroid => _p.getString('latestAndroid');
+  set latestAndroid(String? v) => v == null ? _p.remove('latestAndroid') : _p.setString('latestAndroid', v);
+  String? get dismissedAndroid => _p.getString('dismissedAndroid');
+  set dismissedAndroid(String? v) => v == null ? _p.remove('dismissedAndroid') : _p.setString('dismissedAndroid', v);
+
   int get refreshHours => _p.getInt('refreshHours') ?? 0; // 0 = only when the app opens
   set refreshHours(int v) => _p.setInt('refreshHours', v);
 

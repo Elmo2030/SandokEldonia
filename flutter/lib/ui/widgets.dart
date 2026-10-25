@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:iptvmac/core/android_update.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -140,3 +142,38 @@ String syncStatusText(BuildContext context, double? progress) {
   }
   return '$text $pct';
 }
+
+/// "Version 1.0.3 is available": a new APK is out. The install stays manual: the button opens the release page, where the file is.
+class UpdateBanner extends StatelessWidget {
+  const UpdateBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final v = context.select<LibraryModel, String?>((m) => m.updateAvailable);
+    if (v == null) return const SizedBox.shrink();
+    final l = AppLocalizations.of(context);
+    final cs = Theme.of(context).colorScheme;
+    return Material(
+      color: cs.primaryContainer,
+      child: Container(
+        key: const Key('update-banner'),
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 4, 4),
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Row(children: [
+          Icon(Icons.system_update, size: 20, color: cs.onPrimaryContainer),
+          const SizedBox(width: 12),
+          Expanded(child: Text(l.updateAvailable(v), style: TextStyle(color: cs.onPrimaryContainer, fontWeight: FontWeight.w600))),
+          TextButton(onPressed: () => openUpdatePage(v), child: Text(l.updateNow)),
+          IconButton(
+            icon: Icon(Icons.close, color: cs.onPrimaryContainer),
+            tooltip: l.updateLater,
+            onPressed: context.read<LibraryModel>().dismissUpdate,
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+/// Opens the release page of [version] in the browser (tests replace this).
+Future<void> Function(String version) openUpdatePage = (v) => launchUrl(androidReleasePage(v), mode: LaunchMode.externalApplication);

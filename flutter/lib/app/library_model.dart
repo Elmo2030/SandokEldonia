@@ -8,6 +8,7 @@ import 'package:iptvmac/app/epg_cache.dart';
 import 'package:iptvmac/app/prefs.dart';
 import 'package:iptvmac/app/sync_worker.dart';
 import 'package:iptvmac/app/watch_progress.dart';
+import 'package:iptvmac/core/android_update.dart';
 import 'package:iptvmac/core/app_database.dart';
 import 'package:iptvmac/core/backup.dart';
 import 'package:iptvmac/core/category_filter.dart';
@@ -43,6 +44,7 @@ class LibraryModel extends ChangeNotifier {
     this.dbMovedAside,
     this.searchDebounce = const Duration(milliseconds: 100),
     this.autoRefresh = true,
+    this.appVersion,
     this.onClearImages,
     DateTime Function()? clock,
   })  : prefs = AppPrefs(prefs),
@@ -59,6 +61,9 @@ class LibraryModel extends ChangeNotifier {
   final String? dbMovedAside;
   final Duration searchDebounce;
   final bool autoRefresh;
+
+  /// The installed version ("1.0.2"); null where there is no update check (tests, debug launchers).
+  final String? appVersion;
   final Future<void> Function()? onClearImages;
   final SyncRunner _runner;
   final http.Client _client;
@@ -160,10 +165,54 @@ class LibraryModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ---- app updates (GitHub releases feed; the install itself stays manual) ----
+
+  UpdateCheck updateCheck = UpdateCheck.idle;
+
+  /// A version newer than the installed one that the user has not dismissed (the banner); null otherwise.
+  String? get updateAvailable {
+    final v = prefs.latestAndroid, cur = appVersion;
+    return v == null || cur == null || !isNewerVersion(v, cur) || prefs.dismissedAndroid == v ? null : v;
+  }
+
+  /// A newer version exists, dismissed or not (the settings row).
+  String? get newerVersion {
+    final v = prefs.latestAndroid, cur = appVersion;
+    return v == null || cur == null || !isNewerVersion(v, cur) ? null : v;
+  }
+
+  /// Asks the releases feed. Automatic checks (at most one every 6 hours) respect the setting; [manual] checks always run and report.
+  Future<void> checkForUpdate({bool manual = false}) async {
+    if (appVersion == null || updateCheck == UpdateCheck.checking) return;
+    if (!manual && (!prefs.autoCheckUpdates || _clock().millisecondsSinceEpoch - prefs.updateCheckedAt < 6 * 3600 * 1000)) return;
+    updateCheck = UpdateCheck.checking;
+    if (manual) notifyListeners();
+    try {
+      final v = await fetchNewestAndroidVersion(_client);
+      prefs.updateCheckedAt = _clock().millisecondsSinceEpoch;
+      if (v != null) prefs.latestAndroid = v;
+      updateCheck = UpdateCheck.done;
+    } catch (_) {
+      updateCheck = UpdateCheck.failed; // offline, GitHub down: the next automatic check tries again
+    }
+    notifyListeners();
+  }
+
+  void dismissUpdate() {
+    prefs.dismissedAndroid = prefs.latestAndroid;
+    notifyListeners();
+  }
+
+  void setAutoCheckUpdates(bool v) {
+    prefs.autoCheckUpdates = v;
+    notifyListeners();
+  }
+
   /// Loads the shown playlist's data once, starts the auto-refresh and syncs the shown playlist.
   Future<void> start() async {
     if (_started) return;
     _started = true;
+    unawaited(checkForUpdate());
     if (autoRefresh) _refreshTimer = Timer.periodic(const Duration(seconds: 60), (_) => _refreshTick());
     if (accounts.isEmpty) await loadAccounts();
     if (account != null) await sync();
@@ -708,3 +757,5 @@ class LibraryModel extends ChangeNotifier {
     if (!text.startsWith('#EXTM3U')) throw IPTVError.badResponse;
   }
 }
+
+enum UpdateCheck { idle, checking, done, failed }

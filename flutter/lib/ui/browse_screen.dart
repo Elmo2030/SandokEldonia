@@ -38,6 +38,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(sectionTitle(l, widget.type)), actions: const [PlaylistMenu()]),
       body: Column(children: [
+        const UpdateBanner(),
         ValueListenableBuilder<bool>(valueListenable: _pulling, builder: (_, p, _) => p ? const SizedBox.shrink() : const StatusStrip()),
         const SearchField(),
         if (searching) const ScopeChips() else if (!index) CategoryChips(type: widget.type),

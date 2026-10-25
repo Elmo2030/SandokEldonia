@@ -9,6 +9,7 @@ import 'package:iptvmac/app/sync_worker.dart';
 import 'package:iptvmac/core/app_database.dart';
 import 'package:iptvmac/downloads/open_downloads.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,6 +36,7 @@ Future<void> main() async {
     dbPath: path,
     syncRunner: failure == null ? null : inlineSyncRunner(db),
     dbMovedAside: movedAside,
+    appVersion: (await PackageInfo.fromPlatform()).version,
     onClearImages: () async {
       PaintingBinding.instance.imageCache.clear();
       await DefaultCacheManager().emptyCache();

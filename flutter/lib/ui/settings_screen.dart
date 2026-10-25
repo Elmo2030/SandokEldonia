@@ -31,6 +31,7 @@ class SettingsScreen extends StatelessWidget {
           child: ListView(padding: const EdgeInsets.only(bottom: 24), children: const [
             _SourcesSection(),
             _PreferencesSection(),
+            _UpdatesSection(),
             _DownloadsTile(),
             _HiddenCategoriesSection(),
             _BackupSection(),
@@ -191,6 +192,45 @@ class _PreferencesSection extends StatelessWidget {
       _Section(title: null, note: Text(Missing.languageNote), children: [
         ListTile(title: Text(l.settingsInterfaceLanguage), trailing: Text(languageName(Localizations.localeOf(context)))),
       ]),
+    ]);
+  }
+}
+
+/// Whether to ask github.com now and then if a newer APK is out, a button to ask right now, and the answer.
+class _UpdatesSection extends StatelessWidget {
+  const _UpdatesSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final m = context.watch<LibraryModel>();
+    final l = AppLocalizations.of(context);
+    if (m.appVersion == null) return const SizedBox.shrink();
+    final newer = m.newerVersion;
+    final subtitle = switch (m.updateCheck) {
+      UpdateCheck.checking => l.syncRunning,
+      UpdateCheck.failed => l.updateFailed,
+      _ when newer != null => l.updateAvailable(newer),
+      UpdateCheck.done => l.updateUpToDate,
+      _ => l.updateCurrent(m.appVersion!),
+    };
+    return _Section(title: null, children: [
+      SwitchListTile(
+        key: const Key('auto-update-switch'),
+        title: Text(l.updateAuto),
+        value: m.prefs.autoCheckUpdates,
+        onChanged: m.setAutoCheckUpdates,
+      ),
+      ListTile(
+        key: const Key('check-update-tile'),
+        title: Text(l.updateCheckNow),
+        subtitle: Text(subtitle),
+        trailing: newer != null
+            ? TextButton(onPressed: () => openUpdatePage(newer), child: Text(l.updateNow))
+            : m.updateCheck == UpdateCheck.checking
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                : null,
+        onTap: m.updateCheck == UpdateCheck.checking ? null : () => m.checkForUpdate(manual: true),
+      ),
     ]);
   }
 }

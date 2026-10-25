@@ -18,10 +18,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// An invented Xtream provider at http://panel.test (user "u", password "p"): two channels, two movies, one series with
 /// three episodes in two seasons, a guide for the first channel and details for the first movie.
 class FakeProvider {
+  /// The releases feed github.com would answer (null = a feed with no releases), and how often it was asked.
+  String? feed;
+  int feedCalls = 0;
+
   FakeProvider() {
     client = MockClient((r) async {
       calls.add(r.url);
       if (fail) throw http.ClientException('connection refused ${r.url}'); // like the real client: the message holds the URL
+      if (r.url.host == 'github.com' && r.url.path.endsWith('releases.atom')) {
+        feedCalls++;
+        return res(feed ?? '<feed></feed>');
+      }
       if (r.url.path.endsWith('.m3u')) return res(m3u);
       final q = r.url.queryParameters;
       if (q['username'] != 'u' || q['password'] != 'p') return res('{"user_info":{"auth":0}}');
@@ -72,12 +80,13 @@ class Harness {
   final LibraryModel model;
 
   /// Without a tester: for plain `test()`s, which have real async.
-  static Future<Harness> createPlain({bool withAccount = false, bool sync = false}) => _create(withAccount: withAccount, sync: sync, prefs: const {});
+  static Future<Harness> createPlain({bool withAccount = false, bool sync = false, String? appVersion, Map<String, Object> prefs = const {}}) =>
+      _create(withAccount: withAccount, sync: sync, prefs: prefs, appVersion: appVersion);
 
-  static Future<Harness> create(WidgetTester tester, {bool withAccount = false, bool sync = false, Map<String, Object> prefs = const {}}) async =>
-      (await tester.runAsync(() => _create(withAccount: withAccount, sync: sync, prefs: prefs)))!;
+  static Future<Harness> create(WidgetTester tester, {bool withAccount = false, bool sync = false, Map<String, Object> prefs = const {}, String? appVersion}) async =>
+      (await tester.runAsync(() => _create(withAccount: withAccount, sync: sync, prefs: prefs, appVersion: appVersion)))!;
 
-  static Future<Harness> _create({required bool withAccount, required bool sync, required Map<String, Object> prefs}) async {
+  static Future<Harness> _create({required bool withAccount, required bool sync, required Map<String, Object> prefs, String? appVersion}) async {
     SharedPreferences.setMockInitialValues(prefs);
     final db = AppDatabase.memory();
     final secrets = MemorySecretStore();
@@ -90,6 +99,7 @@ class Harness {
       syncRunner: inlineSyncRunner(db, client: provider.client),
       client: provider.client,
       autoRefresh: false,
+      appVersion: appVersion,
       searchDebounce: const Duration(milliseconds: 20),
     );
     final h = Harness._(db, secrets, provider, model);

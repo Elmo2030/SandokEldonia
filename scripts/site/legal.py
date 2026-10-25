@@ -3,8 +3,8 @@ Tokens replaced by build.py: @EMAIL@ (a sentence with the CONTACT_EMAIL set in b
 @GUIDES@ (the English guides folder), @FAQ@ (the page's faq list as headings and answers).
 Facts here are checked against the code: see the report in appstore/CHECKLIST.md ("Facts behind the privacy policy"). Change the code, change this text."""
 
-EFFECTIVE = "2026-10-11"
-EFFECTIVE_LABEL = {"en": "11 October 2026", "he": "11 באוקטובר 2026"}
+EFFECTIVE = "2026-10-25"
+EFFECTIVE_LABEL = {"en": "25 October 2026", "he": "25 באוקטובר 2026"}
 
 UI = {
  "en": dict(bc="Breadcrumb", toc="On this page", eff="Effective", side_h="Questions?", side_btn="Open an issue on GitHub", email='You can also write to <a href="mailto:@MAIL@">@MAIL@</a>.'),
@@ -51,6 +51,7 @@ LEGAL = {
 <ul>
 <li><strong>App Store version.</strong> IPTVMac does not check for updates by itself. Updates come through the Mac App Store, under Apple's own privacy terms.</li>
 <li><strong>Version downloaded from GitHub.</strong> The app checks GitHub Releases for a newer version (requests to github.com and api.github.com) and verifies the download with a checksum and a signature. Like any web server, GitHub sees your IP address. The app sends no identifier. You can turn this off in Settings, General.</li>
+<li><strong>Android version.</strong> The app asks github.com now and then (the public releases feed, at most once every six hours) which Android version is the newest. If a newer one exists it shows a banner with a link to that release page. The app downloads and installs nothing by itself. Like any web server, GitHub sees your IP address. The app sends no identifier. You can turn this off in Settings.</li>
 </ul>
 <h2>This website</h2>
 <p>The site is hosted on GitHub Pages, a free service of GitHub. It sets no cookies and loads no analytics, ads, or third-party scripts, fonts or widgets: everything comes from the same address. It stores one value in your browser's local storage, your light or dark choice, and that never leaves your device. GitHub, as the host, may log visits as described in its own <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">privacy statement</a>. Links from here to GitHub, YouTube and other sites are plain links, and those sites have their own policies.</p>
@@ -102,6 +103,7 @@ LEGAL = {
 <ul>
 <li><strong>גרסת ה-App Store.</strong> IPTVMac לא בודקת עדכונים בעצמה. העדכונים מגיעים דרך ה-Mac App Store, לפי תנאי הפרטיות של Apple.</li>
 <li><strong>גרסה שהורדה מ-GitHub.</strong> האפליקציה בודקת ב-GitHub Releases אם יש גרסה חדשה (בקשות אל github.com ו-api.github.com) ובודקת את ההורדה מול סכום ביקורת וחתימה. כמו כל שרת אינטרנט, GitHub רואה את כתובת ה-IP שלכם. האפליקציה לא שולחת שום מזהה. אפשר לכבות את הבדיקה בהגדרות, בלשונית כללי.</li>
+<li><strong>גרסת Android.</strong> האפליקציה פונה מדי פעם אל github.com (הפיד הציבורי של הגרסאות, לכל היותר אחת לשש שעות) ושואלת מהי גרסת ה-Android החדשה ביותר. אם יש חדשה יותר מוצג באנר עם קישור לעמוד הגרסה. האפליקציה לא מורידה ולא מתקינה כלום בעצמה. כמו כל שרת אינטרנט, GitHub רואה את כתובת ה-IP שלכם. האפליקציה לא שולחת שום מזהה. אפשר לכבות את זה בהגדרות.</li>
 </ul>
 <h2>האתר הזה</h2>
 <p>האתר מתארח ב-GitHub Pages, שירות חינמי של GitHub. הוא לא יוצר עוגיות ולא טוען אנליטיקס, פרסומות, או סקריפטים, גופנים ווידג׳טים של צד שלישי: הכול נטען מאותה כתובת. הוא שומר ערך אחד באחסון המקומי של הדפדפן, את בחירת המראה הבהיר או הכהה, והערך הזה לא עוזב את המכשיר שלכם. GitHub, כמארח, עשוי לתעד ביקורים כמתואר ב<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">הצהרת הפרטיות שלו</a> (באנגלית). קישורים מכאן אל GitHub, יוטיוב ואתרים אחרים הם קישורים רגילים, ולאתרים האלה יש מדיניות משלהם.</p>

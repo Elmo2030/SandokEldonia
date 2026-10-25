@@ -75,6 +75,12 @@ class FakeHost implements PlayerHost {
   bool isFavorite(Item item) => favorites.contains(item.name);
 
   @override
+  bool hasDetails(Item item) => false;
+
+  @override
+  void showDetails(Item item) {}
+
+  @override
   Future<void> toggleFavorite(Item item) async => favorites.contains(item.name) ? favorites.remove(item.name) : favorites.add(item.name);
 
   @override

@@ -37,6 +37,15 @@ class PlayerTopBar extends StatelessWidget {
             Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 13, shadows: _shadow)),
         ]),
       ),
+      if (item != null && model.host.hasDetails(item))
+        PlayerButton(
+          icon: Icons.info_outline,
+          label: l.infoDetails,
+          onPressed: () {
+            model.host.showDetails(item);
+            model.touchControls();
+          },
+        ),
       if (item != null)
         PlayerButton(
           icon: favorite ? Icons.star : Icons.star_border,

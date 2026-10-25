@@ -17,6 +17,8 @@ class FakeHost implements PlayerHost {
   PlayRequest? zapTo;
   PlayRequest? next;
   String? programme;
+  var details = false;
+  final shownDetails = <String>[];
 
   @override
   void saveProgress(PlayRequest r, double p, double d) => saves.add((r.title, p, d));
@@ -24,6 +26,10 @@ class FakeHost implements PlayerHost {
   bool isFavorite(Item i) => favorites.contains(i.name);
   @override
   Future<void> toggleFavorite(Item i) async => favorites.contains(i.name) ? favorites.remove(i.name) : favorites.add(i.name);
+  @override
+  bool hasDetails(Item i) => details;
+  @override
+  void showDetails(Item i) => shownDetails.add(i.name);
   @override
   PlayRequest? zap(PlayRequest c, int step) => zapTo;
   @override
@@ -226,6 +232,23 @@ void main() {
     await t.pump(const Duration(milliseconds: 300));
     final next = t.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.skip_next));
     expect(next.onPressed, null);
+    await t.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('the details button opens the item\'s details through the host and only shows when the host has details', (t) async {
+    final host = FakeHost();
+    var (e, _, _) = await open(t, movie(), host: host);
+    playing(e);
+    await t.pump(const Duration(milliseconds: 300));
+    expect(find.byIcon(Icons.info_outline), findsNothing, reason: 'no provider details (M3U, live): no button');
+    await t.pumpWidget(const SizedBox());
+
+    host.details = true;
+    (e, _, _) = await open(t, movie(), host: host);
+    playing(e);
+    await t.pump(const Duration(milliseconds: 300));
+    await t.tap(find.byIcon(Icons.info_outline));
+    expect(host.shownDetails, ['Sintel']);
     await t.pumpWidget(const SizedBox());
   });
 

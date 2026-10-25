@@ -181,7 +181,7 @@ struct PlayerScreen: View {
                     AudioMenu(player: player, labeled: true)
                     ScaleMenu(player: player, labeled: true)
                     SleepMenu(player: player, labeled: true)
-                    if let item = player.request.item { FavoriteTile(item: item) }
+                    if let item = player.request.item { DetailsTile(item: item); FavoriteTile(item: item) }
                 }
             }
             .foregroundStyle(.white)
@@ -203,6 +203,20 @@ struct LiveBadge: View {
             .padding(.vertical, 8).contentShape(Rectangle())
         }
         .buttonStyle(.plain).foregroundStyle(.white).fixedSize()
+    }
+}
+
+/// The details tile of the portrait grid (the landscape title bar has an info button).
+private struct DetailsTile: View {
+    @Environment(PhoneModel.self) private var model
+    @Environment(UIState.self) private var ui
+    let item: IPTVCore.Item
+    var body: some View {
+        if model.hasInfo(item) {
+            Button { open(item, model: model, ui: ui) } label: { UtilityLabel(symbol: "info.circle", title: L("info.details"), labeled: true) }
+                .buttonStyle(PlayerPressStyle())
+                .accessibilityLabel(L("info.details"))
+        }
     }
 }
 

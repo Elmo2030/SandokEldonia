@@ -37,7 +37,7 @@ Future<void> openPlayer(BuildContext context, PlayRequest r, {List<Item> zapList
     if (closed) return; // a second close must not pop the screen below
     closed = true;
     nav.pop(); // a real pop: the player screen blocks a plain back (PopScope) and asks us to leave
-  });
+  }, onShowDetails: (item) => showItemDetails(nav.context, item, playing: true));
   await nav.push(MaterialPageRoute<void>(builder: (_) => playerBuilder(r, host), fullscreenDialog: true));
   closed = true;
   model.reloadContinue();

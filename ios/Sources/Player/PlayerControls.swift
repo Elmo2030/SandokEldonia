@@ -317,7 +317,7 @@ struct TitleBar: View {
             }
             .shadow(color: .black.opacity(0.4), radius: 4, y: 1)
             Spacer(minLength: 8)
-            if let item = player.request.item { FavoriteButton(item: item) }
+            if let item = player.request.item { DetailsButton(item: item); FavoriteButton(item: item) }
             if player.canPiP {
                 PlayerButton(symbol: "pip.enter", label: L("player.pip")) { player.startPiP() }.accessibilityIdentifier("player.pip")
             }
@@ -325,6 +325,24 @@ struct TitleBar: View {
         }
         .foregroundStyle(.white)
     }
+}
+
+/// Opens the details of what plays while it keeps playing: a movie's sheet, a series' screen (an episode's item is its series).
+/// Nothing for a source without provider details (M3U) or a live channel.
+struct DetailsButton: View {
+    @Environment(PhoneModel.self) private var model
+    @Environment(UIState.self) private var ui
+    let item: Item
+    var body: some View {
+        if model.hasInfo(item) {
+            PlayerButton(symbol: "info.circle", label: L("info.details")) { open(item, model: model, ui: ui) }
+                .accessibilityIdentifier("player.details")
+        }
+    }
+}
+
+@MainActor func open(_ item: Item, model: PhoneModel, ui: UIState) {
+    if item.type == .series { model.openSeries = item } else { ui.openInfo = item }
 }
 
 struct FavoriteButton: View {

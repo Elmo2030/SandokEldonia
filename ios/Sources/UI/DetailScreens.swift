@@ -128,10 +128,12 @@ struct DetailSheet: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     ActionRow {
-                        Button { Haptics.press(); dismiss(); model.play(item) } label: {
-                            HStack(spacing: 8) { Image(systemName: "play.fill"); Text(L(resumable ? "info.resume" : "info.play")) }.font(.headline).foregroundStyle(.white).frame(maxWidth: .infinity, minHeight: 36)
+                        if model.playing?.item?.id != item.id {   // opened from the player: "Play" would only restart the movie that is playing
+                            Button { Haptics.press(); dismiss(); model.play(item) } label: {
+                                HStack(spacing: 8) { Image(systemName: "play.fill"); Text(L(resumable ? "info.resume" : "info.play")) }.font(.headline).foregroundStyle(.white).frame(maxWidth: .infinity, minHeight: 36)
+                            }
+                            .buttonStyle(.borderedProminent).controlSize(.large)
                         }
-                        .buttonStyle(.borderedProminent).controlSize(.large)
                     } secondary: {
                         if let url = info?.trailerURL { IconAction(symbol: "play.rectangle", label: L("info.trailer")) { trailer = TrailerLink(url: url) }.transition(.opacity) }
                         IconAction(symbol: fav ? "star.fill" : "star", label: L(fav ? "fav.remove" : "fav.add"), tint: fav ? .yellow : .primary) {

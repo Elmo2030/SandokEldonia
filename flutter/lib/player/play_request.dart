@@ -29,6 +29,12 @@ abstract class PlayerHost {
   bool isFavorite(Item item);
   Future<void> toggleFavorite(Item item);
 
+  /// Whether the provider has details to show for [item] (a movie or series of an Xtream source; an episode's item is its series).
+  bool hasDetails(Item item);
+
+  /// Opens those details over the player; the playback goes on underneath.
+  void showDetails(Item item);
+
   /// Live zapping in the list the user came from: -1 previous, +1 next. Null when there is none.
   PlayRequest? zap(PlayRequest current, int step);
 

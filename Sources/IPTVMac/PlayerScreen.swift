@@ -229,6 +229,10 @@ struct PlayerScreen: View {
             if request.item?.tvArchive == true && request.isLive {
                 Button { showCatchup = true } label: { Image(systemName: "clock.arrow.circlepath") }.help(L("player.catchup"))
             }
+            if let item = request.item, model.hasInfo(item) {   // an episode's item is its series
+                Button { model.openInfo = item } label: { Image(systemName: "info.circle") }.help(L("info.details"))
+                    .accessibilityLabel(L("info.details"))
+            }
             Button { model.enterPiP() } label: { Image(systemName: "pip.enter") }.help(L("player.pip"))
             Button { NSApp.keyWindow?.toggleFullScreen(nil) } label: { Image(systemName: "arrow.up.left.and.arrow.down.right") }.help(L("player.fullscreen"))
         }

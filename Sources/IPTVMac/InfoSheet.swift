@@ -71,6 +71,7 @@ struct InfoSheet: View {
     enum Phase: Equatable { case loading, loaded(ItemInfo), failed(String) }
 
     private var info: ItemInfo? { if case .loaded(let i) = phase { i } else { nil } }
+    private var isPlayingNow: Bool { item.type == .movie && model.playing?.item?.id == item.id }
 
     var body: some View {
         HStack(alignment: .top, spacing: 24) {
@@ -106,8 +107,10 @@ struct InfoSheet: View {
     private var actions: some View {
         let fav = model.isFavorite(item)
         return HStack(spacing: 8) {
-            Button { play() } label: { Label(L("info.play"), systemImage: "play.fill") }
-                .buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
+            if !isPlayingNow {   // opened from the player: "Play" on the movie that is already playing would only restart it
+                Button { play() } label: { Label(L("info.play"), systemImage: "play.fill") }
+                    .buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
+            }
             if let info, info.trailerURL != nil {
                 Button { model.openTrailer(info) } label: { Label(L("info.trailer"), systemImage: "play.rectangle") }
                     .buttonStyle(.bordered).transition(.opacity)

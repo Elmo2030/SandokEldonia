@@ -15,20 +15,22 @@ import 'package:iptvmac/ui/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// The details of a movie in a bottom sheet: poster, facts, Play and the favorite star.
-Future<void> showItemDetails(BuildContext context, Item item) => showModalBottomSheet<void>(
+/// The details of a movie in a bottom sheet: poster, facts, Play and the favorite star. [playing]: opened from the player, where
+/// "Play" would only restart what is already playing, so it is left out.
+Future<void> showItemDetails(BuildContext context, Item item, {bool playing = false}) => showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       constraints: const BoxConstraints(maxWidth: 640),
-      builder: (_) => DetailsSheet(item: item),
+      builder: (_) => DetailsSheet(item: item, playing: playing),
     );
 
 Future<void> openTrailer(Uri url) => launchUrl(url, mode: LaunchMode.externalApplication);
 
 class DetailsSheet extends StatefulWidget {
-  const DetailsSheet({super.key, required this.item});
+  const DetailsSheet({super.key, required this.item, this.playing = false});
   final Item item;
+  final bool playing;
   @override
   State<DetailsSheet> createState() => _DetailsSheetState();
 }
@@ -102,16 +104,17 @@ class _DetailsSheetState extends State<DetailsSheet> {
         ),
         const SizedBox(height: 20),
         Wrap(spacing: 10, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.center, children: [
-          FilledButton.icon(
-            icon: const Icon(Icons.play_arrow_rounded),
-            label: Text(resumable ? l.infoResume : l.infoPlay),
-            style: FilledButton.styleFrom(minimumSize: const Size(140, 48)),
-            onPressed: () {
-              final navContext = nav.context; // the sheet's own context is gone once it is popped
-              nav.pop();
-              playItem(navContext, item);
-            },
-          ),
+          if (!widget.playing)
+            FilledButton.icon(
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: Text(resumable ? l.infoResume : l.infoPlay),
+              style: FilledButton.styleFrom(minimumSize: const Size(140, 48)),
+              onPressed: () {
+                final navContext = nav.context; // the sheet's own context is gone once it is popped
+                nav.pop();
+                playItem(navContext, item);
+              },
+            ),
           if (info?.trailerURL != null) IconButton.filledTonal(icon: const Icon(Icons.smart_display_outlined), tooltip: l.infoTrailer, onPressed: () => openTrailer(info!.trailerURL!)),
           if (m.canDownload(item))
             DownloadButton(tonal: true, entryKey: DownloadEntry.keyOf(item.accountId, item.type, item.streamId, null), start: (d) => m.downloadMovie(d, item)),

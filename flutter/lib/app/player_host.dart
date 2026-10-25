@@ -7,13 +7,16 @@ import 'package:iptvmac/player/play_request.dart';
 /// What the player may ask of the app (the contract in lib/player/play_request.dart) on top of [LibraryModel].
 /// One host per player screen: [zapList] is the channel list the user picked the channel from (a category, favorites, a search).
 class ShellPlayerHost implements PlayerHost {
-  ShellPlayerHost(this.model, {this.zapList = const [], required this.onClose});
+  ShellPlayerHost(this.model, {this.zapList = const [], required this.onClose, this.onShowDetails});
 
   final LibraryModel model;
   final List<Item> zapList;
 
   /// Pops the player screen.
   final void Function() onClose;
+
+  /// Shows an item's details sheet over the player (the UI layer owns the navigator); null where there is none.
+  final void Function(Item item)? onShowDetails;
 
   @override
   void saveProgress(PlayRequest request, double position, double duration) => model.saveProgress(request, position, duration);
@@ -23,6 +26,12 @@ class ShellPlayerHost implements PlayerHost {
 
   @override
   Future<void> toggleFavorite(Item item) => model.toggleFavorite(item);
+
+  @override
+  bool hasDetails(Item item) => onShowDetails != null && model.hasInfo(item);
+
+  @override
+  void showDetails(Item item) => onShowDetails?.call(item);
 
   @override
   PlayRequest? zap(PlayRequest current, int step) {

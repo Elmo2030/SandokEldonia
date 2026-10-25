@@ -18,9 +18,9 @@ struct RootView: View {
             else if sizeClass == .regular { SplitLayout() }
             else { TabLayout() }
         }
-        .environment(ui)
         .preferredColorScheme(appearance == "light" ? .light : appearance == "dark" ? .dark : nil)
         .overlay { if let p = model.player { PlayerScreen(player: p).transition(.opacity) } }
+        .environment(ui)                     // after the overlay: the player opens the details sheets too
         .sheet(item: $model.openSeries) { SeriesScreen(series: $0) }
         .sheet(item: $ui.openInfo) { DetailSheet(item: $0) }
         .sheet(item: $model.passwordPrompt) { PasswordSheet(account: $0) }

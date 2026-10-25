@@ -86,6 +86,9 @@ class LibraryModel extends ChangeNotifier {
   SearchScope scope = SearchScope.category;
   List<Item> results = [];
   bool syncing = false;
+
+  /// How far the running sync is, 0..1 (every playlist counted in All mode); null when none is running.
+  double? syncProgress;
   String? syncMessage;
 
   /// Set when an Xtream account has no stored password: the shell asks for it.
@@ -372,12 +375,19 @@ class LibraryModel extends ChangeNotifier {
     final gen = ++_syncGen;
     syncing = true;
     syncMessage = null;
+    syncProgress = 0;
     notifyListeners();
     final failures = <String>[];
-    for (final a in ready) {
+    for (final (index, a) in ready.indexed) {
+      final share = 1 / ready.length, base = index * share; // All mode: the playlists go one after the other
       String? error;
       try {
-        error = await _runner(a, _passwords[a.id] ?? '');
+        error = await _runner(a, _passwords[a.id] ?? '', (p) {
+          final v = base + p * share;
+          if (gen != _syncGen || v <= (syncProgress ?? 0)) return;
+          syncProgress = v;
+          notifyListeners();
+        });
       } catch (e) {
         error = describeError(e);
       }
@@ -385,6 +395,7 @@ class LibraryModel extends ChangeNotifier {
       if (error != null) failures.add(ready.length > 1 ? '${a.name}: $error' : error);
     }
     syncing = false;
+    syncProgress = null;
     syncMessage = failures.isEmpty ? null : failures.join('; ');
     loadCategories();
     loadFavorites();

@@ -48,7 +48,7 @@ private struct BrowseContent: View {
     var body: some View {
         VStack(spacing: 0) {
             if model.syncing && !ui.pulling {
-                StatusStrip(kind: .busy, text: L("sync.running")).transition(.move(edge: .top).combined(with: .opacity))
+                StatusStrip(kind: .busy, text: syncStatusText(model.syncProgress)).transition(.move(edge: .top).combined(with: .opacity))
             }
             if let m = model.syncMessage {
                 StatusStrip(kind: .warning, text: "\(L("sync.failed")): \(m). \(L("sync.notUpdated"))", action: (L("player.retry"), { Task { await model.sync() } }))

@@ -9,6 +9,7 @@ import 'item_info.dart';
 import 'json_util.dart';
 import 'm3u.dart';
 import 'models.dart';
+import 'sync_meter.dart';
 import 'xtream_client.dart';
 import 'xtream_urls.dart';
 
@@ -23,13 +24,17 @@ class SyncService {
   final AppDatabase db;
   final http.Client _client;
 
-  Future<void> sync(Account account, {String? password}) async {
+  /// [onProgress] is told how far the sync is, 0..1 and never backwards: the login 5%, each of the three Xtream lists 20% (an M3U
+  /// download 50%), the decoded rows 70%, then the last 30% is the writing, counted in rows.
+  Future<void> sync(Account account, {String? password, void Function(double fraction)? onProgress}) async {
     final aid = account.id;
     if (aid == null) throw IPTVError.badConfig;
+    final meter = SyncMeter(onProgress);
     final (cats, items) = switch (account.kind) {
-      AccountKind.xtream => await _fetchXtream(account, aid, password ?? ''),
-      AccountKind.m3u => await _fetchM3U(account, aid),
+      AccountKind.xtream => await _fetchXtream(account, aid, password ?? '', meter),
+      AccountKind.m3u => await _fetchM3U(account, aid, meter),
     };
+    meter.reach(0.7);
     if (items.isEmpty) throw IPTVError.emptyResponse; // expired subscription / overloaded panel / nothing there: keep what we have
     // Only the types that came back with items are replaced: a panel that answers [] for one section while it rebuilds its
     // cache must not wipe that section (and the favorites that point into it).
@@ -50,27 +55,31 @@ class SyncService {
           archiveDays=excluded.archiveDays, epgChannelId=excluded.epgChannelId, stale=0
         ''');
       try {
+        var n = 0;
         for (final i in items) {
           st.execute([aid, i.type.name, i.name, i.categoryId, i.icon, i.rating, i.streamId, i.containerExt, i.directURL,
               i.tvArchive, i.archiveDays, i.epgChannelId]);
+          if (++n % 2000 == 0) meter.reach(0.7 + 0.3 * n / items.length);
         }
       } finally {
         st.close();
       }
       d.execute('DELETE FROM item WHERE accountId = ? AND stale = 1', [aid]);
     });
+    meter.reach(1);
     // The rest is stored; tell the user that a section that used to be there came back empty (a provider that is rebuilding or limiting).
     if (had.any((t) => !items.any((i) => i.type.name == t))) throw IPTVError.partialResponse;
   }
 
   // Xtream
 
-  Future<(List<Category>, List<Item>)> _fetchXtream(Account account, int aid, String password) async {
+  Future<(List<Category>, List<Item>)> _fetchXtream(Account account, int aid, String password, SyncMeter meter) async {
     final urls = XtreamURLs.parse(server: account.server ?? '', username: account.username ?? '', password: password);
     if (urls == null) throw IPTVError.badConfig;
     final client = XtreamClient(urls, client: _client);
     await client.authenticate();
-    final lists = await Future.wait([for (final t in ItemType.values) _fetchType(client, t)]);
+    meter.reach(0.05);
+    final lists = await Future.wait([for (final t in ItemType.values) _fetchType(client, t, meter)]);
     final cats = <Category>[], items = <Item>[];
     for (final (type, rawCats, rawStreams) in lists) {
       for (final c in rawCats) {
@@ -100,23 +109,25 @@ class SyncService {
     return (cats, items);
   }
 
-  Future<(ItemType, List<Map<String, dynamic>>, List<Map<String, dynamic>>)> _fetchType(XtreamClient c, ItemType t) async {
+  Future<(ItemType, List<Map<String, dynamic>>, List<Map<String, dynamic>>)> _fetchType(XtreamClient c, ItemType t, SyncMeter meter) async {
     final (ca, sa) = switch (t) {
       ItemType.live => ('get_live_categories', 'get_live_streams'),
       ItemType.movie => ('get_vod_categories', 'get_vod_streams'),
       ItemType.series => ('get_series_categories', 'get_series'),
     };
     final r = await Future.wait([c.array(ca), c.array(sa)]);
+    meter.advance(0.2); // the three lists finish in any order
     return (t, r[0], r[1]);
   }
 
   // M3U
 
   // ponytail: whole playlist held in memory; switch to a streamed download if lists above ~100 MB show up.
-  Future<(List<Category>, List<Item>)> _fetchM3U(Account account, int aid) async {
+  Future<(List<Category>, List<Item>)> _fetchM3U(Account account, int aid, SyncMeter meter) async {
     final url = Uri.tryParse(account.url?.trim() ?? '');
     if (url == null || !url.hasScheme || url.host.isEmpty) throw IPTVError.badConfig;
     final text = utf8.decode(await apiGet(_client, url), allowMalformed: true);
+    meter.reach(0.5);
     var start = 0;
     while (start < text.length && (text[start].trim().isEmpty || text[start] == '﻿')) {
       start++;

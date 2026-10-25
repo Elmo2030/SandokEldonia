@@ -68,6 +68,8 @@ open class LibraryModel {
     public var scope: SearchScopeChoice = .category { didSet { scheduleSearch() } }
     public var results: [Item] = []
     public var syncing = false
+    /// How far the running sync is, 0...1 (every playlist counted in All mode); nil when none is running.
+    public private(set) var syncProgress: Double?
     public var syncMessage: String?
     public var playing: PlayRequest?
     public var openSeries: Item?
@@ -210,12 +212,19 @@ open class LibraryModel {
         let ready = targets.filter(hasPassword)
         guard !ready.isEmpty else { return }
         syncGen += 1; let gen = syncGen
-        syncing = true; syncMessage = nil
-        defer { if gen == syncGen { syncing = false } }
+        syncing = true; syncMessage = nil; syncProgress = 0
+        defer { if gen == syncGen { syncing = false; syncProgress = nil } }
         var failures: [String] = []
-        for a in ready {
+        for (index, a) in ready.enumerated() {
             guard let aid = a.id else { continue }
-            do { try await SyncService(db: db).sync(account: a, password: secrets.password(for: aid)) }
+            let share = 1 / Double(ready.count), base = Double(index) * share      // All mode: the playlists go one after the other
+            let report: @Sendable (Double) -> Void = { [weak self] p in
+                Task { @MainActor in
+                    guard let self, gen == self.syncGen, base + p * share > (self.syncProgress ?? 0) else { return }
+                    self.syncProgress = base + p * share
+                }
+            }
+            do { try await SyncService(db: db).sync(account: a, password: secrets.password(for: aid), progress: report) }
             catch { failures.append(ready.count > 1 ? "\(a.name): \(error.localizedDescription)" : error.localizedDescription) }
             guard gen == syncGen else { return }                // a newer sync owns the UI state now
         }

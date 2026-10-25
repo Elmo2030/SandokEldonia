@@ -74,7 +74,7 @@ private struct SourcesSection: View {
             }
             Button { adding = true } label: { Label(L("account.add"), systemImage: "plus.circle.fill") }
         } header: { Text(L("settings.accounts")) } footer: {
-            if model.syncing { HStack(spacing: 8) { ProgressView().controlSize(.small); Text(L("sync.running")) } }
+            if model.syncing { HStack(spacing: 8) { ProgressView().controlSize(.small); Text(syncStatusText(model.syncProgress)) } }
             else if let m = model.syncMessage { Text("\(L("sync.failed")): \(m)").foregroundStyle(.orange) }
         }
         .brandRows()
@@ -256,6 +256,12 @@ private struct NoticeText: UIViewRepresentable {
         return v
     }
     func updateUIView(_ v: UITextView, context: Context) {}
+}
+
+/// "Syncing… 42%": the sync status line, with the percentage once the sync reports one.
+func syncStatusText(_ progress: Double?) -> String {
+    guard let progress else { return L("sync.running") }
+    return "\(L("sync.running")) \(progress.formatted(.percent.precision(.fractionLength(0))))"
 }
 
 /// "Expires 12 Mar 2027 · Days left: 140": orange within a week, red once it ended. Nothing when the panel gave no date.

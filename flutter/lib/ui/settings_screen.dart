@@ -14,6 +14,7 @@ import 'package:iptvmac/ui/about_screens.dart';
 import 'package:iptvmac/ui/downloads_screen.dart';
 import 'package:iptvmac/ui/missing_strings.dart';
 import 'package:iptvmac/ui/source_form.dart';
+import 'package:iptvmac/ui/widgets.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -105,7 +106,7 @@ class _SourcesSectionState extends State<_SourcesSection> {
     return _Section(
       title: l.settingsAccounts,
       note: m.syncing
-          ? Row(children: [const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)), const SizedBox(width: 8), Text(l.syncRunning)])
+          ? Row(children: [SizedBox(width: 14, height: 14, child: CircularProgressIndicator(value: m.syncProgress, strokeWidth: 2)), const SizedBox(width: 8), Text(syncStatusText(context, m.syncProgress))])
           : m.syncMessage != null
               ? Text('${l.syncFailed}: ${m.syncMessage}', style: TextStyle(color: cs.error))
               : null,

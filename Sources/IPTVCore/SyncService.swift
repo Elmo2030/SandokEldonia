@@ -6,13 +6,17 @@ public final class SyncService {
     let session: URLSession
     public init(db: AppDatabase, session: URLSession = apiSession) { self.db = db; self.session = session }
 
-    public func sync(account: Account, password: String?) async throws {
+    /// `progress` is told how far the sync is, 0...1 and never backwards: the login 5%, each of the three Xtream lists 20% (an M3U download
+    /// 50%), the decoded rows 70%, then the last 30% is the writing, counted in rows. It may be called from any thread.
+    public func sync(account: Account, password: String?, progress: (@Sendable (Double) -> Void)? = nil) async throws {
         guard let aid = account.id else { throw IPTVError.badConfig }
+        let meter = SyncMeter(progress)
         let (cats, items): ([Category], [Item])
         switch account.kind {
-        case .xtream: (cats, items) = try await fetchXtream(account, aid, password ?? "")
-        case .m3u: (cats, items) = try await fetchM3U(account, aid)
+        case .xtream: (cats, items) = try await fetchXtream(account, aid, password ?? "", meter)
+        case .m3u: (cats, items) = try await fetchM3U(account, aid, meter)
         }
+        meter.reach(0.7)
         if items.isEmpty { throw IPTVError.emptyResponse }   // expired subscription / overloaded panel / nothing there: keep what we have
         // Only the types that came back with items are replaced: a panel that answers [] for one section while it rebuilds its
         // cache must not wipe that section (and the favorites that point into it).
@@ -30,12 +34,14 @@ public final class SyncService {
                   containerExt=excluded.containerExt, directURL=excluded.directURL, tvArchive=excluded.tvArchive,
                   archiveDays=excluded.archiveDays, epgChannelId=excluded.epgChannelId, stale=0
                 """)
-            for i in items {
+            for (n, i) in items.enumerated() {
                 try st.execute(arguments: [aid, i.type.rawValue, i.name, i.categoryId, i.icon, i.rating, i.streamId,
                                            i.containerExt, i.directURL, i.tvArchive, i.archiveDays, i.epgChannelId])
+                if n % 2000 == 1999 { meter.reach(0.7 + 0.3 * Double(n + 1) / Double(items.count)) }
             }
             try d.execute(sql: "DELETE FROM item WHERE accountId = ? AND stale = 1", arguments: [aid])
         }
+        meter.reach(1)
     }
 
     /// Provider-controlled size limit: a list this large is a broken or hostile response, not a catalog.
@@ -43,14 +49,15 @@ public final class SyncService {
 
     // MARK: Xtream
 
-    private func fetchXtream(_ account: Account, _ aid: Int64, _ password: String) async throws -> ([Category], [Item]) {
+    private func fetchXtream(_ account: Account, _ aid: Int64, _ password: String, _ meter: SyncMeter) async throws -> ([Category], [Item]) {
         guard let urls = XtreamURLs(server: account.server ?? "", username: account.username ?? "", password: password)
         else { throw IPTVError.badConfig }
         let client = XtreamClient(urls: urls, session: session)
         try await client.authenticate()
-        async let l = fetchType(client, .live)
-        async let m = fetchType(client, .movie)
-        async let s = fetchType(client, .series)
+        meter.reach(0.05)
+        async let l = fetchType(client, .live, meter)
+        async let m = fetchType(client, .movie, meter)
+        async let s = fetchType(client, .series, meter)
         var cats: [Category] = [], items: [Item] = []
         for (type, rawCats, rawStreams) in try await [l, m, s] {
             for c in rawCats {
@@ -72,7 +79,7 @@ public final class SyncService {
         return (cats, items)
     }
 
-    private func fetchType(_ c: XtreamClient, _ t: ItemType) async throws -> (ItemType, [[String: Any]], [[String: Any]]) {
+    private func fetchType(_ c: XtreamClient, _ t: ItemType, _ meter: SyncMeter) async throws -> (ItemType, [[String: Any]], [[String: Any]]) {
         let (ca, sa): (String, String) = switch t {
         case .live: ("get_live_categories", "get_live_streams")
         case .movie: ("get_vod_categories", "get_vod_streams")
@@ -80,18 +87,21 @@ public final class SyncService {
         }
         async let cats = c.array(ca)
         async let streams = c.array(sa)
-        return (t, try await cats, try await streams)
+        let result = (t, try await cats, try await streams)
+        meter.advance(by: 0.2)                      // the three lists finish in any order
+        return result
     }
 
     // MARK: M3U
 
     // ponytail: whole playlist held in memory; switch to a streamed download if lists above ~100 MB show up.
-    private func fetchM3U(_ account: Account, _ aid: Int64) async throws -> ([Category], [Item]) {
+    private func fetchM3U(_ account: Account, _ aid: Int64, _ meter: SyncMeter) async throws -> ([Category], [Item]) {
         guard let s = account.url?.trimmingCharacters(in: .whitespacesAndNewlines), let url = URL(string: s),
               url.scheme != nil, url.host != nil else { throw IPTVError.badConfig }
         let (data, resp) = try await session.data(from: url)
         if let code = (resp as? HTTPURLResponse)?.statusCode, !(200..<300).contains(code) { throw IPTVError.http(code) }
         guard data.count <= Self.maxResponseBytes else { throw IPTVError.badResponse }
+        meter.reach(0.5)
         let text = String(decoding: data, as: UTF8.self)
         let first = text.drop { $0.isWhitespace || $0 == "\u{FEFF}" }
         guard first.hasPrefix("#EXTM3U") else { throw IPTVError.badResponse }

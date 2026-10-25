@@ -58,7 +58,7 @@ struct RootView: View {
                         UpdateBanner()
                         #endif
                         if model.wrappedValue.syncing {
-                            StatusStrip(kind: .busy, text: L("sync.running"))
+                            StatusStrip(kind: .busy, text: syncStatusText(model.wrappedValue.syncProgress))
                                 .transition(.move(edge: .top).combined(with: .opacity))
                         }
                         if let m = model.wrappedValue.syncMessage {

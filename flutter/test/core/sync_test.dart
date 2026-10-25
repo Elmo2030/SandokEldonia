@@ -6,6 +6,7 @@ import 'package:iptvmac/core/errors.dart';
 import 'package:iptvmac/core/models.dart';
 import 'package:iptvmac/core/search.dart';
 import 'package:iptvmac/core/subscription_info.dart';
+import 'package:iptvmac/core/sync_meter.dart';
 import 'package:iptvmac/core/sync_service.dart';
 import 'package:iptvmac/core/xtream_client.dart';
 import 'package:iptvmac/core/xtream_urls.dart';
@@ -100,6 +101,50 @@ void main() {
     await expectLater(client(server).authenticate(), throwsA(IPTVError.accountInactive));
     server.reply(200, '[]');
     await expectLater(client(server).authenticate(), throwsA(IPTVError.badResponse));
+  });
+
+  test('the meter never goes backwards and only reports growth', () {
+    final seen = <double>[];
+    SyncMeter(seen.add)
+      ..reach(0.2)
+      ..reach(0.1)
+      ..reach(0.2)
+      ..advance(0.2)
+      ..reach(0.3)
+      ..reach(5)
+      ..advance(1);
+    expect(seen.length, 3);
+    expect(seen[0], 0.2);
+    expect(seen[1], closeTo(0.4, 1e-9));
+    expect(seen[2], 1.0, reason: 'nothing passes 100%');
+  });
+
+  test('an Xtream sync reports progress forward up to 100%', () async {
+    server.handler = (r) => res(200, switch (actionOf(r)) {
+          'get_vod_categories' || 'get_series_categories' || 'get_vod_streams' || 'get_series' => '[]',
+          final x => body(x),
+        });
+    final seen = <double>[];
+    await svc.sync(a, password: 'p', onProgress: seen.add);
+    expect(seen, [...seen]..sort(), reason: 'forward only');
+    expect(seen.first, 0.05, reason: 'the login');
+    expect(seen.any((v) => (v - 0.65).abs() < 1e-9), true, reason: 'the three lists, 20% each');
+    expect(seen.last, 1.0);
+  });
+
+  test('writing many rows reports progress inside the write', () async {
+    final m3u = StringBuffer('#EXTM3U\n');
+    for (var i = 0; i < 5000; i++) {
+      m3u.write('#EXTINF:-1 group-title="G",Channel $i\nhttp://h/live/$i.ts\n');
+    }
+    final b = db.write((d) => Account(name: 'm', kind: AccountKind.m3u, url: 'http://h/list.m3u').insert(d));
+    server.reply(200, m3u.toString());
+    final seen = <double>[];
+    await svc.sync(b, onProgress: seen.add);
+    expect(seen, [...seen]..sort());
+    expect(seen.contains(0.5) && seen.contains(0.7), true, reason: 'downloaded, then decoded');
+    expect(seen.where((v) => v > 0.7 && v < 1).length, greaterThanOrEqualTo(2), reason: 'the write is counted in rows: $seen');
+    expect(seen.last, 1.0);
   });
 
   test('subscription reads the expiry and keeps what the panel leaves out', () async {

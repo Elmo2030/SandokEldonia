@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -41,9 +42,9 @@ class StatusStrip extends StatelessWidget {
     final Widget? child;
     if (m.syncing) {
       child = Row(children: [
-        const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+        SizedBox(width: 18, height: 18, child: CircularProgressIndicator(value: m.syncProgress, strokeWidth: 2)),
         const SizedBox(width: 12),
-        Expanded(child: Text(l.syncRunning)),
+        Expanded(child: Text(syncStatusText(context, m.syncProgress), key: const Key('sync-status'))),
       ]);
     } else if (m.syncMessage != null) {
       child = Row(children: [
@@ -125,4 +126,17 @@ class FavoriteButton extends StatelessWidget {
         ? IconButton.filledTonal(onPressed: onPressed, icon: icon, tooltip: tip)
         : IconButton(onPressed: onPressed, icon: icon, tooltip: tip);
   }
+}
+
+/// "Syncing… 42%": the sync status line, with the percentage once the sync reports one.
+String syncStatusText(BuildContext context, double? progress) {
+  final text = AppLocalizations.of(context).syncRunning;
+  if (progress == null) return text;
+  String pct;
+  try {
+    pct = NumberFormat.percentPattern(Localizations.localeOf(context).toString()).format(progress);
+  } catch (_) {
+    pct = '${(progress * 100).floor()}%'; // a locale intl has no number data for
+  }
+  return '$text $pct';
 }

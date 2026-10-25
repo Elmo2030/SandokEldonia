@@ -226,6 +226,12 @@ struct PlaylistSettings: View {
     }
 }
 
+/// "Syncing… 42%": the sync status line, with the percentage once the sync reports one.
+func syncStatusText(_ progress: Double?) -> String {
+    guard let progress else { return L("sync.running") }
+    return "\(L("sync.running")) \(progress.formatted(.percent.precision(.fractionLength(0))))"
+}
+
 /// "Expires 12 Mar 2027 · Days left: 140": orange within a week, red once it ended. Nothing when the panel gave no date.
 struct SubscriptionLine: View {
     let info: SubscriptionInfo

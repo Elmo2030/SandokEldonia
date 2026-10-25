@@ -245,5 +245,8 @@
   "infoEmpty": "プロバイダーにこの作品の詳細情報はありません。",
   "infoLoading": "詳細を読み込み中…",
   "infoError": "詳細を読み込めませんでした。",
-  "unitHoursShort": "{p1}時間"
+  "unitHoursShort": "{p1}時間",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

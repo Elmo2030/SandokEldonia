@@ -245,5 +245,8 @@
   "infoEmpty": "Penyedia Anda tidak memiliki detail untuk judul ini.",
   "infoLoading": "Memuat detail…",
   "infoError": "Detail tidak dapat dimuat.",
-  "unitHoursShort": "{p1} j"
+  "unitHoursShort": "{p1} j",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

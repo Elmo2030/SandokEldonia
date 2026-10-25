@@ -245,5 +245,8 @@
   "infoEmpty": "Je aanbieder heeft geen details over deze titel.",
   "infoLoading": "Details laden…",
   "infoError": "De details konden niet worden geladen.",
-  "unitHoursShort": "{p1} u"
+  "unitHoursShort": "{p1} u",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

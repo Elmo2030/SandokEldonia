@@ -244,3 +244,6 @@
 "info.loading" = "상세 정보를 불러오는 중…";
 "info.error" = "상세 정보를 불러오지 못했습니다.";
 "unit.hoursShort" = "%d시간";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

@@ -244,3 +244,6 @@
 "info.loading" = "טוען פרטים…";
 "info.error" = "לא ניתן לטעון את הפרטים.";
 "unit.hoursShort" = "%d שע׳";
+"sub.expires" = "תוקף עד %@";
+"sub.expired" = "פג תוקף ב-%@";
+"sub.daysLeft" = "ימים שנותרו: %d";

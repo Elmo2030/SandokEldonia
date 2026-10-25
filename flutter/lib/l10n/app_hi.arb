@@ -245,5 +245,8 @@
   "infoEmpty": "आपके प्रदाता के पास इस शीर्षक की कोई जानकारी नहीं है।",
   "infoLoading": "विवरण लोड हो रहा है…",
   "infoError": "विवरण लोड नहीं हो सका।",
-  "unitHoursShort": "{p1} घं."
+  "unitHoursShort": "{p1} घं.",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

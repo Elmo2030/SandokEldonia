@@ -245,5 +245,8 @@
   "infoEmpty": "Twój dostawca nie ma informacji o tym tytule.",
   "infoLoading": "Wczytywanie szczegółów…",
   "infoError": "Nie udało się wczytać szczegółów.",
-  "unitHoursShort": "{p1} godz."
+  "unitHoursShort": "{p1} godz.",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

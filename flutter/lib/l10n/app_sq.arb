@@ -245,5 +245,8 @@
   "infoEmpty": "Ofruesi juaj nuk ka detaje për këtë titull.",
   "infoLoading": "Po ngarkohen detajet…",
   "infoError": "Detajet nuk u ngarkuan.",
-  "unitHoursShort": "{p1} orë"
+  "unitHoursShort": "{p1} orë",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

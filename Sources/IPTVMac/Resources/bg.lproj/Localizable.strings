@@ -244,3 +244,6 @@
 "info.loading" = "Зареждане на подробности…";
 "info.error" = "Подробностите не можаха да се заредят.";
 "unit.hoursShort" = "%d ч";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

@@ -245,5 +245,8 @@
   "infoEmpty": "У вашего провайдера нет сведений об этом фильме или сериале.",
   "infoLoading": "Загрузка сведений…",
   "infoError": "Не удалось загрузить сведения.",
-  "unitHoursShort": "{p1} ч"
+  "unitHoursShort": "{p1} ч",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

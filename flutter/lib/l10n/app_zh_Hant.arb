@@ -245,5 +245,8 @@
   "infoEmpty": "你的服務供應商沒有這部作品的詳細資訊。",
   "infoLoading": "正在載入詳細資訊…",
   "infoError": "無法載入詳細資訊。",
-  "unitHoursShort": "{p1} 小時"
+  "unitHoursShort": "{p1} 小時",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

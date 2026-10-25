@@ -17,6 +17,7 @@ import 'package:iptvmac/core/models.dart';
 import 'package:iptvmac/core/refresh_schedule.dart';
 import 'package:iptvmac/core/search.dart';
 import 'package:iptvmac/core/secret_store.dart';
+import 'package:iptvmac/core/subscription_info.dart';
 import 'package:iptvmac/core/sync_service.dart';
 import 'package:iptvmac/core/user_data.dart';
 import 'package:iptvmac/core/xtream_client.dart';
@@ -96,6 +97,10 @@ class LibraryModel extends ChangeNotifier {
   /// The last item played (the list highlights it).
   int? lastPlayedId;
   DateTime? lastSync;
+
+  /// What each Xtream panel said about its subscription (the expiry date), by playlist id: the last answers are kept in the preferences,
+  /// the settings screen refreshes them (one login request per playlist).
+  late Map<int, SubscriptionInfo> subscriptions = prefs.subscriptions;
 
   final _passwords = <int, String>{}; // loaded from [secrets] at start: the player host needs stream URLs synchronously
   final _episodeByUrl = <String, Episode>{};
@@ -463,6 +468,10 @@ class LibraryModel extends ChangeNotifier {
     });
     await secrets.deletePassword(id);
     _passwords.remove(id);
+    if (subscriptions.containsKey(id)) {
+      subscriptions = {...subscriptions}..remove(id);
+      prefs.subscriptions = subscriptions;
+    }
     await loadAccounts();
     if (allPlaylists && selectedCategory.startsWith('$id|')) selectedCategory = '__all';
     loadCategories();
@@ -638,6 +647,21 @@ class LibraryModel extends ChangeNotifier {
     reloadContinue();
     scheduleSearch(immediate: true);
     notifyListeners();
+  }
+
+  /// Asks the panel again. A failed request (offline, wrong password, a panel without the field) keeps what was known.
+  Future<void> refreshSubscription(Account a) async {
+    final id = a.id;
+    if (a.kind != AccountKind.xtream || id == null || !hasPassword(a)) return;
+    final u = XtreamURLs.parse(server: a.server ?? '', username: a.username ?? '', password: _passwords[id] ?? '');
+    if (u == null) return;
+    try {
+      final info = await XtreamClient(u, client: _client).subscription();
+      if (subscriptions[id] == info) return;
+      subscriptions = {...subscriptions, id: info};
+      prefs.subscriptions = subscriptions;
+      notifyListeners();
+    } catch (_) {}
   }
 
   // ---- adding a source ----

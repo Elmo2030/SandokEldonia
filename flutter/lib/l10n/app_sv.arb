@@ -245,5 +245,8 @@
   "infoEmpty": "Din leverantör har inga detaljer om den här titeln.",
   "infoLoading": "Läser in detaljer…",
   "infoError": "Det gick inte att läsa in detaljerna.",
-  "unitHoursShort": "{p1} tim"
+  "unitHoursShort": "{p1} tim",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

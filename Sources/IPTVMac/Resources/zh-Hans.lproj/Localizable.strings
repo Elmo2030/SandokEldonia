@@ -244,3 +244,6 @@
 "info.loading" = "正在加载详情…";
 "info.error" = "无法加载详情。";
 "unit.hoursShort" = "%d 小时";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

@@ -245,5 +245,8 @@
   "infoEmpty": "Ο πάροχός σας δεν έχει λεπτομέρειες για αυτόν τον τίτλο.",
   "infoLoading": "Φόρτωση λεπτομερειών…",
   "infoError": "Δεν ήταν δυνατή η φόρτωση των λεπτομερειών.",
-  "unitHoursShort": "{p1} ώ."
+  "unitHoursShort": "{p1} ώ.",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

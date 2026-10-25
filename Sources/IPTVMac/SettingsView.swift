@@ -148,7 +148,10 @@ struct PlaylistSettings: View {
             Section(L("settings.accounts")) {
                 ForEach(model.accounts) { a in
                     HStack {
-                        Label(a.name, systemImage: a.kind == .xtream ? "server.rack" : "list.bullet.rectangle")
+                        VStack(alignment: .leading, spacing: 2) {
+                            Label(a.name, systemImage: a.kind == .xtream ? "server.rack" : "list.bullet.rectangle")
+                            if a.kind == .xtream, let s = model.subscriptions[a.id ?? 0] { SubscriptionLine(info: s).padding(.leading, 26) }
+                        }
                         Spacer()
                         if a.kind == .xtream { Button(L("settings.changePassword")) { newPassword = ""; editing = a } }
                         Button(L("settings.delete"), role: .destructive) { model.deleteAccount(a) }
@@ -156,6 +159,7 @@ struct PlaylistSettings: View {
                 }
                 Button(L("account.add")) { model.showGuide = true }
             }
+            .task { for a in model.accounts { await model.refreshSubscription(a) } }
             Section {
                 Picker(L("settings.refresh"), selection: $refreshHours) {
                     ForEach([0, 6, 12, 24], id: \.self) { Text(L("settings.refresh.\($0)")).tag($0) }
@@ -218,6 +222,20 @@ struct PlaylistSettings: View {
             catch BackupError.unsupportedVersion { message = L("backup.error.version") }
             catch BackupError.invalid { message = L("backup.error.invalid") }
             catch { message = "\(L("backup.failed")): \(error.localizedDescription)" }
+        }
+    }
+}
+
+/// "Expires 12 Mar 2027 · Days left: 140": orange within a week, red once it ended. Nothing when the panel gave no date.
+struct SubscriptionLine: View {
+    let info: SubscriptionInfo
+    var body: some View {
+        if let end = info.expires {
+            let state = info.state()
+            let date = end.formatted(date: .abbreviated, time: .omitted)
+            Text(state == .expired ? String(format: L("sub.expired"), date)
+                                   : "\(String(format: L("sub.expires"), date)) · \(String(format: L("sub.daysLeft"), info.daysLeft() ?? 0))")
+                .font(.caption).foregroundStyle(state == .expired ? .red : state == .soon ? .orange : .secondary)
         }
     }
 }

@@ -244,3 +244,6 @@
 "info.loading" = "Po ngarkohen detajet…";
 "info.error" = "Detajet nuk u ngarkuan.";
 "unit.hoursShort" = "%d orë";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

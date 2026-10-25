@@ -245,5 +245,8 @@
   "infoEmpty": "আপনার প্রদানকারীর কাছে এই শিরোনামের কোনো তথ্য নেই।",
   "infoLoading": "বিবরণ লোড হচ্ছে…",
   "infoError": "বিবরণ লোড করা যায়নি।",
-  "unitHoursShort": "{p1} ঘ."
+  "unitHoursShort": "{p1} ঘ.",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

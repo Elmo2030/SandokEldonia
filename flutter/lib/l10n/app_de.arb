@@ -245,5 +245,8 @@
   "infoEmpty": "Dein Anbieter hat keine Details zu diesem Titel.",
   "infoLoading": "Details werden geladen…",
   "infoError": "Die Details konnten nicht geladen werden.",
-  "unitHoursShort": "{p1} Std."
+  "unitHoursShort": "{p1} Std.",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

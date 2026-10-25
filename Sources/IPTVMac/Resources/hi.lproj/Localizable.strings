@@ -244,3 +244,6 @@
 "info.loading" = "विवरण लोड हो रहा है…";
 "info.error" = "विवरण लोड नहीं हो सका।";
 "unit.hoursShort" = "%d घं.";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

@@ -5,6 +5,7 @@ import 'package:iptvmac/core/app_database.dart';
 import 'package:iptvmac/core/errors.dart';
 import 'package:iptvmac/core/models.dart';
 import 'package:iptvmac/core/search.dart';
+import 'package:iptvmac/core/subscription_info.dart';
 import 'package:iptvmac/core/sync_service.dart';
 import 'package:iptvmac/core/xtream_client.dart';
 import 'package:iptvmac/core/xtream_urls.dart';
@@ -99,6 +100,17 @@ void main() {
     await expectLater(client(server).authenticate(), throwsA(IPTVError.accountInactive));
     server.reply(200, '[]');
     await expectLater(client(server).authenticate(), throwsA(IPTVError.badResponse));
+  });
+
+  test('subscription reads the expiry and keeps what the panel leaves out', () async {
+    server.reply(200, '{"user_info":{"auth":1,"status":"Active","exp_date":"1800864000","max_connections":"2"}}');
+    final s = await client(server).subscription();
+    expect(s.expires, DateTime.fromMillisecondsSinceEpoch(1800864000 * 1000));
+    expect(s.maxConnections, 2);
+    server.reply(200, '{"user_info":{"auth":1,"exp_date":null}}');
+    expect(await client(server).subscription(), const SubscriptionInfo());
+    server.reply(200, '{"user_info":{"auth":0}}');
+    await expectLater(client(server).subscription(), throwsA(IPTVError.badCredentials));
   });
 
   test('EPG titles are base64 decoded', () async {

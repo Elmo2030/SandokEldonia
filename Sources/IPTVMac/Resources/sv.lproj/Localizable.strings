@@ -244,3 +244,6 @@
 "info.loading" = "Läser in detaljer…";
 "info.error" = "Det gick inte att läsa in detaljerna.";
 "unit.hoursShort" = "%d tim";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

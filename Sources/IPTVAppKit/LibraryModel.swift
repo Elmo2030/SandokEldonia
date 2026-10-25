@@ -169,6 +169,33 @@ open class LibraryModel {
         return secrets.password(for: id) != nil  // "" = deliberately no password
     }
 
+    // MARK: Subscription
+
+    /// What each Xtream panel said about its subscription (the expiry date), by playlist id. The last answers are kept in the defaults, so a
+    /// date shows at once and offline; the settings screen refreshes them (one login request per playlist).
+    public private(set) var subscriptions: [Int64: SubscriptionInfo] = LibraryModel.savedSubscriptions()
+    private static let subscriptionsKey = "subscriptions"
+
+    private static func savedSubscriptions() -> [Int64: SubscriptionInfo] {
+        guard let d = UserDefaults.standard.data(forKey: subscriptionsKey),
+              let m = try? JSONDecoder().decode([String: SubscriptionInfo].self, from: d) else { return [:] }
+        return Dictionary(uniqueKeysWithValues: m.compactMap { k, v in Int64(k).map { ($0, v) } })
+    }
+
+    private func saveSubscriptions() {
+        let m = Dictionary(uniqueKeysWithValues: subscriptions.map { (String($0.key), $0.value) })
+        UserDefaults.standard.set(try? JSONEncoder().encode(m), forKey: Self.subscriptionsKey)
+    }
+
+    /// Asks the panel again. A failed request (offline, wrong password, a panel without the field) keeps what was known.
+    public func refreshSubscription(_ a: Account) async {
+        guard a.kind == .xtream, let id = a.id, hasPassword(a),
+              let urls = XtreamURLs(server: a.server ?? "", username: a.username ?? "", password: secrets.password(for: id) ?? "") else { return }
+        guard let info = try? await XtreamClient(urls: urls).subscription(), info != subscriptions[id] else { return }
+        subscriptions[id] = info
+        saveSubscriptions()
+    }
+
     // MARK: Sync
 
     private var syncGen = 0
@@ -224,6 +251,7 @@ open class LibraryModel {
             _ = try Account.deleteOne(d, key: id)
         }
         secrets.deletePassword(for: id)
+        if subscriptions.removeValue(forKey: id) != nil { saveSubscriptions() }
         loadAccounts()
         if allPlaylists {                                       // still All: the deleted playlist's rows are gone
             if selectedCategory.hasPrefix("\(id)|") { selectedCategory = "__all" }

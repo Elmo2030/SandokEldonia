@@ -244,3 +244,6 @@
 "info.loading" = "กำลังโหลดรายละเอียด…";
 "info.error" = "โหลดรายละเอียดไม่สำเร็จ";
 "unit.hoursShort" = "%d ชม.";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

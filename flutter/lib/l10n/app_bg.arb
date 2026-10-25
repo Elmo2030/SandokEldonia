@@ -245,5 +245,8 @@
   "infoEmpty": "Вашият доставчик няма подробности за това заглавие.",
   "infoLoading": "Зареждане на подробности…",
   "infoError": "Подробностите не можаха да се заредят.",
-  "unitHoursShort": "{p1} ч"
+  "unitHoursShort": "{p1} ч",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

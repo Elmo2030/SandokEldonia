@@ -244,5 +244,8 @@
   "infoEmpty": "info.empty",
   "infoLoading": "info.loading",
   "infoError": "info.error",
-  "unitHoursShort": "unit.hoursShort"
+  "unitHoursShort": "unit.hoursShort",
+  "subExpires": "sub.expires",
+  "subExpired": "sub.expired",
+  "subDaysLeft": "sub.daysLeft"
 }

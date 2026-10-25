@@ -244,3 +244,6 @@
 "info.loading" = "Завантаження подробиць…";
 "info.error" = "Не вдалося завантажити подробиці.";
 "unit.hoursShort" = "%d год";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

@@ -383,5 +383,29 @@
         "type": "int"
       }
     }
+  },
+  "subExpires": "Expires {p1}",
+  "@subExpires": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
+  "subExpired": "Expired {p1}",
+  "@subExpired": {
+    "placeholders": {
+      "p1": {
+        "type": "String"
+      }
+    }
+  },
+  "subDaysLeft": "Days left: {p1}",
+  "@subDaysLeft": {
+    "placeholders": {
+      "p1": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -244,3 +244,6 @@
 "info.loading" = "詳細を読み込み中…";
 "info.error" = "詳細を読み込めませんでした。";
 "unit.hoursShort" = "%d時間";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

@@ -245,5 +245,8 @@
   "infoEmpty": "ارائه‌دهنده شما جزئیاتی درباره این عنوان ندارد.",
   "infoLoading": "در حال بارگذاری جزئیات…",
   "infoError": "بارگذاری جزئیات ممکن نشد.",
-  "unitHoursShort": "{p1} ساعت"
+  "unitHoursShort": "{p1} ساعت",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

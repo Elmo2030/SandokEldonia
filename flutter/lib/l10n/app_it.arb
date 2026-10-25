@@ -245,5 +245,8 @@
   "infoEmpty": "Il tuo provider non ha dettagli per questo titolo.",
   "infoLoading": "Caricamento dei dettagli…",
   "infoError": "Impossibile caricare i dettagli.",
-  "unitHoursShort": "{p1} h"
+  "unitHoursShort": "{p1} h",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

@@ -76,6 +76,17 @@ import GRDB
         try await XtreamClient(urls: urls, session: mockSession()).authenticate()
     }
 
+    @Test func subscriptionReadsTheExpiryAndKeepsWhatThePanelLeavesOut() async throws {
+        let urls = XtreamURLs(server: "h", username: "u", password: "p")!
+        MockURLProtocol.handler = { _ in (200, Data(#"{"user_info":{"auth":1,"status":"Active","exp_date":"1800864000","max_connections":"2"}}"#.utf8)) }
+        let s = try await XtreamClient(urls: urls, session: mockSession()).subscription()
+        #expect(s.expires == Date(timeIntervalSince1970: 1_800_864_000) && s.maxConnections == 2)
+        MockURLProtocol.handler = { _ in (200, Data(#"{"user_info":{"auth":1,"exp_date":null}}"#.utf8)) }
+        #expect(try await XtreamClient(urls: urls, session: mockSession()).subscription() == SubscriptionInfo())
+        MockURLProtocol.handler = { _ in (200, Data(#"{"user_info":{"auth":0}}"#.utf8)) }
+        await #expect(throws: IPTVError.badCredentials) { try await XtreamClient(urls: urls, session: mockSession()).subscription() }
+    }
+
     @Test func epgTitlesAreBase64Decoded() async throws {
         let urls = XtreamURLs(server: "h", username: "u", password: "p")!
         let t = Data("Evening News".utf8).base64EncodedString()

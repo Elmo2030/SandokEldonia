@@ -3,9 +3,11 @@ import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:iptvmac/app/library_model.dart';
 import 'package:iptvmac/core/backup.dart';
 import 'package:iptvmac/core/models.dart';
+import 'package:iptvmac/core/subscription_info.dart';
 import 'package:iptvmac/downloads/downloads_model.dart';
 import 'package:iptvmac/l10n/app_localizations.dart';
 import 'package:iptvmac/ui/about_screens.dart';
@@ -78,8 +80,22 @@ Future<bool> confirm(BuildContext context, {required String title, required Stri
   return ok == true;
 }
 
-class _SourcesSection extends StatelessWidget {
+class _SourcesSection extends StatefulWidget {
   const _SourcesSection();
+
+  @override
+  State<_SourcesSection> createState() => _SourcesSectionState();
+}
+
+class _SourcesSectionState extends State<_SourcesSection> {
+  @override
+  void initState() {
+    super.initState();
+    final m = context.read<LibraryModel>();
+    for (final a in m.accounts) {
+      m.refreshSubscription(a); // the expiry date of each Xtream subscription, when the panel gives one
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +115,10 @@ class _SourcesSection extends StatelessWidget {
             key: Key('source-${a.id}'),
             leading: Icon(a.kind == AccountKind.xtream ? Icons.dns_outlined : Icons.list_alt, color: cs.primary),
             title: Text(a.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-            subtitle: Text([a.kind == AccountKind.xtream ? l.kindXtream : l.kindM3u, if (a.kind == AccountKind.xtream) a.username].whereType<String>().join(' · '), maxLines: 1, overflow: TextOverflow.ellipsis),
+            subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text([a.kind == AccountKind.xtream ? l.kindXtream : l.kindM3u, if (a.kind == AccountKind.xtream) a.username].whereType<String>().join(' · '), maxLines: 1, overflow: TextOverflow.ellipsis),
+              if (m.subscriptions[a.id] case final s? when s.expires != null) SubscriptionLine(s),
+            ]),
             trailing: Row(mainAxisSize: MainAxisSize.min, children: [
               IconButton(icon: const Icon(Icons.refresh), tooltip: l.syncNow, onPressed: m.syncing ? null : () => m.sync([a])),
               IconButton(
@@ -337,4 +356,34 @@ String languageName(Locale l) {
   };
   if (l.languageCode == 'zh') return l.scriptCode == 'Hant' ? '繁體中文' : '简体中文';
   return names[l.languageCode] ?? l.toLanguageTag();
+}
+
+/// "Expires 12 Mar 2027 · Days left: 140": orange within a week, red once it ended. Nothing when the panel gave no date.
+class SubscriptionLine extends StatelessWidget {
+  const SubscriptionLine(this.info, {super.key, this.now});
+  final SubscriptionInfo info;
+  final DateTime? now;
+
+  @override
+  Widget build(BuildContext context) {
+    final end = info.expires;
+    if (end == null) return const SizedBox.shrink();
+    final l = AppLocalizations.of(context);
+    final cs = Theme.of(context).colorScheme;
+    final at = now ?? DateTime.now();
+    final state = info.state(at);
+    String date;
+    try {
+      date = DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(end);
+    } catch (_) {
+      date = end.toIso8601String().substring(0, 10); // a locale intl has no date data for
+    }
+    final text = state == SubscriptionState.expired ? l.subExpired(date) : '${l.subExpires(date)} · ${l.subDaysLeft(info.daysLeft(at) ?? 0)}';
+    final color = switch (state) {
+      SubscriptionState.expired => cs.error,
+      SubscriptionState.soon => Colors.orange,
+      _ => cs.onSurfaceVariant,
+    };
+    return Text(text, key: const Key('subscription-line'), style: TextStyle(color: color, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis);
+  }
 }

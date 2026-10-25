@@ -245,5 +245,8 @@
   "infoEmpty": "Tu proveedor no tiene detalles de este título.",
   "infoLoading": "Cargando detalles…",
   "infoError": "No se pudieron cargar los detalles.",
-  "unitHoursShort": "{p1} h"
+  "unitHoursShort": "{p1} h",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

@@ -69,6 +69,14 @@ public struct XtreamClient {
         if let status = str(u["status"])?.lowercased(), ["expired", "disabled", "banned"].contains(status) { throw IPTVError.accountInactive }
     }
 
+    /// What the panel says about the subscription (the expiry date, the allowed connections). A panel that does not send a field leaves it nil.
+    public func subscription() async throws -> SubscriptionInfo {
+        guard let o = try await json(urls.api(nil)) as? [String: Any], let u = o["user_info"] as? [String: Any]
+        else { throw IPTVError.badResponse }
+        if int(u["auth"]) != 1 { throw IPTVError.badCredentials }
+        return SubscriptionInfo(userInfo: u)
+    }
+
     /// Timezone the panel uses for timeshift URLs (`server_info.timezone`), or nil if unknown.
     public func serverTimeZone() async -> TimeZone? {
         guard let o = try? await json(urls.api(nil)) as? [String: Any],

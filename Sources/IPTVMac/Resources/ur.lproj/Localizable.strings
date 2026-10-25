@@ -244,3 +244,6 @@
 "info.loading" = "تفصیلات لوڈ ہو رہی ہیں…";
 "info.error" = "تفصیلات لوڈ نہیں ہو سکیں۔";
 "unit.hoursShort" = "%d گھنٹے";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

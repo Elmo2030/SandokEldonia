@@ -245,5 +245,8 @@
   "infoEmpty": "لا يوفّر مزوّدك أي تفاصيل لهذا العنوان.",
   "infoLoading": "جارٍ تحميل التفاصيل…",
   "infoError": "تعذّر تحميل التفاصيل.",
-  "unitHoursShort": "{p1} س"
+  "unitHoursShort": "{p1} س",
+  "subExpires": "ينتهي في {p1}",
+  "subExpired": "انتهى في {p1}",
+  "subDaysLeft": "الأيام المتبقية: {p1}"
 }

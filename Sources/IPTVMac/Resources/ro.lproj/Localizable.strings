@@ -244,3 +244,6 @@
 "info.loading" = "Se încarcă detaliile…";
 "info.error" = "Detaliile nu au putut fi încărcate.";
 "unit.hoursShort" = "%d h";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

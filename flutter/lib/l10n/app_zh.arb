@@ -245,5 +245,8 @@
   "infoEmpty": "你的服务商没有这部作品的详细信息。",
   "infoLoading": "正在加载详情…",
   "infoError": "无法加载详情。",
-  "unitHoursShort": "{p1} 小时"
+  "unitHoursShort": "{p1} 小时",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

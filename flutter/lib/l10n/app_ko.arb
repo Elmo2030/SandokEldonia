@@ -245,5 +245,8 @@
   "infoEmpty": "제공업체에 이 작품의 상세 정보가 없습니다.",
   "infoLoading": "상세 정보를 불러오는 중…",
   "infoError": "상세 정보를 불러오지 못했습니다.",
-  "unitHoursShort": "{p1}시간"
+  "unitHoursShort": "{p1}시간",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

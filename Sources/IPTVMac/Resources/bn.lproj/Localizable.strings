@@ -244,3 +244,6 @@
 "info.loading" = "বিবরণ লোড হচ্ছে…";
 "info.error" = "বিবরণ লোড করা যায়নি।";
 "unit.hoursShort" = "%d ঘ.";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

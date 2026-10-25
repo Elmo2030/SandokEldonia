@@ -245,5 +245,8 @@
   "infoEmpty": "У вашого провайдера немає відомостей про цей фільм чи серіал.",
   "infoLoading": "Завантаження подробиць…",
   "infoError": "Не вдалося завантажити подробиці.",
-  "unitHoursShort": "{p1} год"
+  "unitHoursShort": "{p1} год",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

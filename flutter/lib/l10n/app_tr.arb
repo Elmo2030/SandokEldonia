@@ -245,5 +245,8 @@
   "infoEmpty": "Sağlayıcınızın bu yapım hakkında bilgisi yok.",
   "infoLoading": "Ayrıntılar yükleniyor…",
   "infoError": "Ayrıntılar yüklenemedi.",
-  "unitHoursShort": "{p1} sa"
+  "unitHoursShort": "{p1} sa",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

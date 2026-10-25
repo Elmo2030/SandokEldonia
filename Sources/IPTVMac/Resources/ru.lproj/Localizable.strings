@@ -244,3 +244,6 @@
 "info.loading" = "Загрузка сведений…";
 "info.error" = "Не удалось загрузить сведения.";
 "unit.hoursShort" = "%d ч";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

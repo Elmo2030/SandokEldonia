@@ -244,3 +244,6 @@
 "info.loading" = "正在載入詳細資訊…";
 "info.error" = "無法載入詳細資訊。";
 "unit.hoursShort" = "%d 小時";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

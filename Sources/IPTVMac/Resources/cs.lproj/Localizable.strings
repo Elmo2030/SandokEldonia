@@ -244,3 +244,6 @@
 "info.loading" = "Načítání podrobností…";
 "info.error" = "Podrobnosti se nepodařilo načíst.";
 "unit.hoursShort" = "%d h";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

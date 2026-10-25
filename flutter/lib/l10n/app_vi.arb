@@ -245,5 +245,8 @@
   "infoEmpty": "Nhà cung cấp của bạn không có thông tin chi tiết về nội dung này.",
   "infoLoading": "Đang tải chi tiết…",
   "infoError": "Không thể tải chi tiết.",
-  "unitHoursShort": "{p1} giờ"
+  "unitHoursShort": "{p1} giờ",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

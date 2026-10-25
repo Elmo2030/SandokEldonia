@@ -245,5 +245,8 @@
   "infoEmpty": "הספק שלך לא מסר פרטים על הכותר הזה.",
   "infoLoading": "טוען פרטים…",
   "infoError": "לא ניתן לטעון את הפרטים.",
-  "unitHoursShort": "{p1} שע׳"
+  "unitHoursShort": "{p1} שע׳",
+  "subExpires": "תוקף עד {p1}",
+  "subExpired": "פג תוקף ב-{p1}",
+  "subDaysLeft": "ימים שנותרו: {p1}"
 }

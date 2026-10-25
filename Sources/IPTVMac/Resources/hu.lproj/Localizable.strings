@@ -244,3 +244,6 @@
 "info.loading" = "Részletek betöltése…";
 "info.error" = "A részleteket nem sikerült betölteni.";
 "unit.hoursShort" = "%d ó";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

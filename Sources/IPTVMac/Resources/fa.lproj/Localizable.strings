@@ -244,3 +244,6 @@
 "info.loading" = "در حال بارگذاری جزئیات…";
 "info.error" = "بارگذاری جزئیات ممکن نشد.";
 "unit.hoursShort" = "%d ساعت";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

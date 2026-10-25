@@ -244,3 +244,6 @@
 "info.loading" = "Memuat detail…";
 "info.error" = "Detail tidak dapat dimuat.";
 "unit.hoursShort" = "%d j";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

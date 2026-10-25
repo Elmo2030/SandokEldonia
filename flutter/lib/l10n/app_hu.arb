@@ -245,5 +245,8 @@
   "infoEmpty": "Az Ön szolgáltatója nem ad meg részleteket ehhez a címhez.",
   "infoLoading": "Részletek betöltése…",
   "infoError": "A részleteket nem sikerült betölteni.",
-  "unitHoursShort": "{p1} ó"
+  "unitHoursShort": "{p1} ó",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

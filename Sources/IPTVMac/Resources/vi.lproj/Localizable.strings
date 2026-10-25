@@ -244,3 +244,6 @@
 "info.loading" = "Đang tải chi tiết…";
 "info.error" = "Không thể tải chi tiết.";
 "unit.hoursShort" = "%d giờ";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

@@ -245,5 +245,8 @@
   "infoEmpty": "آپ کے فراہم کنندہ کے پاس اس عنوان کی کوئی تفصیل نہیں ہے۔",
   "infoLoading": "تفصیلات لوڈ ہو رہی ہیں…",
   "infoError": "تفصیلات لوڈ نہیں ہو سکیں۔",
-  "unitHoursShort": "{p1} گھنٹے"
+  "unitHoursShort": "{p1} گھنٹے",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

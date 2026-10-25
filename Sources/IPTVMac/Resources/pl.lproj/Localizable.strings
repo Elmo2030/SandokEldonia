@@ -244,3 +244,6 @@
 "info.loading" = "Wczytywanie szczegółów…";
 "info.error" = "Nie udało się wczytać szczegółów.";
 "unit.hoursShort" = "%d godz.";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

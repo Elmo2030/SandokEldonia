@@ -244,3 +244,6 @@
 "info.loading" = "Chargement des détails…";
 "info.error" = "Impossible de charger les détails.";
 "unit.hoursShort" = "%d h";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

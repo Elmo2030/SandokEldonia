@@ -244,3 +244,6 @@
 "info.loading" = "Φόρτωση λεπτομερειών…";
 "info.error" = "Δεν ήταν δυνατή η φόρτωση των λεπτομερειών.";
 "unit.hoursShort" = "%d ώ.";
+"sub.expires" = "Expires %@";
+"sub.expired" = "Expired %@";
+"sub.daysLeft" = "Days left: %d";

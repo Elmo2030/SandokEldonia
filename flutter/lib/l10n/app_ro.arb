@@ -245,5 +245,8 @@
   "infoEmpty": "Furnizorul tău nu are detalii despre acest titlu.",
   "infoLoading": "Se încarcă detaliile…",
   "infoError": "Detaliile nu au putut fi încărcate.",
-  "unitHoursShort": "{p1} h"
+  "unitHoursShort": "{p1} h",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

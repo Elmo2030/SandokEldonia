@@ -245,5 +245,8 @@
   "infoEmpty": "ผู้ให้บริการของคุณไม่มีรายละเอียดของเรื่องนี้",
   "infoLoading": "กำลังโหลดรายละเอียด…",
   "infoError": "โหลดรายละเอียดไม่สำเร็จ",
-  "unitHoursShort": "{p1} ชม."
+  "unitHoursShort": "{p1} ชม.",
+  "subExpires": "Expires {p1}",
+  "subExpired": "Expired {p1}",
+  "subDaysLeft": "Days left: {p1}"
 }

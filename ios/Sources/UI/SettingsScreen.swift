@@ -65,6 +65,7 @@ private struct SourcesSection: View {
                             Text(a.name)
                             Text([a.kind == .xtream ? L("kind.xtream") : L("kind.m3u"), a.kind == .xtream ? a.username : nil].compactMap { $0 }.joined(separator: " · "))
                                 .font(.footnote).foregroundStyle(.secondary).lineLimit(1)
+                            if a.kind == .xtream, let s = model.subscriptions[a.id ?? 0] { SubscriptionLine(info: s).font(.footnote) }
                         }
                     }
                 }
@@ -77,6 +78,7 @@ private struct SourcesSection: View {
             else if let m = model.syncMessage { Text("\(L("sync.failed")): \(m)").foregroundStyle(.orange) }
         }
         .brandRows()
+        .task { for a in model.accounts { await model.refreshSubscription(a) } }
         .confirmationDialog(deleting?.name ?? "", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), titleVisibility: .visible, presenting: deleting) { a in
             Button(L("settings.delete"), role: .destructive) { model.deleteAccount(a) }
         } message: { _ in Text(L("source.delete.warn")) }
@@ -254,4 +256,18 @@ private struct NoticeText: UIViewRepresentable {
         return v
     }
     func updateUIView(_ v: UITextView, context: Context) {}
+}
+
+/// "Expires 12 Mar 2027 · Days left: 140": orange within a week, red once it ended. Nothing when the panel gave no date.
+struct SubscriptionLine: View {
+    let info: SubscriptionInfo
+    var body: some View {
+        if let end = info.expires {
+            let state = info.state()
+            let date = end.formatted(date: .abbreviated, time: .omitted)
+            Text(state == .expired ? String(format: L("sub.expired"), date)
+                                   : "\(String(format: L("sub.expires"), date)) · \(String(format: L("sub.daysLeft"), info.daysLeft() ?? 0))")
+                .font(.caption).foregroundStyle(state == .expired ? .red : state == .soon ? .orange : .secondary)
+        }
+    }
 }

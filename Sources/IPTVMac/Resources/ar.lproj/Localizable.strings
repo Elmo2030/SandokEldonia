@@ -244,3 +244,6 @@
 "info.loading" = "جارٍ تحميل التفاصيل…";
 "info.error" = "تعذّر تحميل التفاصيل.";
 "unit.hoursShort" = "%d س";
+"sub.expires" = "ينتهي في %@";
+"sub.expired" = "انتهى في %@";
+"sub.daysLeft" = "الأيام المتبقية: %d";

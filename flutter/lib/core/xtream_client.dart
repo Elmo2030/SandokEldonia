@@ -7,6 +7,7 @@ import 'errors.dart';
 import 'item_info.dart';
 import 'json_util.dart';
 import 'models.dart';
+import 'subscription_info.dart';
 import 'xtream_urls.dart';
 
 class XtreamClient {
@@ -40,6 +41,15 @@ class XtreamClient {
     if (intOf(u['auth']) != 1) throw IPTVError.badCredentials;
     final status = str(u['status'])?.toLowerCase();
     if (status == 'expired' || status == 'disabled' || status == 'banned') throw IPTVError.accountInactive;
+  }
+
+  /// What the panel says about the subscription (the expiry date, the allowed connections). A panel that does not send a field leaves it null.
+  Future<SubscriptionInfo> subscription() async {
+    final o = await json(urls.api(null));
+    final u = o is Map ? o['user_info'] : null;
+    if (u is! Map) throw IPTVError.badResponse;
+    if (intOf(u['auth']) != 1) throw IPTVError.badCredentials;
+    return SubscriptionInfo.fromUserInfo(u);
   }
 
   /// The time zone name the panel uses for timeshift URLs (`server_info.timezone`, e.g. "Europe/Paris"), or null if

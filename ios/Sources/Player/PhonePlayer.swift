@@ -60,6 +60,7 @@ final class PhonePlayer {
     var paused: Bool { core.paused }
     var position: Double { core.position }
     var duration: Double { core.duration }
+    var quality: String? { core.quality }
     var speed: Double { core.speed }
     var tracks: [Track] { core.tracks }
     var buffering: Bool { core.buffering }

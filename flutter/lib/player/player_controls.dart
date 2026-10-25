@@ -29,7 +29,10 @@ class PlayerTopBar extends StatelessWidget {
       const SizedBox(width: 8),
       Expanded(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-          Text(model.request.title, textDirection: titleDirection(model.request.title), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600, shadows: _shadow)),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            Flexible(child: Text(model.request.title, textDirection: titleDirection(model.request.title), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600, shadows: _shadow))),
+            if (model.core.quality case final q?) ...[const SizedBox(width: 8), QualityBadge(q)],
+          ]),
           if (subtitle != null && subtitle.isNotEmpty)
             Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 13, shadows: _shadow)),
         ]),
@@ -276,5 +279,18 @@ class _Utility extends StatelessWidget {
             ),
           ),
         ),
+      );
+}
+
+/// The picture's quality tag ("4K", "FHD", "HD", "SD") next to the title.
+class QualityBadge extends StatelessWidget {
+  const QualityBadge(this.label, {super.key});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+        decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: 0.85)), borderRadius: BorderRadius.circular(4)),
+        child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800, height: 1.2)),
       );
 }

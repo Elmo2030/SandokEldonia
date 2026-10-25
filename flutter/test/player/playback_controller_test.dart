@@ -37,6 +37,20 @@ void main() {
     c.close();
   });
 
+  test('the quality tag follows the decoded picture size', () {
+    final (c, e) = make();
+    c.play('http://x/live.m3u8', live: true);
+    c.tick();
+    expect(c.quality, isNull, reason: 'unknown until a picture is decoded');
+    e..videoWidth = 1920..videoHeight = 1080;
+    c.tick();
+    expect(c.quality, 'FHD');
+    e..videoWidth = 3840..videoHeight = 2160;
+    c.tick();
+    expect(c.quality, '4K', reason: 'an adaptive stream can change size while it plays');
+    c.close();
+  });
+
   test('buffering while the engine waits for data, never while paused', () {
     final (c, e) = make();
     c.play('u', live: false);

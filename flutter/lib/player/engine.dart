@@ -22,6 +22,10 @@ abstract class PlaybackEngine {
 
   /// Width / height of the picture, 0 until it is known.
   double get aspect;
+
+  /// Size in pixels of the decoded picture, 0 until it is known (audio only stays 0).
+  int get videoWidth;
+  int get videoHeight;
   List<Track> get tracks;
 
   /// [start] in seconds (0 = from the beginning).

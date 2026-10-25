@@ -101,6 +101,11 @@ class MediaKitEngine implements PlaybackEngine {
   }
 
   @override
+  int get videoWidth => _player.state.width ?? 0;
+  @override
+  int get videoHeight => _player.state.height ?? 0;
+
+  @override
   List<Track> get tracks => [
         for (final t in _player.state.tracks.audio)
           if (int.tryParse(t.id) case final id?) Track(id: id, type: 'audio', lang: t.language, title: t.title, selected: id == _aid),

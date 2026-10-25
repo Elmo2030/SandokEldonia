@@ -144,3 +144,13 @@ private let lavfi = "av://lavfi:testsrc=size=320x240:rate=25"
     c.close()
     #expect(saves.count == before + 1, "a live stream is never saved")
 }
+
+@MainActor @Test(arguments: [("1280x720", "HD"), ("1920x1080", "FHD"), ("3840x2160", "4K")])
+func theQualityTagComesFromTheDecodedPictureSize(size: String, tag: String) async {
+    let c = controller()
+    defer { c.close() }
+    #expect(c.quality == nil)                                                // unknown until a picture is decoded
+    c.play("av://lavfi:testsrc=size=\(size):rate=10", isLive: false, start: 0)
+    await wait(c) { c.quality != nil }
+    #expect(c.quality == tag)
+}

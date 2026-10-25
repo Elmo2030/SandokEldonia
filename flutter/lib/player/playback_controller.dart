@@ -7,6 +7,7 @@ import 'playback_speed.dart';
 import 'playback_watch.dart';
 import 'sleep_timer.dart';
 import 'track_label.dart';
+import 'video_quality.dart';
 
 /// One playback and the state a player UI shows (position, pause, speed, tracks, buffering, failure), polled four times a second.
 /// It carries the rules of the Apple players (Sources/IPTVPlayer/PlaybackController.swift): a dropped live stream is reloaded a few
@@ -35,6 +36,9 @@ class PlaybackController extends ChangeNotifier {
   bool paused = false;
   double speed = 1;
   List<Track> tracks = const [];
+
+  /// "4K", "FHD", "HD", "SD" for the picture being decoded; null until the size is known (or for audio only).
+  String? quality;
   bool buffering = false;
   bool atEnd = false;
 
@@ -228,6 +232,7 @@ class PlaybackController extends ChangeNotifier {
     }
     paused = engine.paused;
     speed = engine.speed;
+    quality = videoQualityLabel(engine.videoWidth, engine.videoHeight);   // an adaptive stream can change size while it plays
     buffering = !failed && !paused && !atEnd && (engine.buffering || (position == 0 && duration == 0));
     _ticks++;
     if (tracks.isEmpty || _ticks % _tracksEveryTicks == 0) tracks = engine.tracks;

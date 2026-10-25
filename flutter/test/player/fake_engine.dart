@@ -28,6 +28,10 @@ class FakeEngine implements PlaybackEngine {
   @override
   double aspect = 0;
   @override
+  int videoWidth = 0;
+  @override
+  int videoHeight = 0;
+  @override
   List<Track> tracks = [];
 
   @override

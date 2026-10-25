@@ -17,6 +17,8 @@ public final class PlaybackController {
     public private(set) var paused = false
     public private(set) var speed = 1.0
     public private(set) var tracks: [Track] = []
+    /// "4K", "FHD", "HD", "SD" for the picture being decoded; nil until the size is known (or for audio only).
+    public private(set) var quality: String?
     /// Waiting for data: loading the first frame, a seek, or an empty cache.
     public private(set) var buffering = false
     public private(set) var atEnd = false
@@ -177,6 +179,8 @@ public final class PlaybackController {
         }
         paused = mpv.flag("pause")
         speed = mpv.double("speed") ?? speed
+        let q = VideoQuality.label(width: mpv.double("video-params/w") ?? 0, height: mpv.double("video-params/h") ?? 0)
+        if q != quality { quality = q }        // an adaptive stream can change size while it plays
         buffering = !failed && !paused && !atEnd && (mpv.flag("paused-for-cache") || mpv.flag("seeking") || (position == 0 && duration == 0))
         ticks += 1
         if tracks.isEmpty || ticks % 4 == 0 { tracks = mpv.tracks() }   // the menus fill as soon as the file opened

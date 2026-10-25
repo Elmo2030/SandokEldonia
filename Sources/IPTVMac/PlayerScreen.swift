@@ -81,7 +81,10 @@ struct PlayerScreen: View {
                     Button { model.stopPlayback() } label: { Image(systemName: "xmark.circle.fill").font(.title2) }
                         .buttonStyle(IconButtonStyle(tint: .white, size: 32)).accessibilityLabel(L("player.back"))
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(request.title).font(.headline).lineLimit(1)
+                        HStack(spacing: 6) {
+                            Text(request.title).font(.headline).lineLimit(1)
+                            if let q = pm.quality { QualityBadge(label: q) }
+                        }
                         epgLines
                     }
                     Spacer()
@@ -273,5 +276,15 @@ struct PlayerScreen: View {
 
     private func fmt(_ s: Double) -> String {
         let t = Int(max(s, 0)); return String(format: "%d:%02d:%02d", t / 3600, t % 3600 / 60, t % 60)
+    }
+}
+
+/// The picture's quality tag ("4K", "FHD", "HD", "SD") next to the title.
+struct QualityBadge: View {
+    let label: String
+    var body: some View {
+        Text(label).font(.caption2.weight(.heavy)).padding(.horizontal, 5).padding(.vertical, 1)
+            .overlay { RoundedRectangle(cornerRadius: 4, style: .continuous).strokeBorder(.white.opacity(0.85), lineWidth: 1) }
+            .fixedSize()
     }
 }

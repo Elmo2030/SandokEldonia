@@ -309,7 +309,10 @@ struct TitleBar: View {
             }
             .buttonStyle(PlayerPressStyle()).accessibilityLabel(L("player.close"))
             VStack(alignment: .leading, spacing: 1) {
-                Text(player.request.title).font(.headline).lineLimit(1)
+                HStack(spacing: 6) {
+                    Text(player.request.title).font(.headline).lineLimit(1)
+                    if let q = player.quality { QualityBadge(label: q) }
+                }
                 ProgrammeLines(player: player)
             }
             .shadow(color: .black.opacity(0.4), radius: 4, y: 1)
@@ -375,5 +378,15 @@ struct ErrorCard: View {
             .padding(24)
             .accessibilityElement(children: .contain)
         }
+    }
+}
+
+/// The picture's quality tag ("4K", "FHD", "HD", "SD") next to the title.
+struct QualityBadge: View {
+    let label: String
+    var body: some View {
+        Text(label).font(.caption2.weight(.heavy)).padding(.horizontal, 5).padding(.vertical, 1)
+            .overlay { RoundedRectangle(cornerRadius: 4, style: .continuous).strokeBorder(.white.opacity(0.85), lineWidth: 1) }
+            .fixedSize()
     }
 }

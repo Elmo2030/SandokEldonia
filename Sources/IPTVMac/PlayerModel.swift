@@ -11,6 +11,7 @@ final class PlayerModel {
     var paused = false
     var speed = 1.0
     var tracks: [Track] = []
+    var quality: String?                     // "4K", "FHD", "HD", "SD" of the picture being decoded; nil until known
     var error: String?
     private(set) var request: PlayRequest
     /// The live channel a catch-up program was started from: the player's Live button returns to it.
@@ -144,6 +145,8 @@ final class PlayerModel {
         }
         paused = mpv.flag("pause")
         speed = mpv.double("speed") ?? 1
+        let q = VideoQuality.label(width: mpv.double("video-params/w") ?? 0, height: mpv.double("video-params/h") ?? 0)
+        if q != quality { quality = q }
         ticks += 1
         if ticks % 4 == 0 { tracks = mpv.tracks() }
         if ticks % 20 == 0 { saveIfLoaded(background: true) }   // periodic: must not wait behind a running sync write

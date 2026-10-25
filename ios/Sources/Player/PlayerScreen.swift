@@ -168,7 +168,10 @@ struct PlayerScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(player.request.title).font(.title3.weight(.semibold)).lineLimit(3).fixedSize(horizontal: false, vertical: true)
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text(player.request.title).font(.title3.weight(.semibold)).lineLimit(3).fixedSize(horizontal: false, vertical: true)
+                        if let q = player.quality { QualityBadge(label: q) }
+                    }
                     ProgrammeLines(player: player).foregroundStyle(.white.opacity(0.8))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

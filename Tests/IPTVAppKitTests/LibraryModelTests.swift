@@ -44,3 +44,43 @@ import IPTVCore
     m.stopPlayback()
     #expect(m.playing == nil)
 }
+
+// Stopping playback saves the resume point (the Mac app does it in stopPlayback). When the profile is switched, that point
+// belongs to the profile that was watching, not to the one switched to.
+@MainActor @Test func switchingProfileKeepsTheResumePointWithTheProfileThatWatched() async throws {
+    final class Saving: LibraryModel {
+        override func stopPlayback() { if let r = playing { saveProgress(r, position: 50, duration: 100) }; super.stopPlayback() }
+    }
+    let m = Saving(db: try AppDatabase(), secrets: MemorySecretStore())
+    let acct = try await m.db.dbQueue.write { d -> Account in var x = Account(name: "a", kind: .m3u, url: "http://h/a.m3u"); try x.insert(d); return x }
+    m.loadAccounts(); m.loadProfiles()
+    let kid = try await m.db.dbQueue.write { try Profiles.create($0, name: "Kid", kids: false) }
+    m.loadProfiles()
+
+    m.play(Item(accountId: acct.id!, type: .movie, name: "Film", streamId: "7", directURL: "http://h/7.mp4"))
+    #expect(m.playing != nil)
+    #expect(m.switchProfile(to: kid) == .switched)
+    #expect(m.playing == nil)
+
+    func progress() async throws -> Double? {
+        try await m.db.dbQueue.read { try UserData.progress($0, accountId: acct.id!, type: .movie, streamId: "7") }
+    }
+    #expect(try await progress() == nil)                                   // the kid has not watched it
+    #expect(m.switchProfile(to: m.profiles[0]) == .switched)
+    #expect(try await progress() == 50)                                    // Main has
+}
+
+@MainActor @Test func editingAnotherProfileDoesNotDisturbWhatIsOnScreen() async throws {
+    let m = try model()
+    _ = try await m.db.dbQueue.write { d in var x = Account(name: "a", kind: .m3u, url: "http://h/a.m3u"); try x.insert(d) }
+    m.loadAccounts(); m.loadProfiles()
+    let other = try await m.db.dbQueue.write { try Profiles.create($0, name: "Other", kids: false) }
+    m.loadProfiles()
+    m.selectedCategory = "__fav"
+    try m.editProfiles { try Profiles.update($0, id: other.id!, name: "Renamed", kids: true) }
+    #expect(m.profiles.last?.name == "Renamed")
+    #expect(m.selectedCategory == "__fav")                                 // the list the user was looking at stays
+    let mainId = m.profile.id!
+    try m.editProfiles { try Profiles.update($0, id: mainId, name: "Main", kids: true) }
+    #expect(m.selectedCategory == "__all")                                 // the profile in use became a kids profile: lists are rebuilt
+}

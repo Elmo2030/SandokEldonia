@@ -33,13 +33,13 @@ public enum Similar {
     public static func titles(like item: Item, in db: Database, limit: Int = 24, threshold: Double = 0.34) throws -> [Item] {
         let mine = tokens(item.name)
         guard !mine.isEmpty, item.type != .live else { return [] }
-        // The search index narrows 100k titles to the few hundred that share a word; the scoring is done on those.
+        // The search index narrows 100k titles to the 600 that match best (a common word matches thousands); the scoring is done on those.
         guard let pattern = FTS5Pattern(matchingAnyTokenIn: mine.sorted().prefix(8).joined(separator: " ")) else { return [] }
         let candidates = try Item.fetchAll(db, sql: """
             SELECT item.* FROM item JOIN item_fts ON item_fts.rowid = item.id AND item_fts MATCH ?
             WHERE item.accountId = ? AND item.type = ? AND item.id <> ?
               AND NOT EXISTS (SELECT 1 FROM history h WHERE h.accountId = item.accountId AND h.type = item.type AND h.streamId = item.streamId)
-            LIMIT 600
+            ORDER BY rank LIMIT 600
             """, arguments: [pattern.rawPattern, item.accountId, item.type.rawValue, item.id ?? -1])
         var scored: [(item: Item, score: Double)] = []
         for c in candidates {

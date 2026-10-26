@@ -505,15 +505,19 @@ open class LibraryModel {
     public func switchProfile(to target: Profile, pin: String? = nil) -> ProfileSwitch {
         guard let id = target.id, id != profile.id else { return .switched }
         if profile.hasPIN, !Profiles.accepts(profile, pin: pin) { return pin == nil ? .needsPIN : .wrongPIN }
+        if playing != nil { stopPlayback() }                 // its resume point is saved now, while the profile that watched is still the current one
         guard (try? db.dbQueue.write { try Profiles.switchTo($0, id: id) }) != nil else { return .switched }
         profileChanged()
         return .switched
     }
 
-    /// Created, renamed, given a PIN or deleted: the lists are read again (a kids flag changes what every list shows).
+    /// Created, renamed, given a PIN or deleted. The lists are rebuilt only when the profile in use is another one now or its kids flag
+    /// changed (that changes what every list shows); editing a different profile leaves the screen alone.
     public func editProfiles(_ change: @Sendable (Database) throws -> Void) throws {
+        let before = profile
         try db.dbQueue.write { try change($0) }
-        profileChanged()
+        loadProfiles()
+        if profile.id != before.id || profile.kids != before.kids { profileChanged() }
     }
 
     private func profileChanged() {

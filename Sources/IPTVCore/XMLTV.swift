@@ -24,6 +24,11 @@ public enum XMLTVParser {
         return reader.found
     }
 
+    private static let utc: Calendar = {
+        var c = Calendar(identifier: .gregorian); c.timeZone = TimeZone(identifier: "UTC")!
+        return c
+    }()
+
     /// "20261026183000 +0200" (the offset is optional and means UTC when absent; the seconds are optional too).
     static func date(_ s: String) -> Date? {
         let parts = s.split(separator: " ")
@@ -32,7 +37,7 @@ public enum XMLTVParser {
         func n(_ a: Int, _ b: Int) -> Int { d[a..<b].reduce(0) { $0 * 10 + $1 } }
         var c = DateComponents()
         c.year = n(0, 4); c.month = n(4, 6); c.day = n(6, 8); c.hour = n(8, 10); c.minute = n(10, 12); c.second = d.count == 14 ? n(12, 14) : 0
-        var cal = Calendar(identifier: .gregorian); cal.timeZone = TimeZone(identifier: "UTC")!
+        let cal = utc
         guard (1...12).contains(c.month!), (1...31).contains(c.day!), c.hour! < 24, c.minute! < 60, c.second! < 61, let utc = cal.date(from: c) else { return nil }
         var offset = 0
         if parts.count > 1, parts[1].utf8.count == 5, let sign = parts[1].first, sign == "+" || sign == "-", let h = Int(parts[1].dropFirst().prefix(2)), let m = Int(parts[1].suffix(2)) {
@@ -52,7 +57,9 @@ public enum XMLTVParser {
         func parser(_ p: XMLParser, didStartElement name: String, namespaceURI: String?, qualifiedName: String?, attributes a: [String: String]) {
             if name == "programme" {
                 channel = a["channel"].flatMap { wanted.contains($0) ? $0 : nil }
-                start = a["start"].flatMap(XMLTVParser.date); stop = a["stop"].flatMap(XMLTVParser.date); title = nil
+                title = nil
+                // A guide lists every channel of a provider: dates are read only for the playlist's own.
+                if channel != nil { start = a["start"].flatMap(XMLTVParser.date); stop = a["stop"].flatMap(XMLTVParser.date) } else { start = nil; stop = nil }
             } else if name == "title", channel != nil, title == nil { inTitle = true; text = "" }
         }
 

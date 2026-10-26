@@ -24,8 +24,8 @@ struct UpdateBanner: View {
                 Button(L("update.later")) { model.updateBannerDismissed = true }.buttonStyle(.plain).foregroundStyle(.secondary)
             }
             .padding(.horizontal, 14).padding(.vertical, 8)
-            .background { ZStack { Rectangle().fill(.bar); Color.accentColor.opacity(0.08) } }
-            .overlay(alignment: .bottom) { Divider() }
+            .background { ZStack { Rectangle().fill(CinemaTheme.surface); CinemaTheme.accent.opacity(0.08) } }
+            .overlay(alignment: .bottom) { Rectangle().fill(CinemaTheme.separator).frame(height: 1) }
             .transition(.move(edge: .top).combined(with: .opacity))
     }
 

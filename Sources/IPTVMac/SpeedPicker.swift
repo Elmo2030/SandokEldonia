@@ -86,9 +86,9 @@ private struct SpeedRow: View {
                 Spacer()
             }
             .font(.body.weight(selected ? .semibold : .regular))
-            .foregroundStyle(selected ? Color.accentColor : .primary)
+            .foregroundStyle(selected ? CinemaTheme.accent : CinemaTheme.primaryText)
             .padding(.horizontal, 8).frame(height: 28)
-            .background { RoundedRectangle(cornerRadius: 6).fill(selected ? Color.accentColor.opacity(0.16) : Color.primary.opacity(hover ? 0.08 : 0)) }
+            .background { RoundedRectangle(cornerRadius: 6).fill(selected ? CinemaTheme.accentSoft : CinemaTheme.cardBorder.opacity(hover ? 1 : 0)) }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

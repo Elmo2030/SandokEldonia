@@ -5,6 +5,7 @@ struct RootView: View {
     @Environment(AppModel.self) var model
     @State private var catFilter = ""
     @State private var columns = NavigationSplitViewVisibility.all
+    @State private var showingHome = true
 
     var body: some View {
         @Bindable var model = model
@@ -18,6 +19,36 @@ struct RootView: View {
         .sheet(item: $model.passwordPrompt) { PasswordPrompt(account: $0) }
     }
 
+    private func categoryColor(_ name: String) -> Color {
+        let n = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+        if ["sport", "bein", "football", "soccer", "رياض", "كورة", "كرة"].contains(where: n.contains) {
+            return Color(red: 0.35, green: 0.68, blue: 1.0)
+        }
+        if ["movie", "cinema", "film", "أفلام", "افلام", "سينما"].contains(where: n.contains) {
+            return CinemaTheme.accent
+        }
+        if ["series", "drama", "مسلسل", "مسلسلات", "دراما"].contains(where: n.contains) {
+            return Color(red: 0.72, green: 0.60, blue: 1.0)
+        }
+        if ["news", "أخبار", "اخبار"].contains(where: n.contains) {
+            return Color(red: 0.95, green: 0.48, blue: 0.45)
+        }
+        if ["kids", "children", "أطفال", "اطفال", "family"].contains(where: n.contains) {
+            return Color(red: 0.30, green: 0.78, blue: 0.57)
+        }
+        return CinemaTheme.secondaryText
+    }
+
+    private func categorySymbol(_ name: String) -> String {
+        let n = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+        if ["sport", "bein", "football", "soccer", "رياض", "كورة", "كرة"].contains(where: n.contains) { return "sportscourt.fill" }
+        if ["movie", "cinema", "film", "أفلام", "افلام", "سينما"].contains(where: n.contains) { return "film.fill" }
+        if ["series", "drama", "مسلسل", "مسلسلات", "دراما"].contains(where: n.contains) { return "tv.fill" }
+        if ["news", "أخبار", "اخبار"].contains(where: n.contains) { return "newspaper.fill" }
+        if ["kids", "children", "أطفال", "اطفال", "family"].contains(where: n.contains) { return "figure.2.and.child.holdinghands" }
+        return "folder.fill"
+    }
+
     private func showsPlayer(_ m: AppModel) -> Bool { m.playing != nil && !m.pip && m.player != nil }
 
     @ViewBuilder
@@ -26,26 +57,29 @@ struct RootView: View {
             VStack(spacing: 0) {
                 TextField(L("cat.filter"), text: $catFilter).textFieldStyle(.roundedBorder).padding(8)
                 List(selection: model.selectedCategory) {
-                    Label(L("cat.all"), systemImage: "square.grid.2x2").tag("__all")
-                    Label(L("cat.favorites"), systemImage: "star").tag("__fav")
-                    Label(L("cat.continue"), systemImage: "clock").tag("__hist")
+                    Label { Text(L("cat.all")) } icon: { Image(systemName: "square.grid.2x2").foregroundStyle(Color(red: 0.35, green: 0.68, blue: 1.0)) }.tag("__all")
+                    Label { Text(L("cat.favorites")) } icon: { Image(systemName: "star.fill").foregroundStyle(CinemaTheme.accent) }.tag("__fav")
+                    Label { Text(L("cat.continue")) } icon: { Image(systemName: "clock.fill").foregroundStyle(Color(red: 0.30, green: 0.78, blue: 0.57)) }.tag("__hist")
                     let cats = model.wrappedValue.categories.filter { catFilter.isEmpty || $0.name.localizedCaseInsensitiveContains(catFilter) }
                     if model.wrappedValue.allPlaylists {
                         ForEach(model.wrappedValue.accounts) { a in       // one header per playlist
                             let mine = cats.filter { $0.accountId == a.id }
                             if !mine.isEmpty {
                                 Section(a.name) {
-                                    ForEach(mine) { c in Text(c.name).lineLimit(1).tag(model.wrappedValue.categoryTag(c)) }
+                                    ForEach(mine) { c in Label { Text(c.name).lineLimit(1) } icon: { Image(systemName: categorySymbol(c.name)).foregroundStyle(categoryColor(c.name)) }.tag(model.wrappedValue.categoryTag(c)) }
                                 }
                             }
                         }
                     } else {
                         Section {
-                            ForEach(cats) { c in Text(c.name).lineLimit(1).tag(model.wrappedValue.categoryTag(c)) }
+                            ForEach(cats) { c in Label { Text(c.name).lineLimit(1) } icon: { Image(systemName: categorySymbol(c.name)).foregroundStyle(categoryColor(c.name)) }.tag(model.wrappedValue.categoryTag(c)) }
                         }
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .background(CinemaTheme.background)
             }
+            .background(CinemaTheme.background)
             .navigationSplitViewColumnWidth(min: 200, ideal: 240)
         } detail: {
             VStack(spacing: 0) {
@@ -65,12 +99,19 @@ struct RootView: View {
                             StatusStrip(kind: .warning, text: "\(L("sync.failed")): \(m). \(L("sync.notUpdated"))")
                                 .transition(.move(edge: .top).combined(with: .opacity))
                         }
-                        ResultsView()
+                        if showingHome
+                            && model.wrappedValue.selectedCategory == "__all"
+                            && model.wrappedValue.searchText.isEmpty {
+                            HomeDashboardView(onExplore: { showingHome = false })
+                        } else {
+                            ResultsView()
+                        }
                     }
                     .motion(value: model.wrappedValue.syncing)
                     .motion(value: model.wrappedValue.syncMessage)
                 }
             }
+            .background(CinemaTheme.background)
             .searchable(text: model.searchText, prompt: L("search.prompt"))
             .searchScopes(model.scope) {
                 Text(L("scope.category")).tag(SearchScopeChoice.category)
@@ -112,7 +153,7 @@ struct RootView: View {
                         }
                     }.help(L("downloads.title"))
                 }
-                ToolbarItem { Button { Task { await model.wrappedValue.sync() } } label: { Image(systemName: "arrow.clockwise") }.disabled(model.wrappedValue.syncing) }
+                ToolbarItem { Button { Task { await model.wrappedValue.sync() } } label: { Image(systemName: "arrow.clockwise") }.disabled(model.wrappedValue.syncing).help(L("settings.refresh")).accessibilityLabel(L("settings.refresh")) }
             }
         }
         .onChange(of: model.wrappedValue.playerFullscreen) { _, full in columns = full ? .detailOnly : .automatic }

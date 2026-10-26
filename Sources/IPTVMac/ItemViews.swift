@@ -12,7 +12,7 @@ struct PlaylistBadge: View {
             Text(name).font(.caption2.weight(.medium)).lineLimit(1)
                 .foregroundStyle(onArtwork ? AnyShapeStyle(.white) : AnyShapeStyle(.secondary))
                 .padding(.horizontal, 7).padding(.vertical, 2)
-                .background(onArtwork ? Color.black.opacity(0.62) : Color.primary.opacity(0.08), in: Capsule())
+                .background(onArtwork ? Color.black.opacity(0.62) : CinemaTheme.cardBorder, in: Capsule())
         }
     }
 }
@@ -28,10 +28,10 @@ struct ChannelRow: View {
             Artwork(url: item.iconURL, symbol: "tv")
                 .padding(4)
                 .frame(width: 44, height: 44)
-                .background(Color.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background(CinemaTheme.surface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.name).lineLimit(1)
-                if let now = model.epgTitle(item) { Text(now).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
+                Text(item.name).foregroundStyle(CinemaTheme.primaryText).lineLimit(1)
+                if let now = model.epgTitle(item) { Text(now).font(.caption).foregroundStyle(CinemaTheme.secondaryText).lineLimit(1) }
             }
             Spacer()
             PlaylistBadge(item: item)
@@ -39,16 +39,26 @@ struct ChannelRow: View {
             Button { model.toggleFavorite(item) } label: {
                 Image(systemName: isFav ? "star.fill" : "star").contentTransition(.symbolEffect(.replace))
             }
-            .buttonStyle(.plain).foregroundStyle(isFav ? Color.yellow : Color.secondary)
+            .buttonStyle(.plain).foregroundStyle(isFav ? CinemaTheme.accent : CinemaTheme.secondaryText)
             .accessibilityLabel(L(isFav ? "fav.remove" : "fav.add"))
             .motion(value: isFav)
         }
-        .padding(.horizontal, 12).padding(.vertical, 6)
+        .padding(.horizontal, 12).padding(.vertical, 9)
         .background {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(current ? Color.accentColor.opacity(hover ? 0.22 : 0.14) : Color.primary.opacity(hover ? 0.07 : 0))
+            RoundedRectangle(cornerRadius: 11, style: .continuous)
+                .fill(
+                    current ? CinemaTheme.selectedSurface :
+                    hover ? CinemaTheme.elevatedSurface : CinemaTheme.surface
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: 11, style: .continuous)
+                        .strokeBorder(
+                            current ? CinemaTheme.accent.opacity(0.55) : CinemaTheme.cardBorder,
+                            lineWidth: current ? 1.2 : 1
+                        )
+                }
         }
-        .padding(.horizontal, 6)
+        .padding(.horizontal, 8)
         .contentShape(Rectangle())
         .onHover { hover = $0 }
         .motion(.easeOut(duration: 0.12), value: hover)
@@ -69,26 +79,80 @@ struct PosterCell: View {
         VStack(alignment: .leading, spacing: 6) {
             Color.clear.aspectRatio(2.0 / 3.0, contentMode: .fit)
                 .overlay {
-                    ZStack {
+                    ZStack(alignment: .bottomTrailing) {
                         Rectangle().fill(placeholderFill)
                         Artwork(url: item.iconURL, symbol: "film", fill: true, symbolFont: .largeTitle)
+
+                        LinearGradient(
+                            colors: [.clear, .black.opacity(0.62)],
+                            startPoint: .center,
+                            endPoint: .bottom
+                        )
+
+                        Button {
+                            model.play(item)
+                        } label: {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(CinemaTheme.background)
+                                .frame(width: 38, height: 38)
+                                .background(CinemaTheme.accent, in: Circle())
+                                .overlay {
+                                    Circle().strokeBorder(.white.opacity(0.18), lineWidth: 1)
+                                }
+                                .shadow(color: .black.opacity(0.25), radius: 5, y: 2)
+                                .padding(10)
+                        }
+                        .buttonStyle(.plain)
+                        .opacity(hover ? 1 : 0)
+                        .allowsHitTesting(hover)
+                        .help(L("info.play"))
+                        .accessibilityLabel("\(L("info.play")), \(item.name)")
+                        .transition(.opacity)
                     }
                 }
                 .clipShape(shape)
-                .overlay { shape.strokeBorder(Color.primary.opacity(hover ? 0.28 : 0.10), lineWidth: 1) }
-                .overlay { if model.lastPlayedID == item.id { shape.strokeBorder(Color.accentColor, lineWidth: 3) } }
+                .overlay { shape.strokeBorder(CinemaTheme.accent.opacity(hover ? 0.42 : 0.13), lineWidth: 1) }
+                .overlay { if model.lastPlayedID == item.id { shape.strokeBorder(CinemaTheme.accent, lineWidth: 2) } }
                 .overlay(alignment: .topLeading) { PlaylistBadge(item: item, onArtwork: true).padding(5) }
                 .overlay(alignment: .topTrailing) { if model.hasInfo(item) { infoButton } }
                 .shadow(color: .black.opacity(hover ? 0.35 : 0), radius: hover ? 10 : 0, y: hover ? 5 : 0)
                 .scaleEffect(hover && !reduce ? 1.035 : 1)
-            Text(item.name).font(.callout).lineLimit(2, reservesSpace: true)
+            Text(item.name)
+                .font(.callout.weight(.medium))
+                .foregroundStyle(CinemaTheme.primaryText)
+                .lineLimit(2, reservesSpace: true)
                 .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .padding(8)
+        .background(
+            CinemaTheme.surface,
+            in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 13, style: .continuous)
+                .strokeBorder(
+                    CinemaTheme.accent.opacity(hover ? 0.38 : 0.10),
+                    lineWidth: 1
+                )
+        }
+        .shadow(
+            color: .black.opacity(hover ? 0.22 : 0),
+            radius: hover ? 12 : 0,
+            y: hover ? 5 : 0
+        )
         .contentShape(Rectangle())
         .zIndex(hover ? 1 : 0)
         .onHover { hover = $0 }
         .animation(reduce ? nil : .smooth(duration: 0.18), value: hover)
-        .onTapGesture { model.play(item) }
+        .onTapGesture {
+            if model.hasInfo(item) {
+                model.openInfo = item
+            } else {
+                model.play(item)
+            }
+        }
         .contextMenu {
             if model.hasInfo(item) { Button(L("info.details")) { model.openInfo = item } }
             Button(model.isFavorite(item) ? L("fav.remove") : L("fav.add")) { model.toggleFavorite(item) }
@@ -96,7 +160,7 @@ struct PosterCell: View {
         }
     }
 
-    /// Shows under the pointer or when focused; stays in the accessibility tree and focus order, so VoiceOver and keyboard users can reach it.
+    /// Always shown (brighter under the pointer or when focused); stays in the accessibility tree and focus order, so VoiceOver and keyboard users can reach it.
     private var infoButton: some View {
         let label = "\(L("info.details")), \(item.name)"
         return Button { model.openInfo = item } label: {
@@ -106,8 +170,7 @@ struct PosterCell: View {
         }
         .buttonStyle(.plain).focused($infoFocused)
         .help(L("info.details")).accessibilityLabel(label)
-        .opacity(hover || infoFocused ? 1 : 0)
-        .allowsHitTesting(hover || infoFocused)        // a click on the corner while it is hidden still plays the title
+        .opacity(hover || infoFocused ? 1 : 0.8)        // always visible and clickable: the way to the details must not depend on hovering
         .motion(.easeOut(duration: 0.12), value: infoFocused)
         .padding(5)
     }
@@ -152,7 +215,11 @@ struct ResultsView: View {
                             } header: {
                                 if groups.count > 1 {
                                     Text(title(t)).font(.headline).padding(8)
-                                        .frame(maxWidth: .infinity, alignment: .leading).background(.bar)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(CinemaTheme.surface)
+                                        .overlay(alignment: .bottom) {
+                                            Rectangle().fill(CinemaTheme.separator).frame(height: 1)
+                                        }
                                 }
                             }
                         }

@@ -13,7 +13,7 @@ struct PosterImage: View {
         Color.clear.aspectRatio(2.0 / 3.0, contentMode: .fit)
             .overlay { ZStack { Rectangle().fill(placeholderFill); Artwork(url: url, symbol: "film", fill: true, symbolFont: .largeTitle) } }
             .clipShape(shape)
-            .overlay { shape.strokeBorder(Color.primary.opacity(0.10), lineWidth: 1) }
+            .overlay { shape.strokeBorder(CinemaTheme.cardBorder, lineWidth: 1) }
             .frame(width: width)
             .accessibilityHidden(true)
     }
@@ -42,7 +42,7 @@ struct InfoMetaLine: View {
                 let s = r.formatted(.number.precision(.fractionLength(1)))
                 let label = "\(L("info.rating")): \(s)"
                 HStack(spacing: 3) {
-                    Image(systemName: "star.fill").imageScale(.small).foregroundStyle(.yellow)
+                    Image(systemName: "star.fill").imageScale(.small).foregroundStyle(CinemaTheme.accent)
                     Text(s).monospacedDigit()
                 }
                 .fixedSize().accessibilityElement(children: .ignore).accessibilityLabel(label)
@@ -75,7 +75,7 @@ struct InfoSheet: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 24) {
-            PosterImage(url: item.iconURL ?? info?.posterURL, width: 180)
+            PosterImage(url: item.iconURL ?? info?.posterURL, width: 260)
             VStack(alignment: .leading, spacing: 14) {
                 header
                 if let info { if InfoMetaLine.hasAny(info) { InfoMetaLine(info: info).transition(.opacity) } }
@@ -86,7 +86,44 @@ struct InfoSheet: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .padding(24)
-        .frame(minWidth: 640, idealWidth: 680, minHeight: 440, idealHeight: 480)
+        .background {
+            GeometryReader { proxy in
+                ZStack {
+                    if let url = info?.backdropURL ?? item.iconURL {
+                        Artwork(
+                            url: url,
+                            symbol: "film",
+                            fill: true,
+                            symbolFont: .largeTitle
+                        )
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .clipped()
+                    } else {
+                        CinemaTheme.background
+                    }
+
+                    LinearGradient(
+                        stops: [
+                            .init(color: .black.opacity(0.88), location: 0),
+                            .init(color: .black.opacity(0.72), location: 0.45),
+                            .init(color: .black.opacity(0.88), location: 1)
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+
+                    LinearGradient(
+                        colors: [.black.opacity(0.12), .black.opacity(0.52)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                }
+                .frame(width: proxy.size.width, height: proxy.size.height)
+                .clipped()
+            }
+        }
+        .frame(minWidth: 900, idealWidth: 1100, minHeight: 600, idealHeight: 720)
+        .background(CinemaTheme.background)
         .motion(value: phase)
         .task(id: attempt) { await load() }
     }
@@ -117,7 +154,7 @@ struct InfoSheet: View {
             }
             Button { model.toggleFavorite(item) } label: {
                 Label(L(fav ? "fav.remove" : "fav.add"), systemImage: fav ? "star.fill" : "star").labelStyle(.iconOnly)
-                    .foregroundStyle(fav ? Color.yellow : Color.primary)
+                    .foregroundStyle(fav ? CinemaTheme.accent : CinemaTheme.primaryText)
             }
             .buttonStyle(.bordered).help(L(fav ? "fav.remove" : "fav.add"))
             if item.type == .movie {

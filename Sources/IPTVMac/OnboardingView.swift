@@ -37,7 +37,7 @@ struct OnboardingView: View {
             ZStack {
                 HStack(spacing: 6) {
                     ForEach(0..<3, id: \.self) { i in
-                        Capsule().fill(i == step ? Color.accentColor : Color.primary.opacity(0.18))
+                        Capsule().fill(i == step ? CinemaTheme.accent : CinemaTheme.separator)
                             .frame(width: i == step ? 18 : 6, height: 6)
                     }
                 }.accessibilityHidden(true)
@@ -69,7 +69,11 @@ struct OnboardingView: View {
 
     private func go(_ delta: Int) {
         forward = delta > 0
-        withAnimation(.smooth(duration: 0.3)) { step += delta }
+        if reduceMotion {
+            step += delta
+        } else {
+            withAnimation(.smooth(duration: 0.3)) { step += delta }
+        }
     }
 
     @ViewBuilder private var welcome: some View {

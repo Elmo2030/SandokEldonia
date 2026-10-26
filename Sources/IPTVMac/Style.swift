@@ -1,4 +1,65 @@
 import SwiftUI
+import AppKit
+
+
+// MARK: - Cinematic Luxury Design System
+
+/// Explicit, lightweight design tokens shared across the app.
+/// Keep surfaces opaque and effects inexpensive for large media libraries.
+enum CinemaTheme {
+    private static var isDark: Bool {
+        NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    }
+
+    static var background: Color {
+        isDark ? Color(red: 0.035, green: 0.043, blue: 0.055)
+               : Color(red: 0.965, green: 0.958, blue: 0.940)
+    }
+
+    static var surface: Color {
+        isDark ? Color(red: 0.067, green: 0.075, blue: 0.090)
+               : Color(red: 0.995, green: 0.991, blue: 0.978)
+    }
+
+    static var elevatedSurface: Color {
+        isDark ? Color(red: 0.095, green: 0.103, blue: 0.120)
+               : Color(red: 1.0, green: 1.0, blue: 0.990)
+    }
+
+    static var selectedSurface: Color {
+        isDark ? Color(red: 0.145, green: 0.125, blue: 0.090)
+               : Color(red: 0.94, green: 0.88, blue: 0.73)
+    }
+
+    static var accent: Color {
+        isDark ? Color(red: 0.83, green: 0.69, blue: 0.43)
+               : Color(red: 0.48, green: 0.34, blue: 0.12)
+    }
+
+    static var accentSoft: Color { accent.opacity(0.16) }
+
+    static var primaryText: Color {
+        isDark ? Color(red: 0.94, green: 0.94, blue: 0.92)
+               : Color(red: 0.12, green: 0.13, blue: 0.15)
+    }
+
+    static var secondaryText: Color {
+        isDark ? Color(red: 0.61, green: 0.63, blue: 0.66)
+               : Color(red: 0.36, green: 0.38, blue: 0.41)
+    }
+
+    static var separator: Color {
+        isDark ? Color.white.opacity(0.085) : Color.black.opacity(0.10)
+    }
+
+    static var cardBorder: Color {
+        isDark ? Color.white.opacity(0.075) : Color.black.opacity(0.09)
+    }
+
+    static let success = Color(red: 0.35, green: 0.75, blue: 0.57)
+    static let warning = Color(red: 0.94, green: 0.66, blue: 0.31)
+    static let danger = Color(red: 0.91, green: 0.36, blue: 0.36)
+}
 
 // Shared look of the app: quiet surfaces, one hover language, motion that switches off with Reduce Motion.
 // Everything here is cheap enough for rows of a list that holds thousands of items (no timers, no blur).
@@ -23,7 +84,7 @@ private struct HoverHighlight: ViewModifier {
     let radius: CGFloat
     func body(content: Content) -> some View {
         content
-            .background { RoundedRectangle(cornerRadius: radius, style: .continuous).fill(Color.primary.opacity(hover ? 0.07 : 0)) }
+            .background { RoundedRectangle(cornerRadius: radius, style: .continuous).fill(CinemaTheme.accent.opacity(hover ? 0.10 : 0)) }
             .onHover { hover = $0 }
             .motion(.easeOut(duration: 0.12), value: hover)
     }
@@ -35,7 +96,7 @@ extension View {
 
 /// Round icon button: a faint disc under the pointer, a darker one and a small press while clicked.
 struct IconButtonStyle: ButtonStyle {
-    var tint: Color = .primary
+    var tint: Color = CinemaTheme.primaryText
     var size: CGFloat = 28
     func makeBody(configuration: Configuration) -> some View { IconButtonBody(configuration: configuration, tint: tint, size: size) }
 }
@@ -78,8 +139,10 @@ struct StatusStrip: View {
         }
         .padding(.horizontal, 14).padding(.vertical, 7)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.bar)
-        .overlay(alignment: .bottom) { Divider() }
+        .background(CinemaTheme.surface)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(CinemaTheme.separator).frame(height: 1)
+        }
         .accessibilityElement(children: .combine)
     }
 }
@@ -91,11 +154,11 @@ struct DownloadBar: View {
 
     var body: some View {
         let p = min(max(progress, 0), 1)
-        Capsule().fill(Color.primary.opacity(0.12))
+        Capsule().fill(CinemaTheme.separator)
             .frame(height: 5)
             .overlay {
                 GeometryReader { g in
-                    Capsule().fill(paused ? Color.secondary : Color.accentColor)
+                    Capsule().fill(paused ? CinemaTheme.secondaryText : CinemaTheme.accent)
                         .frame(width: max(g.size.height, g.size.width * p))
                         .frame(maxWidth: .infinity, alignment: .leading)   // leading: fills from the right in right-to-left layouts
                 }
@@ -121,7 +184,7 @@ private struct Pulse: ViewModifier {
 
 extension View { func pulsing() -> some View { modifier(Pulse()) } }
 
-let placeholderFill = LinearGradient(colors: [Color.primary.opacity(0.10), Color.primary.opacity(0.04)], startPoint: .top, endPoint: .bottom)
+let placeholderFill = LinearGradient(colors: [CinemaTheme.elevatedSurface, CinemaTheme.surface], startPoint: .top, endPoint: .bottom)
 
 /// Skeleton shown instead of an empty screen while the first sync is still running.
 struct SkeletonResults: View {
@@ -175,7 +238,7 @@ struct Artwork: View {
             case .success(let image):
                 image.resizable().aspectRatio(contentMode: fill ? .fill : .fit).transition(.opacity)
             default:
-                Image(systemName: symbol).font(symbolFont).foregroundStyle(.tertiary)
+                Image(systemName: symbol).font(symbolFont).foregroundStyle(CinemaTheme.secondaryText)
             }
         }
     }

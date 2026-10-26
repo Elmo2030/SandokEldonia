@@ -26,7 +26,7 @@ Xtream Codes وM3U، شاشة رئيسية بصفوف ذكية، تقييمات�
 
 يتطلب جهاز ماك بمعالج Apple Silicon (M1 أو أحدث) ونظام macOS 14 أو أحدث. لا شيء آخر للتثبيت: المشغّل (libmpv) داخل التطبيق.
 
-1. نزّل ملف **SandokEldonia-1.1.0.zip** من [آخر إصدار](https://github.com/Elmo2030/SandokEldonia/releases/latest)، وانقر عليه مرتين، واسحب **SandokEldonia** إلى مجلد **Applications**.
+1. نزّل ملف **SandokEldonia-1.1.1.zip** من [آخر إصدار](https://github.com/Elmo2030/SandokEldonia/releases/latest)، وانقر عليه مرتين، واسحب **SandokEldonia** إلى مجلد **Applications**.
 2. افتحه من مجلد Applications. **في أول مرة سيرفض macOS فتحه** لأن هذه النسخة غير موثّقة (notarized) من أبل، وهذا يتطلب حساب مطوّر مدفوعًا. افعل أحد الآتي مرة واحدة:
    - **macOS 15 وما بعده:** حاول فتح التطبيق، ثم **System Settings > Privacy & Security** وانزل لأسفل واضغط **Open Anyway** بجوار SandokEldonia.
    - **الإصدارات الأقدم:** كليك يمين على التطبيق، اختر **Open**، ثم **Open** مرة أخرى.

@@ -24,7 +24,7 @@ SandokEldonia is a Mac app for watching the live channels, movies and series of 
 
 Requires an Apple Silicon Mac (M1 or later) and macOS 14 or later. Nothing else to install: the player (libmpv) is inside the app.
 
-1. Download **SandokEldonia-1.1.0.zip** from the [latest release](https://github.com/Elmo2030/SandokEldonia/releases/latest), double-click it, and drag **SandokEldonia** into your **Applications** folder.
+1. Download **SandokEldonia-1.1.1.zip** from the [latest release](https://github.com/Elmo2030/SandokEldonia/releases/latest), double-click it, and drag **SandokEldonia** into your **Applications** folder.
 2. Open it from Applications. **The first time, macOS will refuse**, because this build is not notarized by Apple (that needs a paid Apple Developer account). Do one of these once:
    - **macOS 15 and later:** try to open the app, then go to **System Settings > Privacy & Security**, scroll down and click **Open Anyway** next to SandokEldonia.
    - **Older macOS:** right-click the app, choose **Open**, then **Open** again.

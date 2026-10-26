@@ -7,4 +7,11 @@ public enum EpisodeQueue {
         guard let i = ordered.firstIndex(where: { $0.streamId == streamId }), i + 1 < ordered.count else { return nil }
         return ordered[i + 1]
     }
+
+    /// The episode before `streamId` in watching order, or nil before the first one.
+    public static func previous(before streamId: String, in episodes: [Episode]) -> Episode? {
+        let ordered = episodes.sorted { ($0.season, $0.number) < ($1.season, $1.number) }
+        guard let i = ordered.firstIndex(where: { $0.streamId == streamId }), i > 0 else { return nil }
+        return ordered[i - 1]
+    }
 }

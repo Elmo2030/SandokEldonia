@@ -250,3 +250,10 @@
 "recent.title" = "Baru ditambahkan";
 "sync.new.movies" = "Film baru: %d";
 "sync.new.series" = "Serial baru: %d";
+"menu.playback" = "Pemutaran";
+"menu.next" = "Episode atau saluran berikutnya";
+"menu.previous" = "Episode atau saluran sebelumnya";
+"menu.mute" = "Bisukan";
+"menu.volumeUp" = "Naikkan volume";
+"menu.volumeDown" = "Turunkan volume";
+"player.copyDiagnostics" = "Salin diagnostik";

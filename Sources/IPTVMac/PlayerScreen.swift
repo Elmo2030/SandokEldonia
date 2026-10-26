@@ -53,7 +53,13 @@ struct PlayerScreen: View {
                     Image(systemName: "exclamationmark.triangle.fill").font(.largeTitle).foregroundStyle(.orange)
                     Text(err).foregroundStyle(.white)
                     Text(L("player.errorHint")).font(.caption).foregroundStyle(.white.opacity(0.7))
-                    Button(L("player.retry")) { pm.retry() }
+                    HStack(spacing: 10) {
+                        Button(L("player.retry")) { pm.retry() }
+                        Button(L("player.copyDiagnostics")) {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(pm.diagnostics, forType: .string)
+                        }
+                    }
                 }
             }
             if let next = model.upNext {
@@ -124,6 +130,11 @@ struct PlayerScreen: View {
         .onKeyPress("2") { if !request.isLive { revealBars(); pm.toggleDoubleSpeed() }; return .handled }
         .onKeyPress("[") { if !request.isLive { revealBars(); pm.stepSpeed(up: false) }; return .handled }
         .onKeyPress("]") { if !request.isLive { revealBars(); pm.stepSpeed(up: true) }; return .handled }
+        .onKeyPress(.upArrow) { revealBars(); pm.changeVolume(up: true); return .handled }
+        .onKeyPress(.downArrow) { revealBars(); pm.changeVolume(up: false); return .handled }
+        .onKeyPress("m") { pm.toggleMute(); return .handled }
+        .onKeyPress("n") { model.playAdjacent(1); return .handled }
+        .onKeyPress("p") { model.playAdjacent(-1); return .handled }
         .onKeyPress("a") { videoScale = videoScale.next; return .handled }
         .onKeyPress("f") { NSApp.keyWindow?.toggleFullScreen(nil); return .handled }
         .onDrop(of: [.fileURL], isTargeted: nil) { providers in

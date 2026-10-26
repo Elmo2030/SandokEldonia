@@ -250,3 +250,10 @@
 "recent.title" = "נוסף לאחרונה";
 "sync.new.movies" = "סרטים חדשים: %d";
 "sync.new.series" = "סדרות חדשות: %d";
+"menu.playback" = "הפעלה";
+"menu.next" = "הפרק או הערוץ הבא";
+"menu.previous" = "הפרק או הערוץ הקודם";
+"menu.mute" = "השתקה";
+"menu.volumeUp" = "הגברת עוצמה";
+"menu.volumeDown" = "הנמכת עוצמה";
+"player.copyDiagnostics" = "העתקת פרטי אבחון";

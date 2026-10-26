@@ -250,3 +250,10 @@
 "recent.title" = "Onlangs toegevoegd";
 "sync.new.movies" = "Nieuwe films: %d";
 "sync.new.series" = "Nieuwe series: %d";
+"menu.playback" = "Afspelen";
+"menu.next" = "Volgende aflevering of zender";
+"menu.previous" = "Vorige aflevering of zender";
+"menu.mute" = "Dempen";
+"menu.volumeUp" = "Volume omhoog";
+"menu.volumeDown" = "Volume omlaag";
+"player.copyDiagnostics" = "Diagnose kopiëren";

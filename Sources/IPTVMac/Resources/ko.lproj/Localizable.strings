@@ -250,3 +250,10 @@
 "recent.title" = "Recently added";
 "sync.new.movies" = "New movies: %d";
 "sync.new.series" = "New series: %d";
+"menu.playback" = "Playback";
+"menu.next" = "Next Episode or Channel";
+"menu.previous" = "Previous Episode or Channel";
+"menu.mute" = "Mute";
+"menu.volumeUp" = "Volume Up";
+"menu.volumeDown" = "Volume Down";
+"player.copyDiagnostics" = "Copy diagnostics";

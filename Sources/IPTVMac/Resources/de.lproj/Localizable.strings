@@ -250,3 +250,10 @@
 "recent.title" = "Kürzlich hinzugefügt";
 "sync.new.movies" = "Neue Filme: %d";
 "sync.new.series" = "Neue Serien: %d";
+"menu.playback" = "Wiedergabe";
+"menu.next" = "Nächste Folge oder nächster Sender";
+"menu.previous" = "Vorherige Folge oder vorheriger Sender";
+"menu.mute" = "Stumm";
+"menu.volumeUp" = "Lauter";
+"menu.volumeDown" = "Leiser";
+"player.copyDiagnostics" = "Diagnose kopieren";

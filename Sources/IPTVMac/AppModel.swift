@@ -190,6 +190,29 @@ final class AppModel: LibraryModel {
 
     func cancelUpNext() { upNextTask?.cancel(); upNextTask = nil; upNext = nil }
 
+    private enum Adjacent { case channel(Item), episode(Episode, series: Item) }
+
+    /// The channel (in the list on screen) or the episode (in the series' order) before/after the one playing; nil when there is none.
+    private func adjacent(_ step: Int) -> Adjacent? {
+        guard let r = playing else { return nil }
+        if r.isLive { return r.item.flatMap { ChannelZap.neighbor(of: $0, in: results, step: step) }.map(Adjacent.channel) }
+        guard let key = r.episodeKey, key.hasPrefix("ep:"), let series = r.item else { return nil }
+        let id = String(key.dropFirst(3))
+        let e = step > 0 ? EpisodeQueue.next(after: id, in: episodeQueue) : EpisodeQueue.previous(before: id, in: episodeQueue)
+        return e.map { Adjacent.episode($0, series: series) }
+    }
+
+    func canPlayAdjacent(_ step: Int) -> Bool { adjacent(step) != nil }
+
+    /// Next (+1) or previous (-1) channel or episode. Does nothing when there is none.
+    func playAdjacent(_ step: Int) {
+        switch adjacent(step) {
+        case .channel(let item): play(item)
+        case .episode(let e, let series): playEpisode(e, of: series, in: episodeQueue)
+        case nil: break
+        }
+    }
+
     override func startPlayback(_ r: PlayRequest) {
         defer { updateToolbar() }
         cancelUpNext()                                           // a pending "up next" must not replace what the user picked now

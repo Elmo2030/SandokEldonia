@@ -250,3 +250,10 @@
 "recent.title" = "Nyligen tillagda";
 "sync.new.movies" = "Nya filmer: %d";
 "sync.new.series" = "Nya serier: %d";
+"menu.playback" = "Uppspelning";
+"menu.next" = "Nästa avsnitt eller kanal";
+"menu.previous" = "Föregående avsnitt eller kanal";
+"menu.mute" = "Ljud av";
+"menu.volumeUp" = "Höj volymen";
+"menu.volumeDown" = "Sänk volymen";
+"player.copyDiagnostics" = "Kopiera diagnostik";

@@ -101,17 +101,39 @@ final class PlayerModel {
 
     private func handleFailure() {
         guard !closed, !retryPending else { return }
-        if request.isLive && retries < 3 {
+        switch PlaybackRetry.decide(isLive: request.isLive, attempt: retries, position: position, requestedStart: request.start) {
+        case .retry(let delay, let start):
             retries += 1
             retryPending = true
             let gen = loadGen
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
                 guard let self, !self.closed, self.loadGen == gen else { return }
                 self.retryPending = false
-                self.position = 0; self.lastPos = 0          // time-pos restarts at 0 after a reload: the retry budget must refresh again
-                self.mpv.load(self.request.url, start: 0)
+                // time-pos restarts after a reload: the retry budget must refresh again. A movie keeps its `position`, so a second
+                // drop before the first tick still knows where to resume.
+                self.lastPos = start
+                if self.request.isLive { self.position = 0 }
+                self.mpv.load(self.request.url, start: start)
             }
-        } else { error = [L("player.error"), mpv.lastError].compactMap { $0 }.joined(separator: ": ") }
+        case .giveUp:
+            error = [L("player.error"), mpv.lastError].compactMap { $0 }.joined(separator: ": ")
+        }
+    }
+
+    /// For "Copy diagnostics" on the error screen: no account, password or token in it.
+    var diagnostics: String {
+        let v = ProcessInfo.processInfo.operatingSystemVersion
+        return PlaybackDiagnostics.report(
+            kind: request.isLive ? "live" : (request.item?.type.rawValue ?? "video"), url: request.url,
+            position: position, duration: duration, retries: retries, error: mpv.lastError,
+            appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?",
+            system: "macOS \(v.majorVersion).\(v.minorVersion)")
+    }
+
+    func toggleMute() { mpv.setProperty("mute", mpv.flag("mute") ? "no" : "yes") }
+    func changeVolume(up: Bool) {
+        mpv.setProperty("mute", "no")
+        mpv.setProperty("volume", String(PlayerVolume.stepped(from: mpv.double("volume") ?? 100, up: up)))
     }
 
     func retry() {
@@ -139,6 +161,9 @@ final class PlayerModel {
         }
         duration = mpv.double("duration") ?? 0
         if !request.isLive {
+            if position > lastPos + 0.5 { retries = 0; lastPos = position }   // playing again: the next drop gets fresh retries
+            // A connection cut early leaves the player at "end of file" well before the real end: that is a drop, not the end.
+            if mpv.isAtEnd && error == nil && position > 0 && duration > 0 && position < duration - 15 { handleFailure() }
             // A connection cut early also sets eof-reached: only the real end of the file starts the next episode.
             let atEnd = mpv.isAtEnd && duration > 0 && position >= duration - 15
             if atEnd != wasAtEnd { wasAtEnd = atEnd; onEndChanged?(atEnd) }

@@ -81,6 +81,19 @@ struct IPTVMacApp: App {
         // One window only (a second would fight the first for the single video view): File > Show Window brings it back, even after a close.
         .commands {
             CommandGroup(replacing: .newItem) { Button(L("menu.showWindow")) { model.showMainWindow() }.keyboardShortcut("n") }
+            CommandGroup(after: .newItem) {
+                Button(L("settings.refresh")) { Task { await model.sync() } }.keyboardShortcut("r").disabled(model.syncing)
+            }
+            CommandMenu(L("menu.playback")) {
+                Button(L("menu.next")) { model.playAdjacent(1) }.keyboardShortcut("]").disabled(!model.canPlayAdjacent(1))
+                Button(L("menu.previous")) { model.playAdjacent(-1) }.keyboardShortcut("[").disabled(!model.canPlayAdjacent(-1))
+                Divider()
+                Button(L("menu.mute")) { model.player?.toggleMute() }.keyboardShortcut("m", modifiers: [.command, .option]).disabled(model.player == nil)
+                Button(L("menu.volumeUp")) { model.player?.changeVolume(up: true) }
+                    .keyboardShortcut(.upArrow, modifiers: [.command, .option]).disabled(model.player == nil)
+                Button(L("menu.volumeDown")) { model.player?.changeVolume(up: false) }
+                    .keyboardShortcut(.downArrow, modifiers: [.command, .option]).disabled(model.player == nil)
+            }
             CommandGroup(replacing: .systemServices) {}   // the app menu's "Services" (no text service applies to a video player)
         }
         Settings { SettingsView().environment(model) }

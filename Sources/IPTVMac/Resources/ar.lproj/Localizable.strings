@@ -250,3 +250,10 @@
 "recent.title" = "أُضيف حديثًا";
 "sync.new.movies" = "أفلام جديدة: %d";
 "sync.new.series" = "مسلسلات جديدة: %d";
+"menu.playback" = "التشغيل";
+"menu.next" = "الحلقة أو القناة التالية";
+"menu.previous" = "الحلقة أو القناة السابقة";
+"menu.mute" = "كتم الصوت";
+"menu.volumeUp" = "رفع الصوت";
+"menu.volumeDown" = "خفض الصوت";
+"player.copyDiagnostics" = "نسخ بيانات التشخيص";

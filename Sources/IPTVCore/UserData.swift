@@ -68,4 +68,21 @@ public enum UserData {
         }
         return items
     }
+
+    /// How far back "recently added" reaches.
+    public static let recentWindow: TimeInterval = 14 * 86_400
+
+    /// Movies and series a sync first saw in the last `recentWindow`, newest first. Titles that were there from the start have no
+    /// date and never show up here. `accountId: nil` = every playlist.
+    public static func recentlyAdded(_ db: Database, accountId: Int64?, types: [ItemType] = [.movie, .series],
+                                     now: Date = Date(), limit: Int = 60) throws -> [Item] {
+        let marks = types.map { _ in "?" }.joined(separator: ",")
+        var args: [DatabaseValueConvertible?] = [accountId, accountId, now.addingTimeInterval(-recentWindow)]
+        args += types.map(\.rawValue)
+        args.append(limit)
+        return try Item.fetchAll(db, sql: """
+            SELECT * FROM item WHERE (? IS NULL OR accountId = ?) AND addedAt >= ? AND type IN (\(marks))
+            ORDER BY addedAt DESC, id DESC LIMIT ?
+            """, arguments: StatementArguments(args))
+    }
 }

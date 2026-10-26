@@ -247,3 +247,6 @@
 "sub.expires" = "ينتهي في %@";
 "sub.expired" = "انتهى في %@";
 "sub.daysLeft" = "الأيام المتبقية: %d";
+"recent.title" = "أُضيف حديثًا";
+"sync.new.movies" = "أفلام جديدة: %d";
+"sync.new.series" = "مسلسلات جديدة: %d";

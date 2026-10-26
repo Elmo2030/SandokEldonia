@@ -58,7 +58,7 @@ open class LibraryModel {
     private func playlistChanged() {
         if playing != nil { stopPlayback() }                    // progress/favorites/credentials belong to the account that started it
         selectedCategory = "__all"; searchText = ""            // a category id of account A means nothing in B
-        favoriteKeys = []; loadCategories(); loadFavorites(); scheduleSearch()
+        favoriteKeys = []; newSinceSync = [:]; loadCategories(); loadFavorites(); scheduleSearch(); loadRecentlyAdded()
     }
 
     public var tab: ItemType = .live { didSet { leavePlayerForBrowsing(); selectedCategory = "__all"; loadCategories(); scheduleSearch() } }
@@ -215,6 +215,7 @@ open class LibraryModel {
         syncing = true; syncMessage = nil; syncProgress = 0
         defer { if gen == syncGen { syncing = false; syncProgress = nil } }
         var failures: [String] = []
+        var found: [ItemType: Int] = [:]
         for (index, a) in ready.enumerated() {
             guard let aid = a.id else { continue }
             let share = 1 / Double(ready.count), base = Double(index) * share      // All mode: the playlists go one after the other
@@ -224,12 +225,30 @@ open class LibraryModel {
                     self.syncProgress = base + p * share
                 }
             }
-            do { try await SyncService(db: db).sync(account: a, password: secrets.password(for: aid), progress: report) }
-            catch { failures.append(ready.count > 1 ? "\(a.name): \(error.localizedDescription)" : error.localizedDescription) }
+            do {
+                let r = try await SyncService(db: db).sync(account: a, password: secrets.password(for: aid), progress: report)
+                found.merge(r.newCounts, uniquingKeysWith: +)
+            } catch { failures.append(ready.count > 1 ? "\(a.name): \(error.localizedDescription)" : error.localizedDescription) }
             guard gen == syncGen else { return }                // a newer sync owns the UI state now
         }
         syncMessage = failures.isEmpty ? nil : failures.joined(separator: "; ")
-        loadCategories(); scheduleSearch()
+        newSinceSync = found.filter { $0.key != .live && $0.value > 0 }
+        loadCategories(); scheduleSearch(); loadRecentlyAdded()
+    }
+
+    /// Movies and series that the last finished sync found new (empty when none, or on a playlist's first sync). The UI announces it once.
+    public var newSinceSync: [ItemType: Int] = [:]
+
+    /// The "recently added" shelf: movies and series first seen in the last 14 days, in the shown playlist (or all of them).
+    public private(set) var recentlyAdded: [Item] = []
+
+    public func loadRecentlyAdded() {
+        guard hasPlaylist else { recentlyAdded = []; return }
+        let aid = scopeAccountId, hide = categoryFilter
+        Task {
+            let rows = (try? await db.dbQueue.read { d in try hide.visible(try UserData.recentlyAdded(d, accountId: aid), in: d) }) ?? []
+            if aid == scopeAccountId { recentlyAdded = rows }       // the playlist may have been switched while this ran
+        }
     }
 
     public func savePassword(_ password: String, for a: Account) async {
@@ -383,7 +402,7 @@ open class LibraryModel {
     public func hiddenCategoriesChanged() {
         loadCategories()
         if !selectedCategory.hasPrefix("__"), !categories.contains(where: { categoryTag($0) == selectedCategory }) { selectedCategory = "__all" }
-        scheduleSearch()
+        scheduleSearch(); loadRecentlyAdded()
     }
 
     /// Details exist only for movies and series of an Xtream playlist (an M3U file has none).

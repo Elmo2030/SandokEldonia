@@ -124,7 +124,7 @@ private struct IconButtonBody: View {
 
 /// Thin bar under the toolbar for "syncing" and "sync failed".
 struct StatusStrip: View {
-    enum Kind { case busy, warning }
+    enum Kind { case busy, warning, info }
     let kind: Kind
     let text: String
 
@@ -132,6 +132,7 @@ struct StatusStrip: View {
         HStack(spacing: 8) {
             switch kind {
             case .busy: ProgressView().controlSize(.small)
+            case .info: Image(systemName: "sparkles").foregroundStyle(CinemaTheme.accent)
             case .warning: Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
             }
             Text(text).font(.callout).lineLimit(2)

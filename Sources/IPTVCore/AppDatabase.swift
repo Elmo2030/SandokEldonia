@@ -141,6 +141,11 @@ public final class AppDatabase {
                 t.primaryKey(["accountId", "type", "streamId"])
             }
         }
+        // When a sync first saw a title. NULL = there since the first sync of its playlist (the baseline), or unknown.
+        m.registerMigration("v5-added-at") { db in
+            try db.alter(table: "item") { t in t.add(column: "addedAt", .datetime) }
+            try db.create(index: "item_added", on: "item", columns: ["type", "addedAt"], condition: Column("addedAt") != nil)
+        }
         return m
     }
 }

@@ -49,6 +49,14 @@ struct RootView: View {
         return "folder.fill"
     }
 
+    /// "New movies: 12 · New series: 3" for what the last refresh found; nil when nothing was new.
+    private func newTitlesText(_ found: [ItemType: Int]) -> String? {
+        let parts = [(ItemType.movie, "sync.new.movies"), (.series, "sync.new.series")].compactMap { type, key in
+            found[type].flatMap { $0 > 0 ? String(format: L(key), $0) : nil }
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+    }
+
     private func showsPlayer(_ m: AppModel) -> Bool { m.playing != nil && !m.pip && m.player != nil }
 
     @ViewBuilder
@@ -94,6 +102,14 @@ struct RootView: View {
                         if model.wrappedValue.syncing {
                             StatusStrip(kind: .busy, text: syncStatusText(model.wrappedValue.syncProgress))
                                 .transition(.move(edge: .top).combined(with: .opacity))
+                        }
+                        if !model.wrappedValue.syncing, let text = newTitlesText(model.wrappedValue.newSinceSync) {
+                            StatusStrip(kind: .info, text: text)
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                                .task(id: model.wrappedValue.newSinceSync) {         // announced once, then it goes away
+                                    try? await Task.sleep(for: .seconds(10))
+                                    if !Task.isCancelled { model.wrappedValue.newSinceSync = [:] }
+                                }
                         }
                         if let m = model.wrappedValue.syncMessage {
                             StatusStrip(kind: .warning, text: "\(L("sync.failed")): \(m). \(L("sync.notUpdated"))")

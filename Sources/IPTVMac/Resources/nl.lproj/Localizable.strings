@@ -247,3 +247,6 @@
 "sub.expires" = "Expires %@";
 "sub.expired" = "Expired %@";
 "sub.daysLeft" = "Days left: %d";
+"recent.title" = "Onlangs toegevoegd";
+"sync.new.movies" = "Nieuwe films: %d";
+"sync.new.series" = "Nieuwe series: %d";

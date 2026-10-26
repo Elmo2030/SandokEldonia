@@ -23,6 +23,10 @@ struct HomeDashboardView: View {
             VStack(alignment: .leading, spacing: 30) {
                 hero
 
+                if !model.recentlyAdded.isEmpty {
+                    posterSection(L("recent.title"), items: model.recentlyAdded)
+                }
+
                 if !movies.isEmpty {
                     posterSection("أفلام من مكتبتك", items: movies)
                 }

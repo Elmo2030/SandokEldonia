@@ -1,6 +1,13 @@
 import Foundation
 import GRDB
 
+/// What a finished sync found.
+public struct SyncResult: Equatable, Sendable {
+    /// Titles this playlist did not have before, per type. Empty on a playlist's first sync and after a suspected renumbering.
+    public var newCounts: [ItemType: Int]
+    public init(newCounts: [ItemType: Int] = [:]) { self.newCounts = newCounts }
+}
+
 public final class SyncService {
     let db: AppDatabase
     let session: URLSession
@@ -8,7 +15,9 @@ public final class SyncService {
 
     /// `progress` is told how far the sync is, 0...1 and never backwards: the login 5%, each of the three Xtream lists 20% (an M3U download
     /// 50%), the decoded rows 70%, then the last 30% is the writing, counted in rows. It may be called from any thread.
-    public func sync(account: Account, password: String?, progress: (@Sendable (Double) -> Void)? = nil) async throws {
+    @discardableResult
+    public func sync(account: Account, password: String?, progress: (@Sendable (Double) -> Void)? = nil,
+                     now: Date = Date()) async throws -> SyncResult {
         guard let aid = account.id else { throw IPTVError.badConfig }
         let meter = SyncMeter(progress)
         let (cats, items): ([Category], [Item])
@@ -22,13 +31,28 @@ public final class SyncService {
         // cache must not wipe that section (and the favorites that point into it).
         let types = Set(items.map(\.type)).map(\.rawValue)
         let typeList = types.map { "'\($0)'" }.joined(separator: ",")      // raw values of our own enum, not user input
-        try await db.dbQueue.write { d in
+        let newCounts = try await db.dbQueue.write { d -> [ItemType: Int] in
+            // New = a stream id this playlist did not have before this sync. A playlist's first sync (nothing of that type yet)
+            // is the baseline: nothing is stamped. A type where most titles are "new" at once is a panel that renumbered its ids
+            // (or an M3U whose links carry a rotating token): stamping it would flood Recently Added, so it is skipped too.
+            var known = Set<String>(), prior: [String: Int] = [:]
+            for r in try Row.fetchAll(d, sql: "SELECT type, streamId FROM item WHERE accountId = ? AND type IN (\(typeList))", arguments: [aid]) {
+                let t: String = r["type"], s: String = r["streamId"]
+                known.insert("\(t)|\(s)"); prior[t, default: 0] += 1
+            }
+            func isNew(_ i: Item) -> Bool { !known.contains("\(i.type.rawValue)|\(i.streamId)") }
+            var counts: [ItemType: Int] = [:]
+            for i in items where isNew(i) { counts[i.type, default: 0] += 1 }
+            counts = counts.filter { type, n in
+                let before = prior[type.rawValue] ?? 0
+                return before > 0 && !(n >= Self.renumberFloor && n * 2 > before)
+            }
             try d.execute(sql: "UPDATE item SET stale = 1 WHERE accountId = ? AND type IN (\(typeList))", arguments: [aid])
             try d.execute(sql: "DELETE FROM category WHERE accountId = ? AND type IN (\(typeList))", arguments: [aid])
             for var c in cats { try c.insert(d, onConflict: .ignore) }
             let st = try d.cachedStatement(sql: """
-                INSERT INTO item (accountId,type,name,categoryId,icon,rating,streamId,containerExt,directURL,tvArchive,archiveDays,epgChannelId,stale)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,0)
+                INSERT INTO item (accountId,type,name,categoryId,icon,rating,streamId,containerExt,directURL,tvArchive,archiveDays,epgChannelId,stale,addedAt)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,0,?)
                 ON CONFLICT(accountId,type,streamId) DO UPDATE SET
                   name=excluded.name, categoryId=excluded.categoryId, icon=excluded.icon, rating=excluded.rating,
                   containerExt=excluded.containerExt, directURL=excluded.directURL, tvArchive=excluded.tvArchive,
@@ -36,13 +60,19 @@ public final class SyncService {
                 """)
             for (n, i) in items.enumerated() {
                 try st.execute(arguments: [aid, i.type.rawValue, i.name, i.categoryId, i.icon, i.rating, i.streamId,
-                                           i.containerExt, i.directURL, i.tvArchive, i.archiveDays, i.epgChannelId])
+                                           i.containerExt, i.directURL, i.tvArchive, i.archiveDays, i.epgChannelId,
+                                           counts[i.type] != nil && isNew(i) ? now : nil])      // an existing row keeps its addedAt (not in the UPDATE list)
                 if n % 2000 == 1999 { meter.reach(0.7 + 0.3 * Double(n + 1) / Double(items.count)) }
             }
             try d.execute(sql: "DELETE FROM item WHERE accountId = ? AND stale = 1", arguments: [aid])
+            return counts
         }
         meter.reach(1)
+        return SyncResult(newCounts: newCounts)
     }
+
+    /// From this many "new" titles of one type, and more than half of what the playlist had, the change is read as a renumbering.
+    static let renumberFloor = 200
 
     /// Provider-controlled size limit: a list this large is a broken or hostile response, not a catalog.
     static let maxResponseBytes = 300_000_000

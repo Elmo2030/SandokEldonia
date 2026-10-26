@@ -247,3 +247,6 @@
 "sub.expires" = "Expires %@";
 "sub.expired" = "Expired %@";
 "sub.daysLeft" = "Days left: %d";
+"recent.title" = "Adicionados recentemente";
+"sync.new.movies" = "Novos filmes: %d";
+"sync.new.series" = "Novas séries: %d";

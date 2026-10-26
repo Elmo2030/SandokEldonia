@@ -247,3 +247,6 @@
 "sub.expires" = "Expires %@";
 "sub.expired" = "Expired %@";
 "sub.daysLeft" = "Days left: %d";
+"recent.title" = "Baru ditambahkan";
+"sync.new.movies" = "Film baru: %d";
+"sync.new.series" = "Serial baru: %d";

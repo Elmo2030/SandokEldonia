@@ -247,3 +247,6 @@
 "sub.expires" = "Expires %@";
 "sub.expired" = "Expired %@";
 "sub.daysLeft" = "Days left: %d";
+"recent.title" = "Nyligen tillagda";
+"sync.new.movies" = "Nya filmer: %d";
+"sync.new.series" = "Nya serier: %d";

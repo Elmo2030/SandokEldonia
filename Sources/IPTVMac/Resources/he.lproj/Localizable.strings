@@ -247,3 +247,6 @@
 "sub.expires" = "תוקף עד %@";
 "sub.expired" = "פג תוקף ב-%@";
 "sub.daysLeft" = "ימים שנותרו: %d";
+"recent.title" = "נוסף לאחרונה";
+"sync.new.movies" = "סרטים חדשים: %d";
+"sync.new.series" = "סדרות חדשות: %d";

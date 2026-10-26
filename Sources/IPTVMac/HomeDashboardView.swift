@@ -204,6 +204,7 @@ struct HomeDashboardView: View {
                                 .lineLimit(2)
                                 .multilineTextAlignment(.leading)
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                            if let rating = item.ratingValue { RatingBadge(value: rating) }
                         }
                         .contentShape(Rectangle())
                     }

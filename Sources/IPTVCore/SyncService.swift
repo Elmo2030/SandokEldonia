@@ -104,7 +104,7 @@ public final class SyncService {
                     accountId: aid, type: type, name: str(d["name"]) ?? sid, streamId: sid,
                     categoryId: str(d["category_id"]),
                     icon: str(type == .series ? d["cover"] : d["stream_icon"]),
-                    rating: str(d["rating"]), containerExt: str(d["container_extension"]),
+                    rating: Rating.stored(rating: str(d["rating"]), fiveBased: str(d["rating_5based"])), containerExt: str(d["container_extension"]),
                     tvArchive: int(d["tv_archive"]) == 1, archiveDays: int(d["tv_archive_duration"]) ?? 0,
                     epgChannelId: str(d["epg_channel_id"])))
             }

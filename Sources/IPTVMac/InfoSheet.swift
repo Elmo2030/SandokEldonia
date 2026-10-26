@@ -19,6 +19,15 @@ struct PosterImage: View {
     }
 }
 
+extension ItemInfo {
+    /// The details screen shows the rating even when the details call has none, using the list's own.
+    func withListRating(_ item: Item) -> ItemInfo {
+        var i = self
+        if i.rating == nil { i.rating = item.ratingValue }
+        return i
+    }
+}
+
 /// Year, rating (a star and the number), duration and genre: whichever the provider has.
 struct InfoMetaLine: View {
     let info: ItemInfo
@@ -78,8 +87,11 @@ struct InfoSheet: View {
             PosterImage(url: item.iconURL ?? info?.posterURL, width: 260)
             VStack(alignment: .leading, spacing: 14) {
                 header
-                if let info { if InfoMetaLine.hasAny(info) { InfoMetaLine(info: info).transition(.opacity) } }
-                else if phase == .loading { SkeletonBars(widths: [150], height: 12) }
+                if let info { let shown = info.withListRating(item); if InfoMetaLine.hasAny(shown) { InfoMetaLine(info: shown).transition(.opacity) } }
+                else if phase == .loading {
+                    // The list already knows the rating: show it at once, the rest follows with the details.
+                    if let r = item.ratingValue { RatingBadge(value: r) } else { SkeletonBars(widths: [150], height: 12) }
+                }
                 actions
                 content
             }
@@ -264,7 +276,8 @@ struct SeriesHeader: View {
         HStack(alignment: .top, spacing: 14) {
             PosterImage(url: series.iconURL ?? info.posterURL, width: 84)
             VStack(alignment: .leading, spacing: 8) {
-                if InfoMetaLine.hasAny(info) { InfoMetaLine(info: info) }
+                let shown = info.withListRating(series)
+                if InfoMetaLine.hasAny(shown) { InfoMetaLine(info: shown) }
                 if let plot = info.plot {
                     ViewThatFits(in: .vertical) {
                         Text(verbatim: plot).font(.callout)

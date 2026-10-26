@@ -2,6 +2,21 @@ import SwiftUI
 import IPTVCore
 
 /// Which playlist an item comes from; only shown while All playlists is on.
+/// A star and the rating (0-10), under a title in a list. Only shown when the provider gave one.
+struct RatingBadge: View {
+    let value: Double
+
+    var body: some View {
+        let text = Rating.display(value)
+        HStack(spacing: 3) {
+            Image(systemName: "star.fill").imageScale(.small).foregroundStyle(CinemaTheme.accent)
+            Text(text).monospacedDigit()
+        }
+        .font(.caption).foregroundStyle(CinemaTheme.secondaryText)
+        .accessibilityElement(children: .ignore).accessibilityLabel("\(L("info.rating")): \(text)")
+    }
+}
+
 struct PlaylistBadge: View {
     @Environment(AppModel.self) var model
     let item: Item
@@ -124,6 +139,7 @@ struct PosterCell: View {
                 .lineLimit(2, reservesSpace: true)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            if let rating = item.ratingValue { RatingBadge(value: rating) }
         }
         .padding(8)
         .background(

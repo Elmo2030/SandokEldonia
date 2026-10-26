@@ -57,6 +57,7 @@ struct GeneralSettings: View {
             Section {
                 Text(String(format: L("update.current"), model.currentVersion)).foregroundStyle(.secondary)
                 #if !APPSTORE   // the App Store updates the app: no update check, banner or installer in that build
+                if AppModel.updatesEnabled {
                 Toggle(L("update.auto"), isOn: $autoCheck)
                 Toggle(L("update.autoInstall"), isOn: $autoInstall).disabled(!autoCheck)
                 HStack {
@@ -70,6 +71,7 @@ struct GeneralSettings: View {
                     case .failed(let m): Label(m, systemImage: "exclamationmark.triangle.fill").foregroundStyle(.red).lineLimit(2)
                     case .none: EmptyView()
                     }
+                }
                 }
                 #endif
             }

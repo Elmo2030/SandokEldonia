@@ -1,211 +1,105 @@
 <div align="center">
 
-<img src="docs/logo.png" alt="IPTVMac logo" width="112">
-
-# IPTVMac
+# SandokEldonia · صندوق الدنيا
 
 **A native IPTV player for the Mac.**<br>
-Xtream Codes and M3U, instant search, a built-in player with subtitles, Picture in Picture, catch-up and downloads.<br>
+Xtream Codes and M3U, a home screen with shelves, ratings, profiles with a kids mode, and a built-in mpv player.<br>
 Free and open source. No accounts, no analytics.
 
-<br>
-
-[![Latest release](https://img.shields.io/github/v/release/Goelir/IPTVMac?style=flat-square&color=5b6cf2&label=release)](https://github.com/Goelir/IPTVMac/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/Goelir/IPTVMac/total?style=flat-square&color=2ea44f)](https://github.com/Goelir/IPTVMac/releases)
-[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](LICENSE)
 ![macOS 14+](https://img.shields.io/badge/macOS-14%2B-black?style=flat-square&logo=apple)
 ![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-arm64-lightgrey?style=flat-square)
-[![Stars](https://img.shields.io/github/stars/Goelir/IPTVMac?style=flat-square&logo=github&color=eac54f)](https://github.com/Goelir/IPTVMac/stargazers)
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](LICENSE)
 
-[**Download for Mac**](https://github.com/Goelir/IPTVMac/releases/latest) &nbsp;|&nbsp; [**Android (APK)**](https://github.com/Goelir/IPTVMac/releases/tag/android-v1.0.3) &nbsp;|&nbsp; [Website](https://goelir.github.io/IPTVMac/) &nbsp;|&nbsp; [Install](#install) &nbsp;|&nbsp; [Features](#features) &nbsp;|&nbsp; [FAQ](#faq) &nbsp;|&nbsp; [עברית](README.he.md)
-
-<br>
-
-[![IPTVMac on macOS: a movie library with a Picture in Picture player, live channels and the full-screen player](docs/screenshots/hero-windows.png)](https://github.com/Goelir/IPTVMac/releases/download/v0.3.4/IPTVMac-demo-en.mp4)
-
-<sub>Demo playlist with invented titles, video from the Blender Foundation's "Sintel" (CC-BY 3.0). [Watch the 80-second demo](https://github.com/Goelir/IPTVMac/releases/download/v0.3.4/IPTVMac-demo-en.mp4).</sub>
+[Install](#install) &nbsp;|&nbsp; [First run](#first-run) &nbsp;|&nbsp; [Features](#features) &nbsp;|&nbsp; [Shortcuts](#keyboard-shortcuts) &nbsp;|&nbsp; [Build](#build-from-source) &nbsp;|&nbsp; [Credits](#credits-and-license) &nbsp;|&nbsp; [العربية](README.ar.md)
 
 </div>
 
-## Why IPTVMac
-
-- **Fast.** Your whole library lives in a local SQLite database with full-text search. Typing finds a channel among 100,000 items in well under a second, in a category, in a section, or everywhere.
-- **Stable.** Playback runs on [mpv](https://mpv.io) (libmpv, bundled). It plays the broken TS and HLS streams that trip up system players, reconnects when the stream drops, and uses hardware decoding.
-- **Native.** SwiftUI, no Electron, no web view. Nothing else to install: the player is inside the app.
-- **Open.** GPL-3.0, no accounts, no analytics. The app talks only to the servers you add, and to GitHub for updates.
+SandokEldonia is a Mac app for watching the live channels, movies and series of your own IPTV provider. It is a fork of the open source [IPTVMac](https://github.com/Goelir/IPTVMac) with a redesigned dark interface and a good deal of new functionality (listed below). It is only a player: it does **not** include or host any channels, movies or series. You need a source you are allowed to use.
 
 ## Install
 
-Requires an Apple Silicon Mac (M1 or later) and macOS 14 or later.
+Requires an Apple Silicon Mac (M1 or later) and macOS 14 or later. Nothing else to install: the player (libmpv) is inside the app.
 
-**Install in one line.** Paste this in Terminal:
+1. Download **SandokEldonia-1.1.0.zip** from the [latest release](https://github.com/Elmo2030/SandokEldonia/releases/latest), double-click it, and drag **SandokEldonia** into your **Applications** folder.
+2. Open it from Applications. **The first time, macOS will refuse**, because this build is not notarized by Apple (that needs a paid Apple Developer account). Do one of these once:
+   - **macOS 15 and later:** try to open the app, then go to **System Settings > Privacy & Security**, scroll down and click **Open Anyway** next to SandokEldonia.
+   - **Older macOS:** right-click the app, choose **Open**, then **Open** again.
+   - **Or in Terminal** (works everywhere): `xattr -dr com.apple.quarantine /Applications/SandokEldonia.app`
 
-```
-curl -fsSL https://raw.githubusercontent.com/Goelir/IPTVMac/main/install.sh | bash
-```
-
-It downloads the latest release, checks its signature and the SHA-256, copies IPTVMac to `/Applications` and opens it. [install.sh](install.sh) is short; read it first if you like. It works for every version, and because nothing is downloaded in a browser, macOS has nothing to flag. After this the app updates itself.
-
-**Or download the DMG.** Get `IPTVMac.dmg` from the [latest release](https://github.com/Goelir/IPTVMac/releases/latest), open it and drag the **IPTVMac** icon onto the **Applications** icon in the window (not the .dmg file itself). From version 0.9.1, releases are signed with an Apple Developer ID and notarized (an automated malware scan by Apple, not a review of the app), so the app opens with a normal double-click. macOS may ask you once to confirm that it was downloaded from the internet.
-
-Older versions are not notarized, and macOS blocks a browser-downloaded copy on first launch. For those:
-
-- macOS 15 and later: try to open the app once, then go to **System Settings > Privacy & Security**, scroll down and click **Open Anyway** next to IPTVMac.
-- Or in Terminal: `xattr -dr com.apple.quarantine /Applications/IPTVMac.app`
-
-Prefer to see it first? [Watch the install guide (95 seconds)](https://youtu.be/TgaoFEEMg48).
+After that it opens with a normal double-click. This build does **not** update itself; you replace it with a newer copy. Your playlists, favorites and history are kept (they live outside the app, see [Your data](#your-data)).
 
 ## First run
 
-The app opens a short three-step guide. You add a playlist from your provider:
+The app opens a short guide. You add a playlist from your provider:
 
-- **Xtream Codes:** server address (for example `http://host:8080`), username and password. Your provider gives you these.
+- **Xtream Codes:** server address (for example `http://host:8080`), username and password.
 - **M3U:** a name and the playlist link.
 
-IPTVMac is only a player. It does not include or host any channels, movies or series: you need a source you are allowed to use.
-
-### No playlist yet?
-
-If you do not have a provider, [iptv-org/iptv](https://github.com/iptv-org/iptv) is a free, independent open source project that publishes M3U playlists of publicly available channels from around the world. In IPTVMac choose **M3U**, give it a name and paste:
-
-```
-https://iptv-org.github.io/iptv/index.m3u
-```
-
-It holds about 11,000 entries (loading takes a moment); the project's README also lists playlists by country, language and category. IPTVMac is not affiliated with iptv-org. Whether a stream is available, and whether you may watch it, depends on the channel and on your country: use only what you are allowed to.
-
-## Screenshots
-
-<div align="center">
-
-![Movies](docs/screenshots/03-movies.jpg)
-
-| | |
-|:---:|:---:|
-| ![Live channels](docs/screenshots/01-live.jpg)<br>**Live channels** | ![Global search](docs/screenshots/02-search.jpg)<br>**Search everywhere** |
-| ![Series](docs/screenshots/04-series.jpg)<br>**Series** | ![Player](docs/screenshots/05-player.jpg)<br>**Player** |
-| ![Picture in Picture](docs/screenshots/06-pip.jpg)<br>**Picture in Picture** | ![Downloads](docs/screenshots/07-downloads.jpg)<br>**Downloads** |
-
-<sub>The screenshots use an invented demo playlist; the video is the Blender Foundation's "Sintel" trailer (CC-BY 3.0).</sub>
-
-</div>
+Each person uses their own subscription. Sharing one account between people may be against your provider's terms, and many providers allow only one connection at a time.
 
 ## Features
 
-| | |
+**Library and home**
+- Live channels, movies and series from Xtream Codes or M3U playlists, several playlists at once, or **All playlists** in one view.
+- A **home screen** with shelves: *Continue watching*, *Recently added*, *Similar to the last title you watched* and *More from its category*.
+- **Recently added:** a refresh compares the list with the previous one and tells you how many movies and series are new. The first refresh of a playlist is the baseline, so nothing is called new then.
+- **Update lists** button on the home screen and in the toolbar (⌘R).
+- Instant full-text search over 100,000+ titles (in a category, a section, or everywhere).
+- **Filters** on the Movies and Series tabs: hide watched, newest first, minimum rating.
+- **Ratings** under every movie and series that has one, and on the details screen. They come from your provider's own data; M3U playlists carry none.
+- **Watch later** list (sidebar and right-click on any title), and favorites.
+- A **details screen** with poster, plot, cast, year, rating, duration and trailer for Xtream movies and series (click a poster; the ⓘ button is always visible).
+
+**People**
+- **Profiles:** favorites, watch history and Watch later are separate for each person; playlists are shared. Up to 8 profiles.
+- **Kids profile:** shows only categories whose names look made for children (kids, cartoon, family, أطفال, كرتون...). This is a guess from category names, so it is a convenience, not a guarantee.
+- An optional **PIN** is asked when leaving a profile that has one. It is a convenience lock, not security.
+
+**Playback**
+- A built-in [mpv](https://mpv.io) player: hardware decoding, subtitles and audio tracks (embedded, or `.srt`/`.ass` files by drag and drop), speed 0.25x to 4x, sleep timer, fit/fill/stretch.
+- **Picture in Picture**, **catch-up** (Xtream `tv_archive`), downloads of movies and episodes, resume where you stopped, and a next-episode countdown.
+- **Smarter recovery:** movies and episodes reconnect after a dropped connection and resume just before the break; live channels retry with growing delays. If it still fails, **Copy diagnostics** copies the server name, file type and error. It never copies your account, password or tokens.
+- **Program guide:** current and next program for Xtream channels, and for **M3U channels whose playlist names a guide** (`url-tvg`, XMLTV, plain or gzip).
+- Volume, mute and next/previous episode or channel from the keyboard.
+
+**Other**
+- A warning strip when an Xtream subscription has a week or less left.
+- Backup and restore of playlists (without passwords), favorites, watch history and Watch later (for the profile in use).
+- 31 interface languages, with right-to-left layout for Arabic, Hebrew, Persian and Urdu. Apart from the original Hebrew, English and Arabic, translations were written with AI help and have not been reviewed by native speakers.
+
+## Keyboard shortcuts
+
+| Where | Keys |
 |---|---|
-| **Live, Movies, Series** | Three sections with categories, posters, channel logos, "Continue watching" and favorites. |
-| **Search** | Type to search inside the current category, inside the section, or everywhere, with results grouped by section. Hebrew, Arabic and Latin text. |
-| **Player** | Full screen by default; controls fade until you move the mouse. Space, arrows to skip (10 s by default, 5 to 60 s in Settings), `F` full screen, `2` double speed, `[` and `]` slower and faster, a speed picker from 0.25x to 4x (movies and episodes), `A` fit, fill or stretch, a **sleep timer** (moon icon), an optional clock, `Esc` to go back. |
-| **Subtitles and audio** | Embedded tracks, external `.srt` and `.ass` files (menu or drag and drop), size and delay settings, preferred languages. |
-| **Picture in Picture** | A floating mini player, always on top, that follows you across Spaces while you keep browsing. |
-| **Catch-up** | Watch past programs on channels whose provider supports it (Xtream `tv_archive`), picked from the EPG. |
-| **EPG** | Current and next program in the channel list and in the player (Xtream). |
-| **Downloads** | Save movies and episodes (a whole season at once on Xtream series) to a folder you choose, and play them from the Downloads screen. |
-| **Playlists** | Xtream Codes and M3U. With several playlists, switch from the toolbar, or choose **All playlists** to search, favorite and continue watching across all of them, with the playlist name on every item. |
-| **Resume and next episode** | Movies and episodes continue where you stopped. When an episode ends, the next one starts after a 5-second countdown (cancel it, or turn it off). |
-| **Settings** | System, light or dark appearance, interface language, automatic playlist refresh, hide categories by words, network buffer size, **backup and restore** of playlists (without passwords), favorites and watch history, and clearing history, favorites or the image cache. |
-| **31 languages** | Includes right-to-left layout for Hebrew, Arabic, Persian and Urdu. See [Languages](#languages). |
-| **Signed self-updates** | The app checks for new releases, verifies a signature and a SHA-256, and updates itself. See [Updates](#updates). |
+| Anywhere | ⌘R update playlists · ⌘N show window |
+| Playback menu | ⌘] next episode or channel · ⌘[ previous · ⌥⌘M mute · ⌥⌘↑ / ⌥⌘↓ volume |
+| In the player | Space pause · ← / → skip · ↑ / ↓ volume · M mute · N / P next / previous · F full screen · A fit / fill / stretch · 2 double speed · [ / ] slower / faster · Esc back |
 
-## FAQ
+## Your data
 
-<details>
-<summary><b>macOS says the app "cannot be opened" or "is damaged".</b></summary>
+Playlists, favorites, history and profiles are stored in `~/Library/Application Support/IPTVMac/` (readable by your user only). Account passwords are kept in that database in plain text, not in the Keychain. The app contacts only the servers you add (your provider, and the guide link named by an M3U playlist). No analytics, no telemetry. The folder keeps its original name `IPTVMac` so the app can read data from the original project.
 
-This happens with older versions, which are not notarized (see [Install](#install)). Install the latest release: the DMG, or the install command above, which works for every version. To open an old copy anyway, go to **System Settings > Privacy & Security** and click **Open Anyway**, or run `xattr -dr com.apple.quarantine /Applications/IPTVMac.app`. If you see this message on the latest release, please open an issue.
-</details>
+## Good to know
 
-<details>
-<summary><b>Nothing plays, or I see "HTTP 4xx/5xx" (for example 403 or 413).</b></summary>
-
-Check the username and password in **Settings** (**Change password**). Some providers answer wrong credentials or a blocked connection with unusual HTTP codes, such as 403 or 413, instead of a clear message. A typo in the password is the most common cause. The player also shows the reason mpv reports.
-</details>
-
-<details>
-<summary><b>The update fails with a message about GitHub limiting requests, or "HTTP 403".</b></summary>
-
-Versions before 0.7.2 asked the GitHub API for the latest release, and GitHub allows only 60 such requests per hour for each IP address, so a shared network can hit the limit. Version 0.7.2 reads a signed `release.txt` from github.com instead, which has no such limit, and says clearly when GitHub is limiting a network. If an older version cannot update, download `IPTVMac.dmg` from the [latest release](https://github.com/Goelir/IPTVMac/releases/latest) and replace the app in `/Applications`, or run the install command above. From then on it updates by itself.
-</details>
-
-<details>
-<summary><b>Playback fails while a download is running.</b></summary>
-
-Many providers allow a single connection per account (see `max_connections` in your account). Downloads run one at a time; avoid watching something else while one runs. Using more connections would not make it faster either: the speed is limited by the provider's line.
-</details>
-
-<details>
-<summary><b>Why is 2x speed not available on live channels?</b></summary>
-
-A live stream cannot run faster than real time. Speed works on movies, episodes and catch-up.
-</details>
-
-<details>
-<summary><b>Intel Macs or older macOS?</b></summary>
-
-Not supported: the bundled player is built for Apple Silicon (arm64) and the app needs macOS 14 or later.
-</details>
-
-<details>
-<summary><b>Where is my data?</b></summary>
-
-In `~/Library/Application Support/IPTVMac/` (the folder and database are readable by your user only). See [Privacy](#privacy).
-</details>
-
-## Languages
-
-31 interface languages: Hebrew, English, Arabic, Spanish, French, German, Portuguese, Italian, Russian, Ukrainian, Polish, Romanian, Bulgarian, Dutch, Swedish, Czech, Hungarian, Greek, Albanian, Turkish, Persian, Urdu, Hindi, Bengali, Indonesian, Vietnamese, Thai, Chinese (Simplified and Traditional), Japanese and Korean, with right-to-left layout for Hebrew, Arabic, Persian and Urdu. The app follows your Mac's language, or you can pick one in Settings.
-
-Apart from Hebrew, English and Arabic, the translations were written with AI help and no native speaker has reviewed them yet. Corrections are welcome, see below.
-
-### Contributing translations
-
-1. Copy `Sources/IPTVMac/Resources/en.lproj/Localizable.strings` to `<lang>.lproj/` (an Apple language code such as `pt` or `zh-Hans`) and translate the values. Keep every key and every `%@` / `%d` placeholder, in the same order.
-2. Add the language, written in its own language, to `InterfaceLanguage.all` in `Sources/IPTVMac/AppPrefs.swift` (this fills the language picker in Settings).
-3. Run `python3 scripts/check-strings.py <lang>`; it must print `OK`.
-
-## Updates
-
-The installed app checks GitHub Releases at launch and every 6 hours. When a newer version exists it downloads it and verifies the release **signature** (an Ed25519 key that is not stored on GitHub and is pinned in the app) and the SHA-256 published in the release notes. Then it shows a banner: **Restart to update** (or it installs on the next quit). Automatic checking and automatic download can each be turned off in Settings.
-
-## Privacy
-
-Your sources are stored in `~/Library/Application Support/IPTVMac/` (readable by your user only). Account passwords are kept in that database in plain text; they are not in the Keychain (the Keychain asked for permission again with every new build). The app only contacts the servers you add, and GitHub for update checks. No analytics, no telemetry.
-
-## Security
-
-See [SECURITY.md](SECURITY.md) for how updates are protected, the known limits, and how to report a vulnerability privately.
-
-## Other platforms
-
-IPTVMac is a Mac app you can download today. Two more apps share its engine and its design, and their source is in this repository:
-
-- **iPhone and iPad** (`ios/`): submitted to the App Store, waiting for review. Build with `scripts/ios-setup.sh`, then open `ios/IPTVPhone.xcodeproj` (see [ios/README.md](ios/README.md)).
-- **Android** (`flutter/`): **[download the APK](https://github.com/Goelir/IPTVMac/releases/tag/android-v1.0.3)** (Android 8 or later; pick the `arm64-v8a` file for almost every phone, the release notes explain the install). Flutter and libmpv, 31 languages generated from the same strings. Touch player with gestures, Picture in Picture, sound that keeps playing with the screen off, a rotate button, and downloads of movies and episodes for offline viewing (the Android app is the one that has downloads next to the Mac app; the iPhone app does not). Build: `cd flutter && flutter pub get && flutter test && flutter build apk` (Flutter 3.47, JDK 17, Android SDK 36; see [flutter/PLAN.md](flutter/PLAN.md)). Android 8 or later. It tells you when a newer APK is out (a banner with a link to the release page; the install stays manual; it asks github.com at most every six hours, and Settings can switch that off).
+- Details, catch-up, ratings and the subscription date come from **Xtream** panels. An **M3U** playlist has none of them; its channels get a program guide only when the playlist names one.
+- "New" titles are detected by their stream ids. If a provider renumbers its catalog, or an M3U link carries a changing token, the app ignores a change that large; a very small list with changing links may be shown as new.
+- Intel Macs and macOS 13 or older are not supported.
+- Automatic updates are switched off in this fork (see [Credits](#credits-and-license)).
 
 ## Build from source
 
-    brew install mpv pkgconf     # mpv only supplies the C headers to compile against
-    scripts/swift.sh test        # tests
-    scripts/swift.sh run IPTVMac # run
-    scripts/make-dmg.sh          # builds build/IPTVMac.dmg
+You need macOS 14+, the Xcode Command Line Tools, and Homebrew with `mpv` and `pkg-config`.
 
-Use `scripts/swift.sh` instead of bare `swift` when only Command Line Tools are installed (it selects an SDK whose SwiftUI does not need Xcode's macro plugin). Design notes are in [docs/superpowers/specs](docs/superpowers/specs/2026-10-05-iptvmac-design.md).
+```
+./scripts/swift.sh build -c release    # compile
+./scripts/swift.sh test                # run the tests
+./scripts/make-app.sh                  # assemble build/IPTVMac.app with the player bundled
+```
 
-## Guides
+`make-app.sh` expects the app icon at `~/Downloads/SandokEldonia.icns`; point `CUSTOM_ICON` in the script to your own `.icns` file, or edit the script to skip it. `scripts/swift.sh` is a small wrapper that picks an SDK on which SwiftUI compiles with only the Command Line Tools installed.
 
-- [How to watch Xtream Codes IPTV on a Mac](https://goelir.github.io/IPTVMac/guides/xtream-codes-on-mac.html)
-- [How to play an M3U playlist on a Mac](https://goelir.github.io/IPTVMac/guides/m3u-playlist-on-mac.html)
-- [Picture in Picture for IPTV on a Mac](https://goelir.github.io/IPTVMac/guides/picture-in-picture-iptv-mac.html)
+## Credits and license
 
-## Contributing
+SandokEldonia is a fork of **[IPTVMac](https://github.com/Goelir/IPTVMac)** by Goelir and its contributors, and keeps its license: **GPL-3.0** (see [LICENSE](LICENSE)). If you give someone the app, you must also give them (or point them to) this source code. The iOS (`ios/`) and Android (`flutter/`) sources in this repository come from the original project and do **not** include the changes described above. The files under `docs/` (a project website, privacy page and screenshots) are the original project's and do not describe this app.
 
-Bug reports, translations and pull requests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md). Never paste your server address, username or password in an issue.
-
-## Third-party components
-
-The release bundles prebuilt [libmpv](https://mpv.io) (mpv 0.36 built with `-Dgpl=false` and FFmpeg 6 configured with `--enable-version3` but not `--enable-gpl`, so the libraries are LGPL) from [media-kit/libmpv-darwin-build](https://github.com/media-kit/libmpv-darwin-build) v0.7.3 (sha256 `9bb168ec908b4801f4231f411e3278a0aea644a2b03ce375c880d2813ab7f949`). `scripts/make-app.sh` downloads and verifies it; source for those components is available from the projects linked above. Search and storage use [GRDB.swift](https://github.com/groue/GRDB.swift) (MIT). Demo footage: "Sintel" © Blender Foundation, [CC-BY 3.0](https://durian.blender.org).
-
-## License
-
-[GPL-3.0](LICENSE). IPTVMac is a media player and provides no content; you are responsible for using only sources you are authorized to access.
+The built-in updater of the original project is switched off here: it is tied to the original project's releases and signing key, and with the same app identifier it would otherwise replace SandokEldonia with the original app. The playback engine is [mpv](https://mpv.io) (libmpv, bundled), under its own license.

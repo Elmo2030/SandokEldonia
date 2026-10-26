@@ -274,6 +274,11 @@ extension AppModel {
 #if !APPSTORE
 // MARK: - Updates
 extension AppModel {
+    /// Off in this fork. The built-in updater reads the releases of the original IPTVMac project (its repository and signing key are pinned
+    /// in `Updater`), and this app has the same bundle id: with automatic install on, it would swap SandokEldonia for the original app the
+    /// day the original publishes a newer version. Turn it on only after `Updater.repo` and the release key point at this project's own releases.
+    static let updatesEnabled = false
+
     private static func flag(_ key: String) -> Bool { UserDefaults.standard.object(forKey: key) as? Bool ?? true }
     var autoCheckUpdates: Bool { Self.flag("autoCheckUpdates") }
     var autoInstallUpdates: Bool { Self.flag("autoInstallUpdates") }
@@ -289,6 +294,7 @@ extension AppModel {
     func clearStaleUpdate() { try? FileManager.default.removeItem(at: updateDir) }
 
     func updateLoop() async {
+        guard Self.updatesEnabled else { return }
         while !Task.isCancelled {
             if autoCheckUpdates { await checkForUpdates(manual: false) }
             try? await Task.sleep(for: .seconds(6 * 3600))
@@ -296,6 +302,7 @@ extension AppModel {
     }
 
     func checkForUpdates(manual: Bool) async {
+        guard Self.updatesEnabled else { return }
         guard isInstalledApp else { if manual { updateStatus = .devBuild }; return }
         if updateStatus == .downloading || updateStatus == .ready { return }
         do {

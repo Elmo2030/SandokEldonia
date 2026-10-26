@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Filtre";
+"filter.hideWatched" = "Ascunde vizionatele";
+"filter.rating" = "Notă %d+";
+"filter.newest" = "Cele mai noi primele";
+"filter.reset" = "Resetează filtrele";
+"home.moreFrom" = "Mai multe din „%@”";
+"cat.watchlist" = "De vizionat mai târziu";
+"watch.add" = "Adaugă la „De vizionat mai târziu”";
+"watch.remove" = "Elimină din „De vizionat mai târziu”";

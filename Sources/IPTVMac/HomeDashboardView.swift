@@ -23,8 +23,16 @@ struct HomeDashboardView: View {
             VStack(alignment: .leading, spacing: 30) {
                 hero
 
+                if !model.continueRow.isEmpty {
+                    posterSection(L("cat.continue"), items: model.continueRow)
+                }
+
                 if !model.recentlyAdded.isEmpty {
                     posterSection(L("recent.title"), items: model.recentlyAdded)
+                }
+
+                if let category = model.moreFromTitle, !model.moreFromItems.isEmpty {
+                    posterSection(String(format: L("home.moreFrom"), category), items: model.moreFromItems)
                 }
 
                 if !movies.isEmpty {
@@ -57,6 +65,7 @@ struct HomeDashboardView: View {
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
         .background(CinemaTheme.background)
+        .task { model.loadHomeRows() }      // what was watched or set aside since this screen was last shown
     }
 
     private var hero: some View {
@@ -195,7 +204,8 @@ struct HomeDashboardView: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .help("تشغيل \(item.name)")
+                    .help(model.hasInfo(item) ? L("info.details") : L("info.play"))      // a click opens the details first when there are some
+                    .accessibilityLabel(model.hasInfo(item) ? "\(L("info.details")), \(item.name)" : "\(L("info.play")), \(item.name)")
                 }
             }
         }

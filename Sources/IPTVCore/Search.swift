@@ -7,8 +7,16 @@ public struct SearchRequest {
     public var type: ItemType?
     public var categoryId: String?
     public var limit: Int
-    public init(accountId: Int64?, text: String = "", type: ItemType? = nil, categoryId: String? = nil, limit: Int = 5000) {
+    /// Movies and series with a provider rating of at least this (0...10). A title without a rating does not pass.
+    public var minRating: Double?
+    /// Leaves out movies watched to the end (the same 95% as the "watched" mark). Series and channels are not affected.
+    public var hideWatched: Bool
+    /// Without a search text: titles a sync first saw lately come first (those with no date after them, in list order).
+    public var newestFirst: Bool
+    public init(accountId: Int64?, text: String = "", type: ItemType? = nil, categoryId: String? = nil, limit: Int = 5000,
+                minRating: Double? = nil, hideWatched: Bool = false, newestFirst: Bool = false) {
         self.accountId = accountId; self.text = text; self.type = type; self.categoryId = categoryId; self.limit = limit
+        self.minRating = minRating; self.hideWatched = hideWatched; self.newestFirst = newestFirst
     }
 }
 
@@ -34,8 +42,15 @@ public enum Search {
         if let a = r.accountId { conds.append("item.accountId = ?"); args.append(a) }
         if let t = r.type { conds.append("item.type = ?"); args.append(t.rawValue) }
         if let c = r.categoryId { conds.append("item.categoryId = ?"); args.append(c) }
+        if let m = r.minRating { conds.append("CAST(item.rating AS REAL) >= ?"); args.append(m) }
+        if r.hideWatched {
+            conds.append("""
+                (item.type <> 'movie' OR NOT EXISTS (SELECT 1 FROM history h WHERE h.accountId = item.accountId AND h.type = item.type
+                 AND h.streamId = item.streamId AND h.duration > 0 AND h.position / h.duration > 0.95))
+                """)
+        }
         if !conds.isEmpty { sql += " WHERE " + conds.joined(separator: " AND ") }
-        sql += trimmed.isEmpty ? " ORDER BY item.id" : " ORDER BY rank"
+        sql += trimmed.isEmpty ? (r.newestFirst ? " ORDER BY item.addedAt IS NULL, item.addedAt DESC, item.id" : " ORDER BY item.id") : " ORDER BY rank"
         sql += " LIMIT ?"; args.append(r.limit)
         return try Item.fetchAll(db, sql: sql, arguments: StatementArguments(args))
     }

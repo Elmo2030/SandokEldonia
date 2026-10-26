@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "필터";
+"filter.hideWatched" = "시청한 항목 숨기기";
+"filter.rating" = "평점 %d+";
+"filter.newest" = "최신순";
+"filter.reset" = "필터 초기화";
+"home.moreFrom" = "“%@”의 다른 항목";
+"cat.watchlist" = "나중에 보기";
+"watch.add" = "나중에 보기에 추가";
+"watch.remove" = "나중에 보기에서 삭제";

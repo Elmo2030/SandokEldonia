@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "फ़िल्टर";
+"filter.hideWatched" = "देखे हुए छिपाएँ";
+"filter.rating" = "रेटिंग %d+";
+"filter.newest" = "सबसे नए पहले";
+"filter.reset" = "फ़िल्टर रीसेट करें";
+"home.moreFrom" = "“%@” से और";
+"cat.watchlist" = "बाद में देखें";
+"watch.add" = "“बाद में देखें” में जोड़ें";
+"watch.remove" = "“बाद में देखें” से हटाएँ";

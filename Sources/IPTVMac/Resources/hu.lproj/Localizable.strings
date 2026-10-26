@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Szűrők";
+"filter.hideWatched" = "Megtekintettek elrejtése";
+"filter.rating" = "Értékelés %d+";
+"filter.newest" = "Legújabbak elöl";
+"filter.reset" = "Szűrők visszaállítása";
+"home.moreFrom" = "Továbbiak: „%@”";
+"cat.watchlist" = "Megnézem később";
+"watch.add" = "Hozzáadás a „Megnézem később” listához";
+"watch.remove" = "Eltávolítás a „Megnézem később” listáról";

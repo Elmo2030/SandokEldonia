@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Filtry";
+"filter.hideWatched" = "Skrýt zhlédnuté";
+"filter.rating" = "Hodnocení %d+";
+"filter.newest" = "Nejnovější první";
+"filter.reset" = "Obnovit filtry";
+"home.moreFrom" = "Více z „%@“";
+"cat.watchlist" = "Podívat se později";
+"watch.add" = "Přidat do „Podívat se později“";
+"watch.remove" = "Odebrat z „Podívat se později“";

@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Φίλτρα";
+"filter.hideWatched" = "Απόκρυψη όσων έχετε δει";
+"filter.rating" = "Βαθμολογία %d+";
+"filter.newest" = "Πρώτα τα νεότερα";
+"filter.reset" = "Επαναφορά φίλτρων";
+"home.moreFrom" = "Περισσότερα από «%@»";
+"cat.watchlist" = "Προβολή αργότερα";
+"watch.add" = "Προσθήκη στο «Προβολή αργότερα»";
+"watch.remove" = "Αφαίρεση από το «Προβολή αργότερα»";

@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "筛选";
+"filter.hideWatched" = "隐藏已看";
+"filter.rating" = "评分 %d+";
+"filter.newest" = "最新优先";
+"filter.reset" = "重置筛选";
+"home.moreFrom" = "“%@”的更多内容";
+"cat.watchlist" = "稍后观看";
+"watch.add" = "添加到稍后观看";
+"watch.remove" = "从稍后观看中移除";

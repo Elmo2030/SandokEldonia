@@ -257,3 +257,12 @@
 "menu.volumeUp" = "הגברת עוצמה";
 "menu.volumeDown" = "הנמכת עוצמה";
 "player.copyDiagnostics" = "העתקת פרטי אבחון";
+"filter.title" = "מסננים";
+"filter.hideWatched" = "הסתרת מה שנצפה";
+"filter.rating" = "דירוג %d+";
+"filter.newest" = "החדשים קודם";
+"filter.reset" = "איפוס מסננים";
+"home.moreFrom" = "עוד מתוך “%@”";
+"cat.watchlist" = "לצפות מאוחר יותר";
+"watch.add" = "הוספה לצפייה מאוחרת";
+"watch.remove" = "הסרה מצפייה מאוחרת";

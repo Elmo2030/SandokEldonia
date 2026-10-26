@@ -85,4 +85,73 @@ public enum UserData {
             ORDER BY addedAt DESC, id DESC LIMIT ?
             """, arguments: StatementArguments(args))
     }
+
+    // MARK: Home rows
+
+    /// Movies and series to resume, newest first: the two lists are each in order of last watched, so they are taken in turns.
+    public static func continueWatchingMixed(_ db: Database, accountId: Int64?, limit: Int = 12) throws -> [Item] {
+        let movies = try continueWatching(db, accountId: accountId, type: .movie)
+        let series = try continueWatching(db, accountId: accountId, type: .series)
+        var out: [Item] = []
+        for i in 0..<max(movies.count, series.count) {
+            if i < movies.count { out.append(movies[i]) }
+            if i < series.count { out.append(series[i]) }
+        }
+        return Array(out.prefix(limit))
+    }
+
+    /// "More from <category>": the category of the movie or series watched last, with its titles not watched yet, recently added first.
+    /// Nil when nothing was watched, or fewer than `minimum` titles are left (a row of two posters is not a row).
+    public static func moreLikeWatched(_ db: Database, accountId: Int64?, limit: Int = 24, minimum: Int = 4) throws -> (category: Category, items: [Item])? {
+        guard let last = try Row.fetchOne(db, sql: """
+            SELECT accountId, type, categoryId FROM (
+              SELECT i.accountId, i.type, i.categoryId, h.updated FROM history h
+                JOIN item i ON i.accountId = h.accountId AND i.type = h.type AND i.streamId = h.streamId
+              UNION ALL
+              SELECT i.accountId, i.type, i.categoryId, h.updated FROM history h
+                JOIN episode e ON e.accountId = h.accountId AND h.streamId = 'ep:' || e.streamId
+                JOIN item i ON i.accountId = e.accountId AND i.type = 'series' AND i.streamId = e.seriesId
+                WHERE h.type = 'series')
+            WHERE categoryId IS NOT NULL AND type IN ('movie', 'series') AND (? IS NULL OR accountId = ?)
+            ORDER BY updated DESC LIMIT 1
+            """, arguments: [accountId, accountId]) else { return nil }
+        let aid: Int64 = last["accountId"], type: String = last["type"], cat: String = last["categoryId"]
+        guard let category = try Category.filter(Column("accountId") == aid && Column("type") == type && Column("remoteId") == cat).fetchOne(db)
+        else { return nil }
+        let items = try Item.fetchAll(db, sql: """
+            SELECT * FROM item WHERE accountId = ? AND type = ? AND categoryId = ?
+              AND NOT EXISTS (SELECT 1 FROM history h WHERE h.accountId = item.accountId AND h.type = item.type AND h.streamId = item.streamId)
+              AND NOT EXISTS (SELECT 1 FROM history h JOIN episode e ON e.accountId = h.accountId AND h.streamId = 'ep:' || e.streamId
+                              WHERE h.type = 'series' AND e.accountId = item.accountId AND e.seriesId = item.streamId)
+            ORDER BY addedAt IS NULL, addedAt DESC, id DESC LIMIT ?
+            """, arguments: [aid, type, cat, limit])
+        return items.count >= minimum ? (category, items) : nil
+    }
+
+    // MARK: Watch later
+
+    /// Adds the title to "watch later", or removes it when it is there. Returns whether it is on the list now.
+    public static func toggleWatchlist(_ db: Database, accountId: Int64, type: ItemType, streamId: String) throws -> Bool {
+        let args: StatementArguments = [accountId, type.rawValue, streamId]
+        let exists = try Bool.fetchOne(db, sql: "SELECT EXISTS(SELECT 1 FROM watchlist WHERE accountId=? AND type=? AND streamId=?)", arguments: args) ?? false
+        try db.execute(sql: exists ? "DELETE FROM watchlist WHERE accountId=? AND type=? AND streamId=?"
+                                   : "INSERT INTO watchlist (accountId,type,streamId) VALUES (?,?,?)", arguments: args)
+        return !exists
+    }
+
+    /// Same key shape as `favoriteKey`.
+    public static func watchlistKeys(_ db: Database, accountId: Int64?) throws -> Set<String> {
+        Set(try Row.fetchAll(db, sql: "SELECT accountId, type, streamId FROM watchlist WHERE (? IS NULL OR accountId=?)", arguments: [accountId, accountId])
+            .map { favoriteKey(accountId: $0["accountId"], type: ItemType(rawValue: $0["type"]) ?? .live, streamId: $0["streamId"]) })
+    }
+
+    /// Titles of one type that were set aside, the latest first. A title the provider has dropped since is not listed (it is not in `item`).
+    public static func watchlist(_ db: Database, accountId: Int64?, type: ItemType) throws -> [Item] {
+        try Item.fetchAll(db, sql: """
+            SELECT item.* FROM item JOIN watchlist w ON w.accountId=item.accountId AND w.type=item.type AND w.streamId=item.streamId
+            WHERE (? IS NULL OR item.accountId=?) AND item.type=? ORDER BY w.added DESC, item.id DESC
+            """, arguments: [accountId, accountId, type.rawValue])
+    }
+
+    public static func clearWatchlist(_ db: Database) throws { try db.execute(sql: "DELETE FROM watchlist") }
 }

@@ -257,3 +257,12 @@
 "menu.volumeUp" = "رفع الصوت";
 "menu.volumeDown" = "خفض الصوت";
 "player.copyDiagnostics" = "نسخ بيانات التشخيص";
+"filter.title" = "تصفية";
+"filter.hideWatched" = "إخفاء ما شوهد";
+"filter.rating" = "التقييم %d+";
+"filter.newest" = "الأحدث أولًا";
+"filter.reset" = "إعادة ضبط التصفية";
+"home.moreFrom" = "المزيد من «%@»";
+"cat.watchlist" = "شاهد لاحقًا";
+"watch.add" = "إضافة إلى شاهد لاحقًا";
+"watch.remove" = "إزالة من شاهد لاحقًا";

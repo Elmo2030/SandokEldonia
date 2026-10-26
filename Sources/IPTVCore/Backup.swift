@@ -19,6 +19,9 @@ public struct Backup: Codable, Equatable, Sendable {
         public var server: String?, username: String?, url: String?
         public var favorites: [Favorite]
         public var history: [Watched]
+        /// "Watch later". Optional so that a file written by an older version (no such key) still reads, and an older version
+        /// reading this file ignores the key: the file format stays version 1.
+        public var watchlist: [Favorite]? = nil
     }
     public struct Favorite: Codable, Equatable, Sendable, FetchableRecord { public var type: ItemType; public var streamId: String }
     public struct Watched: Codable, Equatable, Sendable, FetchableRecord {
@@ -39,7 +42,8 @@ public struct Backup: Codable, Equatable, Sendable {
         Backup(playlists: try Account.order(Column("id")).fetchAll(db).map { a in
             Playlist(name: a.name, kind: a.kind, server: a.server, username: a.username, url: a.url,
                      favorites: try Favorite.fetchAll(db, sql: "SELECT type, streamId FROM favorite WHERE accountId = ? ORDER BY type, streamId", arguments: [a.id]),
-                     history: try Watched.fetchAll(db, sql: "SELECT type, streamId, position, duration, updated FROM history WHERE accountId = ? ORDER BY type, streamId", arguments: [a.id]))
+                     history: try Watched.fetchAll(db, sql: "SELECT type, streamId, position, duration, updated FROM history WHERE accountId = ? ORDER BY type, streamId", arguments: [a.id]),
+                     watchlist: try Favorite.fetchAll(db, sql: "SELECT type, streamId FROM watchlist WHERE accountId = ? ORDER BY type, streamId", arguments: [a.id]).nilIfEmpty)
         })
     }
 
@@ -94,6 +98,9 @@ public struct Backup: Codable, Equatable, Sendable {
             for f in p.favorites {
                 try db.execute(sql: "INSERT OR IGNORE INTO favorite (accountId,type,streamId) VALUES (?,?,?)", arguments: [aid, f.type, f.streamId])
             }
+            for w in p.watchlist ?? [] {
+                try db.execute(sql: "INSERT OR IGNORE INTO watchlist (accountId,type,streamId) VALUES (?,?,?)", arguments: [aid, w.type, w.streamId])
+            }
             for h in p.history {
                 try db.execute(sql: """
                     INSERT INTO history (accountId,type,streamId,position,duration,updated) VALUES (?,?,?,?,?,?)
@@ -104,6 +111,10 @@ public struct Backup: Codable, Equatable, Sendable {
         }
         return added
     }
+}
+
+private extension Array {
+    var nilIfEmpty: [Element]? { isEmpty ? nil : self }
 }
 
 private extension Backup.Playlist {

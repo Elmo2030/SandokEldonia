@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume omhoog";
 "menu.volumeDown" = "Volume omlaag";
 "player.copyDiagnostics" = "Diagnose kopiëren";
+"filter.title" = "Filters";
+"filter.hideWatched" = "Bekeken verbergen";
+"filter.rating" = "Beoordeling %d+";
+"filter.newest" = "Nieuwste eerst";
+"filter.reset" = "Filters wissen";
+"home.moreFrom" = "Meer uit “%@”";
+"cat.watchlist" = "Later kijken";
+"watch.add" = "Toevoegen aan Later kijken";
+"watch.remove" = "Verwijderen uit Later kijken";

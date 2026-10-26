@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "フィルター";
+"filter.hideWatched" = "視聴済みを隠す";
+"filter.rating" = "評価 %d+";
+"filter.newest" = "新しい順";
+"filter.reset" = "フィルターをリセット";
+"home.moreFrom" = "「%@」のその他";
+"cat.watchlist" = "あとで見る";
+"watch.add" = "「あとで見る」に追加";
+"watch.remove" = "「あとで見る」から削除";

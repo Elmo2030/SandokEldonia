@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Фільтри";
+"filter.hideWatched" = "Сховати переглянуті";
+"filter.rating" = "Рейтинг %d+";
+"filter.newest" = "Спочатку нові";
+"filter.reset" = "Скинути фільтри";
+"home.moreFrom" = "Більше з «%@»";
+"cat.watchlist" = "Дивитися пізніше";
+"watch.add" = "Додати до «Дивитися пізніше»";
+"watch.remove" = "Видалити з «Дивитися пізніше»";

@@ -146,6 +146,16 @@ public final class AppDatabase {
             try db.alter(table: "item") { t in t.add(column: "addedAt", .datetime) }
             try db.create(index: "item_added", on: "item", columns: ["type", "addedAt"], condition: Column("addedAt") != nil)
         }
+        // "Watch later": a title the user set aside. Keyed like favorites, so it follows a playlist's titles across syncs.
+        m.registerMigration("v6-watchlist") { db in
+            try db.create(table: "watchlist") { t in
+                t.column("accountId", .integer).notNull().references("account", onDelete: .cascade)
+                t.column("type", .text).notNull()
+                t.column("streamId", .text).notNull()
+                t.column("added", .datetime).notNull().defaults(sql: "CURRENT_TIMESTAMP")
+                t.primaryKey(["accountId", "type", "streamId"])
+            }
+        }
         return m
     }
 }

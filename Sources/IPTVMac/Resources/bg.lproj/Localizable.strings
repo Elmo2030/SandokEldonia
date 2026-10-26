@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Филтри";
+"filter.hideWatched" = "Скриване на гледаните";
+"filter.rating" = "Оценка %d+";
+"filter.newest" = "Първо най-новите";
+"filter.reset" = "Нулиране на филтрите";
+"home.moreFrom" = "Още от „%@“";
+"cat.watchlist" = "Гледане по-късно";
+"watch.add" = "Добавяне към „Гледане по-късно“";
+"watch.remove" = "Премахване от „Гледане по-късно“";

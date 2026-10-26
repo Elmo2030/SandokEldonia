@@ -58,7 +58,7 @@ open class LibraryModel {
     private func playlistChanged() {
         if playing != nil { stopPlayback() }                    // progress/favorites/credentials belong to the account that started it
         selectedCategory = "__all"; searchText = ""            // a category id of account A means nothing in B
-        favoriteKeys = []; newSinceSync = [:]; loadCategories(); loadFavorites(); scheduleSearch(); loadRecentlyAdded()
+        favoriteKeys = []; newSinceSync = [:]; loadCategories(); loadFavorites(); scheduleSearch(); loadHomeRows()
     }
 
     public var tab: ItemType = .live { didSet { leavePlayerForBrowsing(); selectedCategory = "__all"; loadCategories(); scheduleSearch() } }
@@ -109,6 +109,7 @@ open class LibraryModel {
         Task { await refreshLoop() }
         loadAccounts()
         if account != nil { await sync() }
+        await refreshSubscriptionsIfDue()
     }
 
     public func loadAccounts() {
@@ -135,6 +136,7 @@ open class LibraryModel {
         guard hasPlaylist else { return }
         let aid = scopeAccountId
         favoriteKeys = (try? db.dbQueue.read { try UserData.favoriteKeys($0, accountId: aid) }) ?? []
+        watchlistKeys = (try? db.dbQueue.read { try UserData.watchlistKeys($0, accountId: aid) }) ?? []
     }
 
     /// In All mode a category is tagged "<accountId>|<remoteId>" (remote ids repeat across playlists); otherwise by remote id alone.
@@ -144,6 +146,7 @@ open class LibraryModel {
         searchTask?.cancel()
         guard hasPlaylist else { results = []; return }
         let text = searchText, tab = tab, cat = selectedCategory, scope = scope, all = allPlaylists, aid = scopeAccountId, hide = categoryFilter
+        let rating = tab == .live ? nil : minRating, unseen = hideWatched, newest = newestFirst      // channels have no rating or watched mark
         searchTask = Task {
             try? await Task.sleep(for: .milliseconds(text.isEmpty ? 0 : 100))
             if Task.isCancelled { return }
@@ -151,6 +154,7 @@ open class LibraryModel {
                 let found: [Item]
                 if text.isEmpty && cat == "__fav" { found = try UserData.favorites(d, accountId: aid, type: tab) }
                 else if text.isEmpty && cat == "__hist" { found = try UserData.continueWatching(d, accountId: aid, type: tab) }
+                else if text.isEmpty && cat == "__watch" { found = try UserData.watchlist(d, accountId: aid, type: tab) }
                 else {
                     var owner = aid, catId: String? = nil
                     if scope == .category && !cat.hasPrefix("__") {
@@ -158,7 +162,8 @@ open class LibraryModel {
                         else if let bar = cat.firstIndex(of: "|") { owner = Int64(cat[..<bar]); catId = String(cat[cat.index(after: bar)...]) }
                     }
                     let type: ItemType? = (scope == .everywhere && !text.isEmpty) ? nil : tab
-                    found = try Search.run(d, SearchRequest(accountId: owner, text: text, type: type, categoryId: catId))
+                    found = try Search.run(d, SearchRequest(accountId: owner, text: text, type: type, categoryId: catId,
+                                                            minRating: rating, hideWatched: unseen, newestFirst: newest))
                 }
                 return try hide.visible(found, in: d)
             }) ?? []
@@ -187,6 +192,19 @@ open class LibraryModel {
     private func saveSubscriptions() {
         let m = Dictionary(uniqueKeysWithValues: subscriptions.map { (String($0.key), $0.value) })
         UserDefaults.standard.set(try? JSONEncoder().encode(m), forKey: Self.subscriptionsKey)
+    }
+
+    /// The Xtream playlist whose subscription ends within a week (or ended), from the last answers; nil when none. Drives the warning strip.
+    public var expiringSubscription: (name: String, info: SubscriptionInfo)? {
+        SubscriptionInfo.mostUrgent(accounts.compactMap { a in a.id.flatMap { subscriptions[$0] }.map { (a.name, $0) } })
+    }
+
+    /// At launch: asks each Xtream panel again, at most every 12 hours (one login request per playlist), so the warning has a fresh date.
+    public func refreshSubscriptionsIfDue(now: Date = Date()) async {
+        let key = "subscriptionsChecked"
+        if let last = UserDefaults.standard.object(forKey: key) as? Date, now.timeIntervalSince(last) < 12 * 3600 { return }
+        UserDefaults.standard.set(now, forKey: key)
+        for a in accounts { await refreshSubscription(a) }
     }
 
     /// Asks the panel again. A failed request (offline, wrong password, a panel without the field) keeps what was known.
@@ -233,7 +251,7 @@ open class LibraryModel {
         }
         syncMessage = failures.isEmpty ? nil : failures.joined(separator: "; ")
         newSinceSync = found.filter { $0.key != .live && $0.value > 0 }
-        loadCategories(); scheduleSearch(); loadRecentlyAdded()
+        loadCategories(); scheduleSearch(); loadHomeRows()
     }
 
     /// Movies and series that the last finished sync found new (empty when none, or on a playlist's first sync). The UI announces it once.
@@ -241,13 +259,51 @@ open class LibraryModel {
 
     /// The "recently added" shelf: movies and series first seen in the last 14 days, in the shown playlist (or all of them).
     public private(set) var recentlyAdded: [Item] = []
+    /// The "continue watching" shelf of the home screen: movies and series that were stopped halfway.
+    public private(set) var continueRow: [Item] = []
+    /// "More from <category>": the category of what was watched last, and its titles not seen yet. Empty when there is nothing to suggest.
+    public private(set) var moreFromTitle: String?
+    public private(set) var moreFromItems: [Item] = []
 
-    public func loadRecentlyAdded() {
-        guard hasPlaylist else { recentlyAdded = []; return }
+    /// Loads the home screen's shelves (all three in one read). Hidden categories are left out of each.
+    public func loadHomeRows() {
+        guard hasPlaylist else { recentlyAdded = []; continueRow = []; moreFromItems = []; moreFromTitle = nil; return }
         let aid = scopeAccountId, hide = categoryFilter
         Task {
-            let rows = (try? await db.dbQueue.read { d in try hide.visible(try UserData.recentlyAdded(d, accountId: aid), in: d) }) ?? []
-            if aid == scopeAccountId { recentlyAdded = rows }       // the playlist may have been switched while this ran
+            let rows = try? await db.dbQueue.read { d in
+                (recent: try hide.visible(try UserData.recentlyAdded(d, accountId: aid), in: d),
+                 resume: try hide.visible(try UserData.continueWatchingMixed(d, accountId: aid), in: d),
+                 more: try UserData.moreLikeWatched(d, accountId: aid).flatMap { m -> (String, [Item])? in
+                     let items = try hide.visible(m.items, in: d)
+                     return items.isEmpty ? nil : (m.category.name, items)
+                 })
+            }
+            guard aid == scopeAccountId else { return }       // the playlist may have been switched while this ran
+            recentlyAdded = rows?.recent ?? []; continueRow = rows?.resume ?? []
+            moreFromTitle = rows?.more?.0; moreFromItems = rows?.more?.1 ?? []
+        }
+    }
+
+    // MARK: Filters (movies and series lists)
+
+    /// Only titles rated at least this (0...10); nil = any.
+    public var minRating: Double? { didSet { scheduleSearch() } }
+    public var hideWatched = false { didSet { scheduleSearch() } }
+    /// Titles a refresh found lately first.
+    public var newestFirst = false { didSet { scheduleSearch() } }
+    public var filtersActive: Bool { minRating != nil || hideWatched || newestFirst }
+    public func resetFilters() { minRating = nil; hideWatched = false; newestFirst = false }
+
+    // MARK: Watch later
+
+    public var watchlistKeys: Set<String> = []
+    public func isOnWatchlist(_ i: Item) -> Bool { watchlistKeys.contains(UserData.favoriteKey(accountId: i.accountId, type: i.type, streamId: i.streamId)) }
+
+    public func toggleWatchlist(_ i: Item) {
+        Task {
+            _ = try? await db.dbQueue.write { try UserData.toggleWatchlist($0, accountId: i.accountId, type: i.type, streamId: i.streamId) }
+            loadFavorites()
+            if selectedCategory == "__watch" { scheduleSearch() }
         }
     }
 
@@ -402,7 +458,7 @@ open class LibraryModel {
     public func hiddenCategoriesChanged() {
         loadCategories()
         if !selectedCategory.hasPrefix("__"), !categories.contains(where: { categoryTag($0) == selectedCategory }) { selectedCategory = "__all" }
-        scheduleSearch(); loadRecentlyAdded()
+        scheduleSearch(); loadHomeRows()
     }
 
     /// Details exist only for movies and series of an Xtream playlist (an M3U file has none).

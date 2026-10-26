@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "فلٹر";
+"filter.hideWatched" = "دیکھے ہوئے چھپائیں";
+"filter.rating" = "ریٹنگ %d+";
+"filter.newest" = "نئے پہلے";
+"filter.reset" = "فلٹر ری سیٹ کریں";
+"home.moreFrom" = "“%@” سے مزید";
+"cat.watchlist" = "بعد میں دیکھیں";
+"watch.add" = "“بعد میں دیکھیں” میں شامل کریں";
+"watch.remove" = "“بعد میں دیکھیں” سے ہٹائیں";

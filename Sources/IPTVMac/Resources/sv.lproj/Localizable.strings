@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Höj volymen";
 "menu.volumeDown" = "Sänk volymen";
 "player.copyDiagnostics" = "Kopiera diagnostik";
+"filter.title" = "Filter";
+"filter.hideWatched" = "Dölj sedda";
+"filter.rating" = "Betyg %d+";
+"filter.newest" = "Nyaste först";
+"filter.reset" = "Återställ filter";
+"home.moreFrom" = "Mer från “%@”";
+"cat.watchlist" = "Titta senare";
+"watch.add" = "Lägg till i Titta senare";
+"watch.remove" = "Ta bort från Titta senare";

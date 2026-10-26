@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Bộ lọc";
+"filter.hideWatched" = "Ẩn phim đã xem";
+"filter.rating" = "Điểm %d+";
+"filter.newest" = "Mới nhất trước";
+"filter.reset" = "Đặt lại bộ lọc";
+"home.moreFrom" = "Xem thêm từ “%@”";
+"cat.watchlist" = "Xem sau";
+"watch.add" = "Thêm vào Xem sau";
+"watch.remove" = "Xóa khỏi Xem sau";

@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Фильтры";
+"filter.hideWatched" = "Скрыть просмотренные";
+"filter.rating" = "Рейтинг %d+";
+"filter.newest" = "Сначала новые";
+"filter.reset" = "Сбросить фильтры";
+"home.moreFrom" = "Ещё из «%@»";
+"cat.watchlist" = "Смотреть позже";
+"watch.add" = "Добавить в «Смотреть позже»";
+"watch.remove" = "Удалить из «Смотреть позже»";

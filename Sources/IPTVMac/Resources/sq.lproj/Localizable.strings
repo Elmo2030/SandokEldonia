@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Filtrat";
+"filter.hideWatched" = "Fshih të parat";
+"filter.rating" = "Vlerësimi %d+";
+"filter.newest" = "Më të rejat të parat";
+"filter.reset" = "Rivendos filtrat";
+"home.moreFrom" = "Më shumë nga “%@”";
+"cat.watchlist" = "Shiko më vonë";
+"watch.add" = "Shto te Shiko më vonë";
+"watch.remove" = "Hiq nga Shiko më vonë";

@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Lauter";
 "menu.volumeDown" = "Leiser";
 "player.copyDiagnostics" = "Diagnose kopieren";
+"filter.title" = "Filter";
+"filter.hideWatched" = "Gesehene ausblenden";
+"filter.rating" = "Bewertung %d+";
+"filter.newest" = "Neueste zuerst";
+"filter.reset" = "Filter zurücksetzen";
+"home.moreFrom" = "Mehr aus „%@“";
+"cat.watchlist" = "Später ansehen";
+"watch.add" = "Zu „Später ansehen“ hinzufügen";
+"watch.remove" = "Aus „Später ansehen“ entfernen";

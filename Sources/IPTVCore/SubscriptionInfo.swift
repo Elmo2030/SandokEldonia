@@ -28,6 +28,12 @@ public struct SubscriptionInfo: Codable, Equatable, Sendable {
         expires.map { Int(ceil($0.timeIntervalSince(now) / 86_400)) }
     }
 
+    /// The playlist to warn about: among those that end within a week or already ended, the one that ends first. Nil when none does.
+    public static func mostUrgent(_ list: [(name: String, info: SubscriptionInfo)], now: Date = Date()) -> (name: String, info: SubscriptionInfo)? {
+        list.filter { [.soon, .expired].contains($0.info.state(now: now)) }
+            .min { ($0.info.expires ?? .distantFuture) < ($1.info.expires ?? .distantFuture) }
+    }
+
     /// `soon` = a week or less, the point where the app should make the date stand out.
     public func state(now: Date = Date()) -> State {
         guard let d = daysLeft(now: now) else { return .unknown }

@@ -156,6 +156,7 @@ struct PosterCell: View {
         .contextMenu {
             if model.hasInfo(item) { Button(L("info.details")) { model.openInfo = item } }
             Button(model.isFavorite(item) ? L("fav.remove") : L("fav.add")) { model.toggleFavorite(item) }
+            Button(model.isOnWatchlist(item) ? L("watch.remove") : L("watch.add")) { model.toggleWatchlist(item) }
             if item.type == .movie { Button(L("downloads.add")) { model.download(item) } }
         }
     }

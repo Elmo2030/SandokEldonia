@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "篩選";
+"filter.hideWatched" = "隱藏已看";
+"filter.rating" = "評分 %d+";
+"filter.newest" = "最新優先";
+"filter.reset" = "重設篩選";
+"home.moreFrom" = "「%@」的更多內容";
+"cat.watchlist" = "稍後觀看";
+"watch.add" = "加入稍後觀看";
+"watch.remove" = "從稍後觀看移除";

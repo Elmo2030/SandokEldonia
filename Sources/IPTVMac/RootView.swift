@@ -1,6 +1,34 @@
 import SwiftUI
 import IPTVCore
 
+/// A week or less left on an Xtream subscription, or it already ended: one line under the toolbar, dismissed for the rest of the day.
+struct ExpiryStrip: View {
+    @Environment(AppModel.self) private var model
+    @AppStorage("expiryDismissed") private var dismissed = ""
+
+    private func token(_ name: String) -> String { "\(name)|\(Int(Calendar.current.startOfDay(for: Date()).timeIntervalSince1970))" }
+
+    var body: some View {
+        if let w = model.expiringSubscription, let end = w.info.expires, dismissed != token(w.name) {
+            let date = end.formatted(date: .abbreviated, time: .omitted)
+            let expired = w.info.state() == .expired
+            let text = expired ? String(format: L("sub.expired"), date)
+                               : "\(String(format: L("sub.expires"), date)) · \(String(format: L("sub.daysLeft"), w.info.daysLeft() ?? 0))"
+            HStack(spacing: 8) {
+                Image(systemName: "calendar.badge.exclamationmark").foregroundStyle(expired ? .red : .orange)
+                Text("\(w.name): \(text)").font(.callout).lineLimit(2)
+                Spacer(minLength: 0)
+                Button(L("update.later")) { dismissed = token(w.name) }.buttonStyle(.link)
+            }
+            .padding(.horizontal, 14).padding(.vertical, 7)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(CinemaTheme.surface)
+            .overlay(alignment: .bottom) { Rectangle().fill(CinemaTheme.separator).frame(height: 1) }
+            .accessibilityElement(children: .combine)
+        }
+    }
+}
+
 struct RootView: View {
     @Environment(AppModel.self) var model
     @State private var catFilter = ""
@@ -68,6 +96,7 @@ struct RootView: View {
                     Label { Text(L("cat.all")) } icon: { Image(systemName: "square.grid.2x2").foregroundStyle(Color(red: 0.35, green: 0.68, blue: 1.0)) }.tag("__all")
                     Label { Text(L("cat.favorites")) } icon: { Image(systemName: "star.fill").foregroundStyle(CinemaTheme.accent) }.tag("__fav")
                     Label { Text(L("cat.continue")) } icon: { Image(systemName: "clock.fill").foregroundStyle(Color(red: 0.30, green: 0.78, blue: 0.57)) }.tag("__hist")
+                    Label { Text(L("cat.watchlist")) } icon: { Image(systemName: "bookmark.fill").foregroundStyle(Color(red: 0.72, green: 0.60, blue: 1.0)) }.tag("__watch")
                     let cats = model.wrappedValue.categories.filter { catFilter.isEmpty || $0.name.localizedCaseInsensitiveContains(catFilter) }
                     if model.wrappedValue.allPlaylists {
                         ForEach(model.wrappedValue.accounts) { a in       // one header per playlist
@@ -99,6 +128,7 @@ struct RootView: View {
                         #if !APPSTORE
                         UpdateBanner()
                         #endif
+                        ExpiryStrip()
                         if model.wrappedValue.syncing {
                             StatusStrip(kind: .busy, text: syncStatusText(model.wrappedValue.syncProgress))
                                 .transition(.move(edge: .top).combined(with: .opacity))
@@ -159,6 +189,21 @@ struct RootView: View {
                         } label: {
                             Label(model.wrappedValue.playlist?.name ?? L("playlist.all"), systemImage: "square.stack.3d.up").labelStyle(.titleAndIcon)
                         }.help(L("playlist.label"))
+                    }
+                }
+                ToolbarItem {
+                    if model.wrappedValue.tab != .live {
+                        Menu {
+                            Toggle(L("filter.hideWatched"), isOn: model.hideWatched)
+                            Toggle(L("filter.newest"), isOn: model.newestFirst)
+                            Picker(L("info.rating"), selection: model.minRating) {
+                                Text(L("cat.all")).tag(Double?.none)
+                                ForEach([6, 7, 8], id: \.self) { Text(String(format: L("filter.rating"), $0)).tag(Double?.some(Double($0))) }
+                            }
+                            if model.wrappedValue.filtersActive { Divider(); Button(L("filter.reset")) { model.wrappedValue.resetFilters() } }
+                        } label: {
+                            Image(systemName: model.wrappedValue.filtersActive ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                        }.help(L("filter.title")).accessibilityLabel(L("filter.title"))
                     }
                 }
                 ToolbarItem {

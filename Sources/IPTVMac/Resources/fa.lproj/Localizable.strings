@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "فیلترها";
+"filter.hideWatched" = "پنهان‌کردن دیده‌شده‌ها";
+"filter.rating" = "امتیاز %d+";
+"filter.newest" = "جدیدترین‌ها اول";
+"filter.reset" = "بازنشانی فیلترها";
+"home.moreFrom" = "بیشتر از «%@»";
+"cat.watchlist" = "بعداً ببینید";
+"watch.add" = "افزودن به «بعداً ببینید»";
+"watch.remove" = "حذف از «بعداً ببینید»";

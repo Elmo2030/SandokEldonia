@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Filtreler";
+"filter.hideWatched" = "İzlenenleri gizle";
+"filter.rating" = "Puan %d+";
+"filter.newest" = "Önce en yeniler";
+"filter.reset" = "Filtreleri sıfırla";
+"home.moreFrom" = "“%@” kategorisinden daha fazlası";
+"cat.watchlist" = "Sonra izle";
+"watch.add" = "“Sonra izle”ye ekle";
+"watch.remove" = "“Sonra izle”den kaldır";

@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Naikkan volume";
 "menu.volumeDown" = "Turunkan volume";
 "player.copyDiagnostics" = "Salin diagnostik";
+"filter.title" = "Filter";
+"filter.hideWatched" = "Sembunyikan yang sudah ditonton";
+"filter.rating" = "Rating %d+";
+"filter.newest" = "Terbaru dulu";
+"filter.reset" = "Setel ulang filter";
+"home.moreFrom" = "Lainnya dari “%@”";
+"cat.watchlist" = "Tonton nanti";
+"watch.add" = "Tambahkan ke Tonton nanti";
+"watch.remove" = "Hapus dari Tonton nanti";

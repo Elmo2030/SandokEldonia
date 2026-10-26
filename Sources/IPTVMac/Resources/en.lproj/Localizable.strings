@@ -257,3 +257,12 @@
 "menu.volumeUp" = "Volume Up";
 "menu.volumeDown" = "Volume Down";
 "player.copyDiagnostics" = "Copy diagnostics";
+"filter.title" = "Filters";
+"filter.hideWatched" = "Hide watched";
+"filter.rating" = "Rating %d+";
+"filter.newest" = "Newest first";
+"filter.reset" = "Reset filters";
+"home.moreFrom" = "More from “%@”";
+"cat.watchlist" = "Watch later";
+"watch.add" = "Add to watch later";
+"watch.remove" = "Remove from watch later";

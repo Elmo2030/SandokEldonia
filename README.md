@@ -16,6 +16,10 @@ Free and open source. No accounts, no analytics.
 
 SandokEldonia is a Mac app for watching the live channels, movies and series of your own IPTV provider. It is a fork of the open source [IPTVMac](https://github.com/Goelir/IPTVMac) with a redesigned dark interface and a good deal of new functionality (listed below). It is only a player: it does **not** include or host any channels, movies or series. You need a source you are allowed to use.
 
+![Movies in a family category, with the provider's rating under each poster](docs/screenshots-sandok/movies-grid.jpg)
+
+<sub>Movies of one category. The star under a poster is the rating your provider gives the title; the ⓘ button opens the details.</sub>
+
 ## Install
 
 Requires an Apple Silicon Mac (M1 or later) and macOS 14 or later. Nothing else to install: the player (libmpv) is inside the app.

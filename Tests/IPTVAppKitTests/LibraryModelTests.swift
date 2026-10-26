@@ -60,6 +60,7 @@ import IPTVCore
     m.play(Item(accountId: acct.id!, type: .movie, name: "Film", streamId: "7", directURL: "http://h/7.mp4"))
     #expect(m.playing != nil)
     #expect(m.switchProfile(to: kid) == .switched)
+    await m.pendingProfileSwitch?.value
     #expect(m.playing == nil)
 
     func progress() async throws -> Double? {
@@ -67,6 +68,7 @@ import IPTVCore
     }
     #expect(try await progress() == nil)                                   // the kid has not watched it
     #expect(m.switchProfile(to: m.profiles[0]) == .switched)
+    await m.pendingProfileSwitch?.value
     #expect(try await progress() == 50)                                    // Main has
 }
 
@@ -77,10 +79,35 @@ import IPTVCore
     let other = try await m.db.dbQueue.write { try Profiles.create($0, name: "Other", kids: false) }
     m.loadProfiles()
     m.selectedCategory = "__fav"
-    try m.editProfiles { try Profiles.update($0, id: other.id!, name: "Renamed", kids: true) }
+    let otherId = other.id!
+    try await m.editProfiles { try Profiles.update($0, id: otherId, name: "Renamed", kids: true) }
     #expect(m.profiles.last?.name == "Renamed")
     #expect(m.selectedCategory == "__fav")                                 // the list the user was looking at stays
     let mainId = m.profile.id!
-    try m.editProfiles { try Profiles.update($0, id: mainId, name: "Main", kids: true) }
+    try await m.editProfiles { try Profiles.update($0, id: mainId, name: "Main", kids: true) }
     #expect(m.selectedCategory == "__all")                                 // the profile in use became a kids profile: lists are rebuilt
+}
+
+// The window must stay responsive while a catalog sync holds the database writer for a long time: choosing a profile is a
+// click on the main thread and must not wait for that write.
+@MainActor @Test func switchingProfileDoesNotWaitForARunningSyncWrite() async throws {
+    let path = NSTemporaryDirectory() + "profile-wait-\(UUID().uuidString).sqlite"
+    defer { for s in ["", "-wal", "-shm"] { try? FileManager.default.removeItem(atPath: path + s) } }
+    let m = LibraryModel(db: try AppDatabase(path: path), secrets: MemorySecretStore())
+    m.loadProfiles()
+    let other = try await m.db.dbQueue.write { try Profiles.create($0, name: "Other", kids: false) }
+    m.loadProfiles()
+
+    let db = m.db
+    let writing = Task.detached { try? await db.dbQueue.write { _ in Thread.sleep(forTimeInterval: 1.5) } }   // a sync's long write
+    try await Task.sleep(for: .milliseconds(200))                    // let it take the writer
+
+    let start = Date()
+    m.switchProfile(to: other)
+    let waited = Date().timeIntervalSince(start)
+    #expect(waited < 0.5, "the click waited \(waited) s for the writer")
+    await writing.value
+    await m.pendingProfileSwitch?.value
+    #expect(m.profile.id == other.id)                                // and the switch did happen once the writer was free
+    #expect(try await m.db.dbQueue.read { try Profiles.current($0) }.id == other.id)
 }

@@ -506,16 +506,26 @@ open class LibraryModel {
         guard let id = target.id, id != profile.id else { return .switched }
         if profile.hasPIN, !Profiles.accepts(profile, pin: pin) { return pin == nil ? .needsPIN : .wrongPIN }
         if playing != nil { stopPlayback() }                 // its resume point is saved now, while the profile that watched is still the current one
-        guard (try? db.dbQueue.write { try Profiles.switchTo($0, id: id) }) != nil else { return .switched }
-        profileChanged()
+        // The write waits its turn behind a running catalog sync (many seconds): a click must not, so it happens off the main thread and
+        // the lists are read again when it is done. The name and kids filter change at once.
+        profile = target
+        let db = db
+        pendingProfileSwitch = Task {
+            _ = try? await db.dbQueue.write { try Profiles.switchTo($0, id: id) }
+            profileChanged()
+        }
         return .switched
     }
 
+    /// The switch started by the last `switchProfile` (tests wait for it).
+    public private(set) var pendingProfileSwitch: Task<Void, Never>?
+
     /// Created, renamed, given a PIN or deleted. The lists are rebuilt only when the profile in use is another one now or its kids flag
-    /// changed (that changes what every list shows); editing a different profile leaves the screen alone.
-    public func editProfiles(_ change: @Sendable (Database) throws -> Void) throws {
+    /// changed (that changes what every list shows); editing a different profile leaves the screen alone. Waits for the database off the
+    /// main thread (a catalog sync can hold it for a long time).
+    public func editProfiles(_ change: @escaping @Sendable (Database) throws -> Void) async throws {
         let before = profile
-        try db.dbQueue.write { try change($0) }
+        try await db.dbQueue.write { try change($0) }
         loadProfiles()
         if profile.id != before.id || profile.kids != before.kids { profileChanged() }
     }

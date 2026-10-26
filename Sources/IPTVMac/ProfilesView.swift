@@ -61,8 +61,10 @@ struct ProfilesSheet: View {
 
     private func add() {
         let name = newName, kids = newKids
-        do { try model.editProfiles { _ = try Profiles.create($0, name: name, kids: kids) }; newName = ""; newKids = false; failure = nil }
-        catch { failure = error.localizedDescription }
+        Task {
+            do { try await model.editProfiles { _ = try Profiles.create($0, name: name, kids: kids) }; newName = ""; newKids = false; failure = nil }
+            catch { failure = error.localizedDescription }
+        }
     }
 }
 
@@ -95,18 +97,18 @@ private struct ProfileRow: View {
     private func change(name: String? = nil, kids: Bool? = nil) {
         guard let id = profile.id else { return }
         let n = name ?? profile.name, k = kids ?? profile.kids
-        do { try model.editProfiles { try Profiles.update($0, id: id, name: n, kids: k) } } catch { onError(error.localizedDescription) }
+        Task { do { try await model.editProfiles { try Profiles.update($0, id: id, name: n, kids: k) } } catch { onError(error.localizedDescription) } }
     }
 
     /// Typing a PIN and pressing Return sets it; pressing Return on an empty field removes it.
     private func savePIN() {
         guard let id = profile.id else { return }
         let value = pin.isEmpty ? nil : pin
-        do { try model.editProfiles { try Profiles.setPIN($0, id: id, pin: value) }; pin = "" } catch { onError(error.localizedDescription) }
+        Task { do { try await model.editProfiles { try Profiles.setPIN($0, id: id, pin: value) }; pin = "" } catch { onError(error.localizedDescription) } }
     }
 
     private func remove() {
         guard let id = profile.id else { return }
-        do { try model.editProfiles { try Profiles.delete($0, id: id) } } catch { onError(error.localizedDescription) }
+        Task { do { try await model.editProfiles { try Profiles.delete($0, id: id) } } catch { onError(error.localizedDescription) } }
     }
 }

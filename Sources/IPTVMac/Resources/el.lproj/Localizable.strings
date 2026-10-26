@@ -266,3 +266,10 @@
 "cat.watchlist" = "Προβολή αργότερα";
 "watch.add" = "Προσθήκη στο «Προβολή αργότερα»";
 "watch.remove" = "Αφαίρεση από το «Προβολή αργότερα»";
+"profile.title" = "Προφίλ";
+"profile.manage" = "Διαχείριση προφίλ…";
+"profile.add" = "Προσθήκη προφίλ";
+"profile.kids" = "Παιδικό προφίλ";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "Λάθος PIN";
+"home.similarTo" = "Παρόμοια με «%@»";

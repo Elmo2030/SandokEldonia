@@ -266,3 +266,10 @@
 "cat.watchlist" = "बाद में देखें";
 "watch.add" = "“बाद में देखें” में जोड़ें";
 "watch.remove" = "“बाद में देखें” से हटाएँ";
+"profile.title" = "प्रोफ़ाइल";
+"profile.manage" = "प्रोफ़ाइल प्रबंधित करें…";
+"profile.add" = "प्रोफ़ाइल जोड़ें";
+"profile.kids" = "बच्चों की प्रोफ़ाइल";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "गलत PIN";
+"home.similarTo" = "“%@” जैसे";

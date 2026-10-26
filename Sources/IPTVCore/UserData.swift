@@ -32,8 +32,7 @@ public enum UserData {
         guard duration > 0, position.isFinite, duration.isFinite, position >= 0 else { return }
         try db.execute(sql: """
             INSERT INTO history (accountId,type,streamId,position,duration,updated) VALUES (?,?,?,?,?,datetime('now'))
-            ON CONFLICT(accountId,type,streamId) DO UPDATE SET position=excluded.position, duration=excluded.duration, updated=excluded.updated
-            """, arguments: [accountId, type.rawValue, streamId, position, duration])
+            """, arguments: [accountId, type.rawValue, streamId, position, duration])      // `history` is the current profile's view: its trigger replaces the old row
     }
 
     public static func progress(_ db: Database, accountId: Int64, type: ItemType, streamId: String) throws -> Double? {
@@ -126,6 +125,22 @@ public enum UserData {
             ORDER BY addedAt IS NULL, addedAt DESC, id DESC LIMIT ?
             """, arguments: [aid, type, cat, limit])
         return items.count >= minimum ? (category, items) : nil
+    }
+
+    /// The movie or series watched last (a series counts when one of its episodes was).
+    public static func lastWatchedTitle(_ db: Database, accountId: Int64?) throws -> Item? {
+        try Item.fetchOne(db, sql: """
+            SELECT * FROM item WHERE id = (SELECT itemId FROM (
+              SELECT i.id AS itemId, h.updated FROM history h
+                JOIN item i ON i.accountId = h.accountId AND i.type = h.type AND i.streamId = h.streamId
+                WHERE i.type IN ('movie', 'series') AND (? IS NULL OR i.accountId = ?)
+              UNION ALL
+              SELECT i.id, h.updated FROM history h
+                JOIN episode e ON e.accountId = h.accountId AND h.streamId = 'ep:' || e.streamId
+                JOIN item i ON i.accountId = e.accountId AND i.type = 'series' AND i.streamId = e.seriesId
+                WHERE h.type = 'series' AND (? IS NULL OR i.accountId = ?))
+              ORDER BY updated DESC LIMIT 1)
+            """, arguments: [accountId, accountId, accountId, accountId])
     }
 
     // MARK: Watch later

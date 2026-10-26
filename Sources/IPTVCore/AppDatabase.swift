@@ -156,6 +156,86 @@ public final class AppDatabase {
                 t.primaryKey(["accountId", "type", "streamId"])
             }
         }
+        // The guide of an M3U playlist: where its header says to get it, and the programs of its channels (epoch seconds).
+        m.registerMigration("v7-guide") { db in
+            try db.alter(table: "account") { t in t.add(column: "guideURL", .text) }
+            try db.create(table: "programme") { t in
+                t.column("accountId", .integer).notNull().references("account", onDelete: .cascade)
+                t.column("channel", .text).notNull()
+                t.column("start", .integer).notNull()
+                t.column("stop", .integer).notNull()
+                t.column("title", .text).notNull()
+                t.primaryKey(["accountId", "channel", "start"])
+            }
+        }
+        // Profiles. Favorites, watch history and "watch later" move to *_all tables that carry a profileId. The old names stay as VIEWS of the
+        // current profile (current_profile, one row) with INSTEAD OF triggers, so every query that already reads or writes `favorite`,
+        // `history` or `watchlist` keeps working, for the profile that is selected. Existing rows go to profile 1 ("Main").
+        m.registerMigration("v8-profiles") { db in
+            try db.execute(sql: """
+                CREATE TABLE profile (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, kids BOOLEAN NOT NULL DEFAULT 0, pin TEXT);
+                INSERT INTO profile (id, name) VALUES (1, 'Main');
+                CREATE TABLE current_profile (id INTEGER PRIMARY KEY CHECK (id = 1), profileId INTEGER NOT NULL REFERENCES profile(id) ON DELETE RESTRICT);
+                INSERT INTO current_profile (id, profileId) VALUES (1, 1);
+
+                CREATE TABLE favorite_all (
+                  profileId INTEGER NOT NULL REFERENCES profile(id) ON DELETE CASCADE,
+                  accountId INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+                  type TEXT NOT NULL, streamId TEXT NOT NULL, PRIMARY KEY (profileId, accountId, type, streamId));
+                INSERT INTO favorite_all SELECT 1, f.accountId, f.type, f.streamId FROM favorite f JOIN account a ON a.id = f.accountId;
+                DROP TABLE favorite;
+                CREATE VIEW favorite AS SELECT accountId, type, streamId FROM favorite_all WHERE profileId = (SELECT profileId FROM current_profile);
+                CREATE TRIGGER favorite_ins INSTEAD OF INSERT ON favorite BEGIN
+                  INSERT OR IGNORE INTO favorite_all (profileId, accountId, type, streamId)
+                  VALUES ((SELECT profileId FROM current_profile), NEW.accountId, NEW.type, NEW.streamId);
+                END;
+                CREATE TRIGGER favorite_del INSTEAD OF DELETE ON favorite BEGIN
+                  DELETE FROM favorite_all WHERE profileId = (SELECT profileId FROM current_profile)
+                    AND accountId = OLD.accountId AND type = OLD.type AND streamId = OLD.streamId;
+                END;
+
+                CREATE TABLE history_all (
+                  profileId INTEGER NOT NULL REFERENCES profile(id) ON DELETE CASCADE,
+                  accountId INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+                  type TEXT NOT NULL, streamId TEXT NOT NULL, position DOUBLE NOT NULL, duration DOUBLE NOT NULL, updated DATETIME NOT NULL,
+                  PRIMARY KEY (profileId, accountId, type, streamId));
+                INSERT INTO history_all SELECT 1, h.accountId, h.type, h.streamId, h.position, h.duration, h.updated FROM history h JOIN account a ON a.id = h.accountId;
+                DROP TABLE history;
+                CREATE VIEW history AS SELECT accountId, type, streamId, position, duration, updated FROM history_all
+                  WHERE profileId = (SELECT profileId FROM current_profile);
+                CREATE TRIGGER history_ins INSTEAD OF INSERT ON history BEGIN
+                  INSERT OR REPLACE INTO history_all (profileId, accountId, type, streamId, position, duration, updated)
+                  VALUES ((SELECT profileId FROM current_profile), NEW.accountId, NEW.type, NEW.streamId, NEW.position, NEW.duration, NEW.updated);
+                END;
+                CREATE TRIGGER history_upd INSTEAD OF UPDATE ON history BEGIN
+                  UPDATE history_all SET position = NEW.position, duration = NEW.duration, updated = NEW.updated
+                  WHERE profileId = (SELECT profileId FROM current_profile)
+                    AND accountId = OLD.accountId AND type = OLD.type AND streamId = OLD.streamId;
+                END;
+                CREATE TRIGGER history_del INSTEAD OF DELETE ON history BEGIN
+                  DELETE FROM history_all WHERE profileId = (SELECT profileId FROM current_profile)
+                    AND accountId = OLD.accountId AND type = OLD.type AND streamId = OLD.streamId;
+                END;
+
+                CREATE TABLE watchlist_all (
+                  profileId INTEGER NOT NULL REFERENCES profile(id) ON DELETE CASCADE,
+                  accountId INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+                  type TEXT NOT NULL, streamId TEXT NOT NULL, added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  PRIMARY KEY (profileId, accountId, type, streamId));
+                INSERT INTO watchlist_all SELECT 1, accountId, type, streamId, added FROM watchlist;
+                DROP TABLE watchlist;
+                CREATE VIEW watchlist AS SELECT accountId, type, streamId, added FROM watchlist_all
+                  WHERE profileId = (SELECT profileId FROM current_profile);
+                CREATE TRIGGER watchlist_ins INSTEAD OF INSERT ON watchlist BEGIN
+                  INSERT OR IGNORE INTO watchlist_all (profileId, accountId, type, streamId, added)
+                  VALUES ((SELECT profileId FROM current_profile), NEW.accountId, NEW.type, NEW.streamId, COALESCE(NEW.added, CURRENT_TIMESTAMP));
+                END;
+                CREATE TRIGGER watchlist_del INSTEAD OF DELETE ON watchlist BEGIN
+                  DELETE FROM watchlist_all WHERE profileId = (SELECT profileId FROM current_profile)
+                    AND accountId = OLD.accountId AND type = OLD.type AND streamId = OLD.streamId;
+                END;
+                """)
+        }
         return m
     }
 }

@@ -266,3 +266,10 @@
 "cat.watchlist" = "Гледане по-късно";
 "watch.add" = "Добавяне към „Гледане по-късно“";
 "watch.remove" = "Премахване от „Гледане по-късно“";
+"profile.title" = "Профили";
+"profile.manage" = "Управление на профилите…";
+"profile.add" = "Добавяне на профил";
+"profile.kids" = "Детски профил";
+"profile.pin" = "PIN код";
+"profile.pin.wrong" = "Грешен PIN код";
+"home.similarTo" = "Подобни на „%@“";

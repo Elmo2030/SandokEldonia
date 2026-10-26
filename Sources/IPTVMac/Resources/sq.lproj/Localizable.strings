@@ -266,3 +266,10 @@
 "cat.watchlist" = "Shiko më vonë";
 "watch.add" = "Shto te Shiko më vonë";
 "watch.remove" = "Hiq nga Shiko më vonë";
+"profile.title" = "Profilet";
+"profile.manage" = "Menaxho profilet…";
+"profile.add" = "Shto profil";
+"profile.kids" = "Profil për fëmijë";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "PIN i gabuar";
+"home.similarTo" = "Të ngjashme me “%@”";

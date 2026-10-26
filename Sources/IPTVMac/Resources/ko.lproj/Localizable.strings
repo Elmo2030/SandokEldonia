@@ -266,3 +266,10 @@
 "cat.watchlist" = "나중에 보기";
 "watch.add" = "나중에 보기에 추가";
 "watch.remove" = "나중에 보기에서 삭제";
+"profile.title" = "프로필";
+"profile.manage" = "프로필 관리…";
+"profile.add" = "프로필 추가";
+"profile.kids" = "어린이 프로필";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "PIN이 틀렸습니다";
+"home.similarTo" = "“%@”와(과) 비슷한 작품";

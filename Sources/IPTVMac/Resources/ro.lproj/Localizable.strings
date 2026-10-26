@@ -266,3 +266,10 @@
 "cat.watchlist" = "De vizionat mai târziu";
 "watch.add" = "Adaugă la „De vizionat mai târziu”";
 "watch.remove" = "Elimină din „De vizionat mai târziu”";
+"profile.title" = "Profiluri";
+"profile.manage" = "Gestionează profilurile…";
+"profile.add" = "Adaugă profil";
+"profile.kids" = "Profil pentru copii";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "PIN greșit";
+"home.similarTo" = "Similar cu „%@”";

@@ -266,3 +266,10 @@
 "cat.watchlist" = "Titta senare";
 "watch.add" = "Lägg till i Titta senare";
 "watch.remove" = "Ta bort från Titta senare";
+"profile.title" = "Profiler";
+"profile.manage" = "Hantera profiler…";
+"profile.add" = "Lägg till profil";
+"profile.kids" = "Barnprofil";
+"profile.pin" = "PIN-kod";
+"profile.pin.wrong" = "Fel PIN-kod";
+"home.similarTo" = "Liknar “%@”";

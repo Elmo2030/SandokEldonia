@@ -266,3 +266,10 @@
 "cat.watchlist" = "شاهد لاحقًا";
 "watch.add" = "إضافة إلى شاهد لاحقًا";
 "watch.remove" = "إزالة من شاهد لاحقًا";
+"profile.title" = "الملفات الشخصية";
+"profile.manage" = "إدارة الملفات الشخصية…";
+"profile.add" = "إضافة ملف شخصي";
+"profile.kids" = "ملف الأطفال";
+"profile.pin" = "رمز PIN";
+"profile.pin.wrong" = "رمز PIN خاطئ";
+"home.similarTo" = "مشابه لـ «%@»";

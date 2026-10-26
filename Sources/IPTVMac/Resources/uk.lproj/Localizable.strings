@@ -266,3 +266,10 @@
 "cat.watchlist" = "Дивитися пізніше";
 "watch.add" = "Додати до «Дивитися пізніше»";
 "watch.remove" = "Видалити з «Дивитися пізніше»";
+"profile.title" = "Профілі";
+"profile.manage" = "Керувати профілями…";
+"profile.add" = "Додати профіль";
+"profile.kids" = "Дитячий профіль";
+"profile.pin" = "PIN-код";
+"profile.pin.wrong" = "Неправильний PIN-код";
+"home.similarTo" = "Схоже на «%@»";

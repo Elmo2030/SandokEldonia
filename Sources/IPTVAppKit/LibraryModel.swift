@@ -107,6 +107,7 @@ open class LibraryModel {
         guard !started else { return }
         started = true
         Task { await refreshLoop() }
+        loadProfiles()
         loadAccounts()
         if account != nil { await sync() }
         await refreshSubscriptionsIfDue()
@@ -252,6 +253,7 @@ open class LibraryModel {
         syncMessage = failures.isEmpty ? nil : failures.joined(separator: "; ")
         newSinceSync = found.filter { $0.key != .live && $0.value > 0 }
         loadCategories(); scheduleSearch(); loadHomeRows()
+        Task { await refreshGuides() }                           // best effort, after the lists are on screen
     }
 
     /// Movies and series that the last finished sync found new (empty when none, or on a playlist's first sync). The UI announces it once.
@@ -264,10 +266,15 @@ open class LibraryModel {
     /// "More from <category>": the category of what was watched last, and its titles not seen yet. Empty when there is nothing to suggest.
     public private(set) var moreFromTitle: String?
     public private(set) var moreFromItems: [Item] = []
+    /// "Similar to <title>": titles whose names share words with the one watched last (worked out on the device). Empty when too few.
+    public private(set) var similarToTitle: String?
+    public private(set) var similarItems: [Item] = []
 
-    /// Loads the home screen's shelves (all three in one read). Hidden categories are left out of each.
+    /// Loads the home screen's shelves (all in one read). Hidden categories are left out of each.
     public func loadHomeRows() {
-        guard hasPlaylist else { recentlyAdded = []; continueRow = []; moreFromItems = []; moreFromTitle = nil; return }
+        guard hasPlaylist else {
+            recentlyAdded = []; continueRow = []; moreFromItems = []; moreFromTitle = nil; similarItems = []; similarToTitle = nil; return
+        }
         let aid = scopeAccountId, hide = categoryFilter
         Task {
             let rows = try? await db.dbQueue.read { d in
@@ -276,11 +283,16 @@ open class LibraryModel {
                  more: try UserData.moreLikeWatched(d, accountId: aid).flatMap { m -> (String, [Item])? in
                      let items = try hide.visible(m.items, in: d)
                      return items.isEmpty ? nil : (m.category.name, items)
+                 },
+                 similar: try UserData.lastWatchedTitle(d, accountId: aid).flatMap { last -> (String, [Item])? in
+                     let items = try hide.visible(try Similar.titles(like: last, in: d), in: d)
+                     return items.count >= 4 ? (last.name, items) : nil
                  })
             }
             guard aid == scopeAccountId else { return }       // the playlist may have been switched while this ran
             recentlyAdded = rows?.recent ?? []; continueRow = rows?.resume ?? []
             moreFromTitle = rows?.more?.0; moreFromItems = rows?.more?.1 ?? []
+            similarToTitle = rows?.similar?.0; similarItems = rows?.similar?.1 ?? []
         }
     }
 
@@ -413,10 +425,30 @@ open class LibraryModel {
     /// Keeps `schedule` fresh for the live channel being watched; ends when the calling task is cancelled.
     public func watchSchedule(of item: Item) async {
         schedule = []
-        guard item.type == .live, let urls = xtreamURLs(for: item.accountId) else { return }
+        guard item.type == .live else { return }
+        if playlist(id: item.accountId)?.kind == .m3u {          // an M3U playlist's guide was downloaded from its header's link
+            guard let channel = item.epgChannelId else { return }
+            while !Task.isCancelled {
+                schedule = (try? await db.dbQueue.read { try GuideStore.entries($0, accountId: item.accountId, channel: channel, limit: 3) }) ?? []
+                try? await Task.sleep(for: .seconds(60))
+            }
+            return
+        }
+        guard let urls = xtreamURLs(for: item.accountId) else { return }
         while !Task.isCancelled {
             if let l = try? await XtreamClient(urls: urls).epgShort(streamId: item.streamId, limit: 3) { schedule = l }
             try? await Task.sleep(for: .seconds(60))
+        }
+    }
+
+    /// Downloads the guide of each M3U playlist that names one, at most every 6 hours per playlist, and never makes a sync fail.
+    public func refreshGuides(now: Date = Date()) async {
+        for a in accounts where a.kind == .m3u {
+            guard let id = a.id else { continue }
+            let key = "guideChecked.\(id)"
+            if let last = UserDefaults.standard.object(forKey: key) as? Date, now.timeIntervalSince(last) < 6 * 3600 { continue }
+            UserDefaults.standard.set(now, forKey: key)                      // an attempt counts, like a sync
+            if (try? await GuideService(db: db).refresh(account: a, now: now)) ?? 0 > 0 { epgStamp = [:] }   // shown "now" titles are re-read
         }
     }
 
@@ -430,10 +462,18 @@ open class LibraryModel {
     /// "Now" per channel (keyed by playlist and stream id): refreshed after 5 minutes, fetched once at a time per channel.
     public func loadEPGNow(_ item: Item) async {
         let key = "\(item.accountId):\(item.streamId)"
-        guard item.type == .live, !epgInFlight.contains(key), let urls = xtreamURLs(for: item.accountId) else { return }
+        guard item.type == .live, !epgInFlight.contains(key) else { return }
+        let fromGuide = playlist(id: item.accountId)?.kind == .m3u
+        let urls = xtreamURLs(for: item.accountId)
+        guard fromGuide ? item.epgChannelId != nil : urls != nil else { return }
         if let t = epgStamp[key], Date().timeIntervalSince(t) < 300 { return }
         epgInFlight.insert(key); defer { epgInFlight.remove(key) }
-        let entries = try? await XtreamClient(urls: urls).epgShort(streamId: item.streamId, limit: 2)
+        let entries: [EPGEntry]?
+        if fromGuide, let channel = item.epgChannelId {
+            entries = try? await db.dbQueue.read { try GuideStore.entries($0, accountId: item.accountId, channel: channel, limit: 2) }
+        } else if let urls {
+            entries = try? await XtreamClient(urls: urls).epgShort(streamId: item.streamId, limit: 2)
+        } else { entries = nil }
         guard !Task.isCancelled else { return }
         epgStamp[key] = Date()
         epgNow[key] = entries?.first?.title
@@ -443,7 +483,46 @@ open class LibraryModel {
     // MARK: Preferences, info, backup
 
     public var refreshHours: Int { UserDefaults.standard.integer(forKey: "refreshHours") }                     // 0 = only when the app opens
-    public var categoryFilter: CategoryFilter { CategoryFilter(UserDefaults.standard.string(forKey: "hiddenCategoryWords") ?? "") }
+    public var categoryFilter: CategoryFilter {
+        profile.kids ? CategoryFilter.kids : CategoryFilter(UserDefaults.standard.string(forKey: "hiddenCategoryWords") ?? "")
+    }
+
+    // MARK: Profiles
+
+    public private(set) var profiles: [Profile] = []
+    /// Whose favorites, history and watch later are shown. A kids profile also narrows every list to categories made for children.
+    public private(set) var profile = Profile(id: 1, name: "Main")
+
+    public enum ProfileSwitch: Equatable { case switched, needsPIN, wrongPIN }
+
+    public func loadProfiles() {
+        let r = try? db.dbQueue.read { (try Profiles.all($0), try Profiles.current($0)) }
+        profiles = r?.0 ?? []; profile = r?.1 ?? profile
+    }
+
+    /// Leaving a profile that has a PIN asks for it. Everything that belongs to a profile is shown again for the new one.
+    @discardableResult
+    public func switchProfile(to target: Profile, pin: String? = nil) -> ProfileSwitch {
+        guard let id = target.id, id != profile.id else { return .switched }
+        if profile.hasPIN, !Profiles.accepts(profile, pin: pin) { return pin == nil ? .needsPIN : .wrongPIN }
+        guard (try? db.dbQueue.write { try Profiles.switchTo($0, id: id) }) != nil else { return .switched }
+        profileChanged()
+        return .switched
+    }
+
+    /// Created, renamed, given a PIN or deleted: the lists are read again (a kids flag changes what every list shows).
+    public func editProfiles(_ change: @Sendable (Database) throws -> Void) throws {
+        try db.dbQueue.write { try change($0) }
+        profileChanged()
+    }
+
+    private func profileChanged() {
+        loadProfiles()
+        if playing != nil { stopPlayback() }
+        selectedCategory = "__all"; searchText = ""
+        newSinceSync = [:]; resetFilters()
+        loadCategories(); loadFavorites(); scheduleSearch(); loadHomeRows()
+    }
 
     /// Syncs what is shown (the playlist, or all of them) once `refreshHours` have passed since the last sync; ends when cancelled.
     public func refreshLoop() async {

@@ -34,12 +34,28 @@ struct RootView: View {
     @State private var catFilter = ""
     @State private var columns = NavigationSplitViewVisibility.all
     @State private var showingHome = true
+    @State private var pinRequest: PinRequest?
+    @State private var showProfiles = false
+
+    /// Picks another profile; asks for the PIN of the one being left when it has one.
+    private func choose(_ p: Profile) {
+        if model.switchProfile(to: p) == .needsPIN { pinRequest = .leave(p) }
+    }
 
     var body: some View {
         @Bindable var model = model
         Group {
             if model.accounts.isEmpty { OnboardingView(isFirstRun: true) } else { main(model: $model) }
         }
+        .sheet(item: $pinRequest) { request in
+            switch request {
+            case .leave(let target):
+                PinSheet(verify: { self.model.switchProfile(to: target, pin: $0) == .switched }, onAccepted: {})
+            case .manage:
+                PinSheet(verify: { Profiles.accepts(self.model.profile, pin: $0) }, onAccepted: { showProfiles = true })
+            }
+        }
+        .sheet(isPresented: $showProfiles) { ProfilesSheet() }
         .sheet(isPresented: $model.showGuide) { OnboardingView(isFirstRun: false) }
         .sheet(item: $model.openSeries) { SeriesView(series: $0) }
         .sheet(item: $model.openInfo) { InfoSheet(item: $0) }
@@ -205,6 +221,21 @@ struct RootView: View {
                             Image(systemName: model.wrappedValue.filtersActive ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
                         }.help(L("filter.title")).accessibilityLabel(L("filter.title"))
                     }
+                }
+                ToolbarItem {
+                    Menu {
+                        ForEach(model.wrappedValue.profiles) { p in
+                            Button { choose(p) } label: {
+                                Label(p.name, systemImage: p.id == model.wrappedValue.profile.id ? "checkmark" : (p.kids ? "figure.and.child.holdinghands" : "person"))
+                            }
+                        }
+                        Divider()
+                        Button(L("profile.manage")) {
+                            if model.wrappedValue.profile.hasPIN { pinRequest = .manage } else { showProfiles = true }
+                        }
+                    } label: {
+                        Image(systemName: model.wrappedValue.profile.kids ? "figure.and.child.holdinghands" : "person.crop.circle")
+                    }.help("\(L("profile.title")): \(model.wrappedValue.profile.name)").accessibilityLabel(L("profile.title"))
                 }
                 ToolbarItem {
                     Button { model.wrappedValue.showDownloads = true } label: {

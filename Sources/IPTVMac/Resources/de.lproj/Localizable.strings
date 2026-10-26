@@ -266,3 +266,10 @@
 "cat.watchlist" = "Später ansehen";
 "watch.add" = "Zu „Später ansehen“ hinzufügen";
 "watch.remove" = "Aus „Später ansehen“ entfernen";
+"profile.title" = "Profile";
+"profile.manage" = "Profile verwalten …";
+"profile.add" = "Profil hinzufügen";
+"profile.kids" = "Kinderprofil";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "Falsche PIN";
+"home.similarTo" = "Ähnlich wie „%@“";

@@ -101,12 +101,11 @@ public struct Backup: Codable, Equatable, Sendable {
             for w in p.watchlist ?? [] {
                 try db.execute(sql: "INSERT OR IGNORE INTO watchlist (accountId,type,streamId) VALUES (?,?,?)", arguments: [aid, w.type, w.streamId])
             }
-            for h in p.history {
-                try db.execute(sql: """
-                    INSERT INTO history (accountId,type,streamId,position,duration,updated) VALUES (?,?,?,?,?,?)
-                    ON CONFLICT(accountId,type,streamId) DO UPDATE SET position=excluded.position, duration=excluded.duration, updated=excluded.updated
-                    WHERE excluded.updated > history.updated
-                    """, arguments: [aid, h.type, h.streamId, h.position, h.duration, h.updated])
+            for h in p.history {      // a resume point is replaced only by a newer one (`history` is a view: no ON CONFLICT here)
+                let known = try Date.fetchOne(db, sql: "SELECT updated FROM history WHERE accountId=? AND type=? AND streamId=?", arguments: [aid, h.type, h.streamId])
+                if let known, known >= h.updated { continue }
+                try db.execute(sql: "INSERT INTO history (accountId,type,streamId,position,duration,updated) VALUES (?,?,?,?,?,?)",
+                               arguments: [aid, h.type, h.streamId, h.position, h.duration, h.updated])
             }
         }
         return added

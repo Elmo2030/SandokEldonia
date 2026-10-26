@@ -31,6 +31,10 @@ struct HomeDashboardView: View {
                     posterSection(L("recent.title"), items: model.recentlyAdded)
                 }
 
+                if let title = model.similarToTitle, !model.similarItems.isEmpty {
+                    posterSection(String(format: L("home.similarTo"), title), items: model.similarItems)
+                }
+
                 if let category = model.moreFromTitle, !model.moreFromItems.isEmpty {
                     posterSection(String(format: L("home.moreFrom"), category), items: model.moreFromItems)
                 }

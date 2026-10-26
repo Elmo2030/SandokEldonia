@@ -266,3 +266,10 @@
 "cat.watchlist" = "Xem sau";
 "watch.add" = "Thêm vào Xem sau";
 "watch.remove" = "Xóa khỏi Xem sau";
+"profile.title" = "Hồ sơ";
+"profile.manage" = "Quản lý hồ sơ…";
+"profile.add" = "Thêm hồ sơ";
+"profile.kids" = "Hồ sơ trẻ em";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "Sai PIN";
+"home.similarTo" = "Tương tự “%@”";

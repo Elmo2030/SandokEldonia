@@ -28,6 +28,20 @@ public struct M3UParser {
                         tvgId: attr("tvg-id"), catchupDays: attr("catchup-days").flatMap { Int($0) })
     }
 
+    /// Where the header of a playlist (`#EXTM3U url-tvg="..."`, also written `x-tvg-url`) says its program guide is. Several links may be
+    /// given, separated by commas: the first web link is used. Nil when there is none.
+    public static func guideURL(inHeader line: String) -> String? {
+        guard line.utf8.count <= 8192 else { return nil }
+        let ns = line as NSString
+        for m in attrRegex.matches(in: line, range: NSRange(location: 0, length: ns.length)) where ["url-tvg", "x-tvg-url"].contains(ns.substring(with: m.range(at: 1)).lowercased()) {
+            for part in ns.substring(with: m.range(at: 2)).split(separator: ",") {
+                let link = part.trimmingCharacters(in: .whitespaces)
+                if let u = URL(string: link), ["http", "https"].contains(u.scheme?.lowercased() ?? ""), u.host?.isEmpty == false { return link }
+            }
+        }
+        return nil
+    }
+
     /// Last path component without query/userinfo, or a neutral label.
     static func fallbackName(_ url: String) -> String {
         let last = URL(string: url)?.lastPathComponent ?? ""

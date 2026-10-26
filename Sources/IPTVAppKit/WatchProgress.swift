@@ -22,9 +22,10 @@ public enum WatchProgress {
     public static func continueEntries(_ db: Database, accountId: Int64?, type: ItemType, limit: Int = 20) throws -> [ContinueEntry] {
         try UserData.continueWatching(db, accountId: accountId, type: type).prefix(limit).map { item in
             if type == .series, let r = try Row.fetchOne(db, sql: """
-                SELECT h.position, h.duration, e.season, e.number FROM history h
+                SELECT h.position, h.duration, e.season, e.number FROM history_all h
                 JOIN episode e ON e.accountId = h.accountId AND h.streamId = 'ep:' || e.streamId
-                WHERE e.accountId = ? AND e.seriesId = ? AND h.type = 'series' ORDER BY h.updated DESC, h.rowid DESC LIMIT 1
+                WHERE h.profileId = (SELECT profileId FROM current_profile)
+                  AND e.accountId = ? AND e.seriesId = ? AND h.type = 'series' ORDER BY h.updated DESC, h.rowid DESC LIMIT 1
                 """, arguments: [item.accountId, item.streamId]) {
                 return ContinueEntry(item: item, fraction: fraction(r["position"], r["duration"]), season: r["season"], episode: r["number"])
             }
@@ -39,7 +40,8 @@ public enum WatchProgress {
     /// Resume points of a series' episodes, keyed by the episode's stream id.
     public static func episodeProgress(_ db: Database, accountId: Int64) throws -> [String: EpisodeProgress] {
         let rows = try Row.fetchAll(db, sql: """
-            SELECT streamId, position, duration FROM history WHERE accountId = ? AND type = 'series' AND streamId LIKE 'ep:%' ORDER BY updated, rowid
+            SELECT streamId, position, duration FROM history_all WHERE profileId = (SELECT profileId FROM current_profile)
+              AND accountId = ? AND type = 'series' AND streamId LIKE 'ep:%' ORDER BY updated, rowid
             """, arguments: [accountId])
         var out: [String: EpisodeProgress] = [:]
         for (i, r) in rows.enumerated() {

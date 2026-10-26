@@ -266,3 +266,10 @@
 "cat.watchlist" = "Podívat se později";
 "watch.add" = "Přidat do „Podívat se později“";
 "watch.remove" = "Odebrat z „Podívat se později“";
+"profile.title" = "Profily";
+"profile.manage" = "Spravovat profily…";
+"profile.add" = "Přidat profil";
+"profile.kids" = "Dětský profil";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "Nesprávný PIN";
+"home.similarTo" = "Podobné jako „%@“";

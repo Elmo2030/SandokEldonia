@@ -266,3 +266,10 @@
 "cat.watchlist" = "あとで見る";
 "watch.add" = "「あとで見る」に追加";
 "watch.remove" = "「あとで見る」から削除";
+"profile.title" = "プロフィール";
+"profile.manage" = "プロフィールを管理…";
+"profile.add" = "プロフィールを追加";
+"profile.kids" = "キッズプロフィール";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "PINが違います";
+"home.similarTo" = "「%@」に似た作品";

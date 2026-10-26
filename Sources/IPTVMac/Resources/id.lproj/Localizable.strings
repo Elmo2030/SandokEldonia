@@ -266,3 +266,10 @@
 "cat.watchlist" = "Tonton nanti";
 "watch.add" = "Tambahkan ke Tonton nanti";
 "watch.remove" = "Hapus dari Tonton nanti";
+"profile.title" = "Profil";
+"profile.manage" = "Kelola profil…";
+"profile.add" = "Tambah profil";
+"profile.kids" = "Profil anak";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "PIN salah";
+"home.similarTo" = "Mirip dengan “%@”";

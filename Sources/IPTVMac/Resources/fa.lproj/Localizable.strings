@@ -266,3 +266,10 @@
 "cat.watchlist" = "بعداً ببینید";
 "watch.add" = "افزودن به «بعداً ببینید»";
 "watch.remove" = "حذف از «بعداً ببینید»";
+"profile.title" = "نمایه‌ها";
+"profile.manage" = "مدیریت نمایه‌ها…";
+"profile.add" = "افزودن نمایه";
+"profile.kids" = "نمایه کودک";
+"profile.pin" = "پین";
+"profile.pin.wrong" = "پین نادرست";
+"home.similarTo" = "مشابه «%@»";

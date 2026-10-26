@@ -266,3 +266,10 @@
 "cat.watchlist" = "稍后观看";
 "watch.add" = "添加到稍后观看";
 "watch.remove" = "从稍后观看中移除";
+"profile.title" = "个人资料";
+"profile.manage" = "管理个人资料…";
+"profile.add" = "添加个人资料";
+"profile.kids" = "儿童资料";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "PIN 错误";
+"home.similarTo" = "与“%@”相似";

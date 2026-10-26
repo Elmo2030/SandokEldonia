@@ -266,3 +266,10 @@
 "cat.watchlist" = "Later kijken";
 "watch.add" = "Toevoegen aan Later kijken";
 "watch.remove" = "Verwijderen uit Later kijken";
+"profile.title" = "Profielen";
+"profile.manage" = "Profielen beheren…";
+"profile.add" = "Profiel toevoegen";
+"profile.kids" = "Kinderprofiel";
+"profile.pin" = "Pincode";
+"profile.pin.wrong" = "Onjuiste pincode";
+"home.similarTo" = "Vergelijkbaar met “%@”";

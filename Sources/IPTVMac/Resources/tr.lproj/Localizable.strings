@@ -266,3 +266,10 @@
 "cat.watchlist" = "Sonra izle";
 "watch.add" = "“Sonra izle”ye ekle";
 "watch.remove" = "“Sonra izle”den kaldır";
+"profile.title" = "Profiller";
+"profile.manage" = "Profilleri yönet…";
+"profile.add" = "Profil ekle";
+"profile.kids" = "Çocuk profili";
+"profile.pin" = "PIN";
+"profile.pin.wrong" = "Yanlış PIN";
+"home.similarTo" = "“%@” gibi";

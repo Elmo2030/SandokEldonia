@@ -266,3 +266,10 @@
 "cat.watchlist" = "Смотреть позже";
 "watch.add" = "Добавить в «Смотреть позже»";
 "watch.remove" = "Удалить из «Смотреть позже»";
+"profile.title" = "Профили";
+"profile.manage" = "Управление профилями…";
+"profile.add" = "Добавить профиль";
+"profile.kids" = "Детский профиль";
+"profile.pin" = "PIN-код";
+"profile.pin.wrong" = "Неверный PIN-код";
+"home.similarTo" = "Похоже на «%@»";

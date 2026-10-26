@@ -266,3 +266,10 @@
 "cat.watchlist" = "Megnézem később";
 "watch.add" = "Hozzáadás a „Megnézem később” listához";
 "watch.remove" = "Eltávolítás a „Megnézem később” listáról";
+"profile.title" = "Profilok";
+"profile.manage" = "Profilok kezelése…";
+"profile.add" = "Profil hozzáadása";
+"profile.kids" = "Gyerekprofil";
+"profile.pin" = "PIN-kód";
+"profile.pin.wrong" = "Hibás PIN-kód";
+"home.similarTo" = "Hasonló: „%@”";

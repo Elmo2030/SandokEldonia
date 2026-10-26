@@ -21,11 +21,13 @@ public final class SyncService {
         guard let aid = account.id else { throw IPTVError.badConfig }
         let meter = SyncMeter(progress)
         let (cats, items): ([Category], [Item])
+        var guide: String?                                   // an M3U header can name the playlist's program guide
         switch account.kind {
         case .xtream: (cats, items) = try await fetchXtream(account, aid, password ?? "", meter)
-        case .m3u: (cats, items) = try await fetchM3U(account, aid, meter)
+        case .m3u: (cats, items, guide) = try await fetchM3U(account, aid, meter)
         }
         meter.reach(0.7)
+        let guideLink = guide
         if items.isEmpty { throw IPTVError.emptyResponse }   // expired subscription / overloaded panel / nothing there: keep what we have
         // Only the types that came back with items are replaced: a panel that answers [] for one section while it rebuilds its
         // cache must not wipe that section (and the favorites that point into it).
@@ -65,6 +67,7 @@ public final class SyncService {
                 if n % 2000 == 1999 { meter.reach(0.7 + 0.3 * Double(n + 1) / Double(items.count)) }
             }
             try d.execute(sql: "DELETE FROM item WHERE accountId = ? AND stale = 1", arguments: [aid])
+            if account.kind == .m3u { try d.execute(sql: "UPDATE account SET guideURL = ? WHERE id = ?", arguments: [guideLink, aid]) }
             return counts
         }
         meter.reach(1)
@@ -125,7 +128,7 @@ public final class SyncService {
     // MARK: M3U
 
     // ponytail: whole playlist held in memory; switch to a streamed download if lists above ~100 MB show up.
-    private func fetchM3U(_ account: Account, _ aid: Int64, _ meter: SyncMeter) async throws -> ([Category], [Item]) {
+    private func fetchM3U(_ account: Account, _ aid: Int64, _ meter: SyncMeter) async throws -> ([Category], [Item], String?) {
         guard let s = account.url?.trimmingCharacters(in: .whitespacesAndNewlines), let url = URL(string: s),
               url.scheme != nil, url.host != nil else { throw IPTVError.badConfig }
         let (data, resp) = try await session.data(from: url)
@@ -149,7 +152,7 @@ public final class SyncService {
             items.append(Item(accountId: aid, type: type, name: e.name, streamId: e.url, categoryId: e.group,
                               icon: e.logo, directURL: e.url, tvArchive: false, archiveDays: 0, epgChannelId: e.tvgId))
         }
-        return (cats, items)
+        return (cats, items, M3UParser.guideURL(inHeader: String(first.prefix { !$0.isNewline })))
     }
 
     // MARK: Episodes

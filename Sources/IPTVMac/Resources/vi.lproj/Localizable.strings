@@ -273,3 +273,4 @@
 "profile.pin" = "PIN";
 "profile.pin.wrong" = "Sai PIN";
 "home.similarTo" = "Tương tự “%@”";
+"series.allEpisodes" = "Tất cả tập";

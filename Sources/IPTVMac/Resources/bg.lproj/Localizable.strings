@@ -273,3 +273,4 @@
 "profile.pin" = "PIN код";
 "profile.pin.wrong" = "Грешен PIN код";
 "home.similarTo" = "Подобни на „%@“";
+"series.allEpisodes" = "Всички епизоди";

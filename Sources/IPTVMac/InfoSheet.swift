@@ -169,6 +169,10 @@ struct InfoSheet: View {
                 Button { play() } label: { Label(playLabel, systemImage: "play.fill") }
                     .buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
                     .task { resume = try? await model.db.dbQueue.read { try WatchProgress.seriesResume($0, series: item) } }
+                if item.type == .series, resume != nil {      // the other choice: all the episodes (start over, the last one, any)
+                    Button { openEpisodeList() } label: { Label(L("series.allEpisodes"), systemImage: "list.bullet") }
+                        .buttonStyle(.bordered).transition(.opacity)
+                }
             }
             if let info, info.trailerURL != nil {
                 Button { model.openTrailer(info) } label: { Label(L("info.trailer"), systemImage: "play.rectangle") }
@@ -247,6 +251,12 @@ struct InfoSheet: View {
     }
 
     /// A movie plays at once. A series opens its episode list; that is a second sheet, which SwiftUI only shows once this one is gone.
+    private func openEpisodeList() {
+        let item = item, model = model
+        dismiss()
+        Task { try? await Task.sleep(for: .milliseconds(350)); model.play(item) }
+    }
+
     private func play() {
         let item = item, model = model
         dismiss()

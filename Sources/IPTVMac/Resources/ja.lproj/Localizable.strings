@@ -273,3 +273,4 @@
 "profile.pin" = "PIN";
 "profile.pin.wrong" = "PINが違います";
 "home.similarTo" = "「%@」に似た作品";
+"series.allEpisodes" = "すべてのエピソード";

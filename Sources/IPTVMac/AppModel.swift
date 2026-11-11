@@ -40,7 +40,24 @@ final class AppModel: LibraryModel {
     func attach(_ w: NSWindow) {
         guard window !== w else { return }
         window = w; reopening = false
+        growWindowOnce(w)
         applyFullscreen(); updateToolbar()
+    }
+
+    /// Once (version 1.1.3), a window saved at the old small size is made roomier, so the episode list and details are not cramped.
+    /// After that the size is yours: it is never touched again.
+    private func growWindowOnce(_ w: NSWindow) {
+        let key = "windowGrownV1"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        Task {   // after SwiftUI has put the window back at its saved size, or it would undo this
+            try? await Task.sleep(for: .milliseconds(800))
+            guard !w.styleMask.contains(.fullScreen), let screen = w.screen ?? NSScreen.main else { return }
+            UserDefaults.standard.set(true, forKey: key)
+            let area = screen.visibleFrame
+            let size = NSSize(width: min(1280, area.width - 60), height: min(820, area.height - 40))
+            guard w.frame.width < size.width || w.frame.height < size.height else { return }
+            w.setFrame(NSRect(x: area.midX - size.width / 2, y: area.midY - size.height / 2, width: size.width, height: size.height), display: true, animate: false)
+        }
     }
 
     /// Dock click, File > Show Window, PiP return: the window comes back (created again if it was closed).

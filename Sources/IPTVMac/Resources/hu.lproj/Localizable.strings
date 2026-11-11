@@ -273,3 +273,4 @@
 "profile.pin" = "PIN-kód";
 "profile.pin.wrong" = "Hibás PIN-kód";
 "home.similarTo" = "Hasonló: „%@”";
+"series.allEpisodes" = "Összes epizód";

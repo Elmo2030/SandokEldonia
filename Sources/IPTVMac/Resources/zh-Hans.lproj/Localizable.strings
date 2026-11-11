@@ -273,3 +273,4 @@
 "profile.pin" = "PIN";
 "profile.pin.wrong" = "PIN 错误";
 "home.similarTo" = "与“%@”相似";
+"series.allEpisodes" = "全部剧集";

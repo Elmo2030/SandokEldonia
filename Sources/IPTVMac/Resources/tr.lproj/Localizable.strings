@@ -273,3 +273,4 @@
 "profile.pin" = "PIN";
 "profile.pin.wrong" = "Yanlış PIN";
 "home.similarTo" = "“%@” gibi";
+"series.allEpisodes" = "Tüm bölümler";

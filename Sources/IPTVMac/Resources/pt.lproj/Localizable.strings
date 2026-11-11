@@ -273,3 +273,4 @@
 "profile.pin" = "PIN";
 "profile.pin.wrong" = "PIN incorreto";
 "home.similarTo" = "Semelhante a “%@”";
+"series.allEpisodes" = "Todos os episódios";

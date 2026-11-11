@@ -273,3 +273,4 @@
 "profile.pin" = "PIN-kod";
 "profile.pin.wrong" = "Fel PIN-kod";
 "home.similarTo" = "Liknar “%@”";
+"series.allEpisodes" = "Alla avsnitt";

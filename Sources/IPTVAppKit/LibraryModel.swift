@@ -564,6 +564,14 @@ open class LibraryModel {
         return try await SyncService(db: db).info(account: a, password: secrets.password(for: id), type: item.type, streamId: item.streamId, refresh: refresh)
     }
 
+    /// The episodes of a series from an earlier visit (empty the first time): the list can show at once while the provider is asked again.
+    public func cachedEpisodes(of series: Item) async -> [Episode] {
+        (try? await db.dbQueue.read {
+            try Episode.filter(Column("accountId") == series.accountId && Column("seriesId") == series.streamId)
+                .order(Column("season"), Column("number")).fetchAll($0)
+        }) ?? []
+    }
+
     /// Whatever is cached, however old: for showing something at once while a fresh copy is on its way.
     public func cachedInfo(_ item: Item) async -> ItemInfo? {
         try? await db.dbQueue.read { try ItemInfoStore.cached($0, accountId: item.accountId, type: item.type, streamId: item.streamId, maxAge: nil) }

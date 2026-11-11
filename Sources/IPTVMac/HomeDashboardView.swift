@@ -103,20 +103,22 @@ struct HomeDashboardView: View {
                         .foregroundStyle(CinemaTheme.secondaryText)
 
                     HStack(spacing: 12) {
-                        Button {
-                            model.selectedCategory = "__all"
-                            model.searchText = ""
-                            model.scope = .category
-                            model.tab = .movie
-                            onExplore()
-                        } label: {
-                            Label("اكتشف الأفلام", systemImage: "play.fill")
-                                .font(.headline)
-                                .padding(.horizontal, 18)
-                                .padding(.vertical, 11)
+                        // Opens the list of the tab you are on; live channels have nothing to "discover" here.
+                        if let title = model.tab == .movie ? "اكتشف الأفلام" : model.tab == .series ? "اكتشف المسلسلات" : nil {
+                            Button {
+                                model.selectedCategory = "__all"
+                                model.searchText = ""
+                                model.scope = .category
+                                onExplore()
+                            } label: {
+                                Label(title, systemImage: "play.fill")
+                                    .font(.headline)
+                                    .padding(.horizontal, 18)
+                                    .padding(.vertical, 11)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(CinemaTheme.accent)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(CinemaTheme.accent)
 
                         // Pulls the movie and series lists again from the playlist link, so new titles show up.
                         Button {

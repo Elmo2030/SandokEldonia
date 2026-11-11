@@ -52,7 +52,7 @@ for f in "$APP"/Contents/Frameworks/*.dylib; do
 done
 
 # App icon: use the custom SandokEldonia icon.
-CUSTOM_ICON="$HOME/Downloads/SandokEldonia.icns"
+CUSTOM_ICON="${CUSTOM_ICON:-$(cd "$(dirname "$0")" && pwd)/icon/SandokEldonia.icns}"   # CUSTOM_ICON=/path/to.icns overrides
 if [ ! -f "$CUSTOM_ICON" ]; then
   echo "Missing custom icon: $CUSTOM_ICON" >&2
   exit 1

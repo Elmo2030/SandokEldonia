@@ -51,6 +51,20 @@ public enum WatchProgress {
         return out
     }
 
+    /// Where a series was left, from the episodes already cached and the resume points. Nil when nothing was watched (or no episode list yet).
+    public struct SeriesResume {
+        public var episode: Episode, queue: [Episode]
+        public var inProgress: Bool                    // left halfway (else: the next one after the last finished)
+        public var fraction: Double?                   // how far into `episode`, when halfway
+    }
+
+    public static func seriesResume(_ db: Database, series: Item) throws -> SeriesResume? {
+        let eps = try Episode.filter(Column("accountId") == series.accountId && Column("seriesId") == series.streamId).fetchAll(db)
+        let prog = try episodeProgress(db, accountId: series.accountId)
+        guard !prog.isEmpty, let n = upNext(eps, progress: prog) else { return nil }
+        return SeriesResume(episode: n.episode, queue: eps, inProgress: n.resume, fraction: n.resume ? prog[n.episode.streamId]?.fraction : nil)
+    }
+
     /// What the series screen offers first: the episode left halfway (resume), else the one after the last finished, else the first.
     /// nil once every episode up to the last one is watched.
     public static func upNext(_ episodes: [Episode], progress: [String: EpisodeProgress]) -> (episode: Episode, resume: Bool)? {

@@ -111,3 +111,22 @@ import IPTVCore
     #expect(m.profile.id == other.id)                                // and the switch did happen once the writer was free
     #expect(try await m.db.dbQueue.read { try Profiles.current($0) }.id == other.id)
 }
+
+@MainActor @Test func aSeriesRemembersWhichEpisodeYouStoppedAt() async throws {
+    let m = try model()
+    let a = try await m.db.dbQueue.write { d -> Int64 in var x = Account(name: "a", kind: .m3u, url: "http://h/a.m3u"); try x.insert(d); return x.id! }
+    let series = Item(accountId: a, type: .series, name: "Show", streamId: "9")
+    try await m.db.dbQueue.write { d in
+        for (n, id) in [(1, "e1"), (2, "e2"), (3, "e3")] { var e = Episode(accountId: a, seriesId: "9", season: 1, number: n, title: "t", streamId: id); try e.insert(d) }
+    }
+    func resume() async throws -> WatchProgress.SeriesResume? { try await m.db.dbQueue.read { try WatchProgress.seriesResume($0, series: series) } }
+    #expect(try await resume() == nil)                                          // nothing watched yet: the series screen starts from its list
+
+    try await m.db.dbQueue.write { d in try UserData.saveProgress(d, accountId: a, type: .series, streamId: "ep:e2", position: 400, duration: 1000) }
+    let half = try #require(try await resume())
+    #expect(half.episode.streamId == "e2" && half.inProgress && half.fraction == 0.4)
+
+    try await m.db.dbQueue.write { d in try UserData.saveProgress(d, accountId: a, type: .series, streamId: "ep:e2", position: 990, duration: 1000) }
+    let done = try #require(try await resume())
+    #expect(done.episode.streamId == "e3" && !done.inProgress)                  // finished e2: next is e3
+}

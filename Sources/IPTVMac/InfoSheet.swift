@@ -80,6 +80,15 @@ struct InfoSheet: View {
     enum Phase: Equatable { case loading, loaded(ItemInfo), failed(String) }
 
     private var info: ItemInfo? { if case .loaded(let i) = phase { i } else { nil } }
+    @State private var resume: WatchProgress.SeriesResume?
+
+    /// "Play", or for a series you started "Continue S2 E5 · 40%" (or "Play S2 E6" after a finished one).
+    private var playLabel: String {
+        guard item.type == .series, let r = resume else { return L("info.play") }
+        let base = String(format: L(r.inProgress ? "series.continueEp" : "series.playEp"), r.episode.season, r.episode.number)
+        return base + (r.fraction.map { " · \(Int($0 * 100))%" } ?? "")
+    }
+
     private var isPlayingNow: Bool { item.type == .movie && model.playing?.item?.id == item.id }
 
     var body: some View {
@@ -157,8 +166,9 @@ struct InfoSheet: View {
         let fav = model.isFavorite(item)
         return HStack(spacing: 8) {
             if !isPlayingNow {   // opened from the player: "Play" on the movie that is already playing would only restart it
-                Button { play() } label: { Label(L("info.play"), systemImage: "play.fill") }
+                Button { play() } label: { Label(playLabel, systemImage: "play.fill") }
                     .buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
+                    .task { resume = try? await model.db.dbQueue.read { try WatchProgress.seriesResume($0, series: item) } }
             }
             if let info, info.trailerURL != nil {
                 Button { model.openTrailer(info) } label: { Label(L("info.trailer"), systemImage: "play.rectangle") }
@@ -240,7 +250,9 @@ struct InfoSheet: View {
     private func play() {
         let item = item, model = model
         dismiss()
-        if item.type == .series {
+        if item.type == .series, let r = resume {      // a series you started: straight to the episode you stopped at
+            Task { try? await Task.sleep(for: .milliseconds(350)); model.playEpisode(r.episode, of: item, in: r.queue) }
+        } else if item.type == .series {
             Task { try? await Task.sleep(for: .milliseconds(350)); model.play(item) }
         } else {
             model.play(item)
